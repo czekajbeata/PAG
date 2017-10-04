@@ -5,11 +5,10 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 
-// settings
 const unsigned int WINDOW_WIDTH = 800;
 const unsigned int WINDOW_HEIGHT = 600;
 
-				const char *vertexShaderSource = "#version 330 core\n"
+			/*	const char *vertexShaderSource = "#version 330 core\n"
 				"layout (location = 0) in vec3 aPos;\n"
 				"void main()\n"
 				"{\n"
@@ -20,16 +19,16 @@ const unsigned int WINDOW_HEIGHT = 600;
 				"void main()\n"
 				"{\n"
 				"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-				"}\n\0";
+				"}\n\0"; */
 
 int main()
 {
 	// glfw: initialize and configure
 	// ------------------------------
 	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	//glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	//glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	
 	// glfw window creation
 	// --------------------
@@ -50,7 +49,14 @@ int main()
 		return -1;
 	}
 
-	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	//	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	// wywo³anie w funkcji, zeby obszar renderowania sie zmienial kiedy zmieniamy rozmiar okna
+	// wywo³anie zwrotne - kiedy obiekt okna zosta³ poprawnie stworzony; przed uruchomieniem game loop
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	
+
+
+
 
 	///////////////////////////////////
 
@@ -59,6 +65,7 @@ int main()
 	// build and compile our shader program
 	// ------------------------------------
 	// vertex shader
+	/*
 	int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
 	glCompileShader(vertexShader);
@@ -96,6 +103,8 @@ int main()
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
+	*/
+
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
 	
@@ -107,18 +116,17 @@ int main()
 		0.0f,  0.5f, 0.0f   // top left				///////////
 	};
 	unsigned int indices[] = {  // note that we start from 0!
-		0, 1, 3,  // first Triangle
-		1, 2, 3   // second Triangle
+		0, 1, 3  // Triangle
 	};
 	unsigned int VBO, VAO, EBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
+
 	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	
 	/////// 2 - przesy³anie danych do bufora openGL
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
@@ -152,11 +160,16 @@ int main()
 
 		// render
 		// ------
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+
+	// T£O
+	//	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	//	glClear(GL_COLOR_BUFFER_BIT);
 
 		// draw our first triangle
-		glUseProgram(shaderProgram);
+		
+	// do shaderow
+	//	glUseProgram(shaderProgram);
+		
 		glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
 								glDrawArrays(GL_TRIANGLES, 0, 3);
 		//glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
@@ -170,9 +183,9 @@ int main()
 
 	// optional: de-allocate all resources once they've outlived their purpose:
 	// ------------------------------------------------------------------------
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
+//	glDeleteVertexArrays(1, &VAO);
+//	glDeleteBuffers(1, &VBO);
+//	glDeleteBuffers(1, &EBO);
 
 	// glfw: terminate, clearing all previously allocated GLFW resources.
 	// ------------------------------------------------------------------
@@ -181,12 +194,14 @@ int main()
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-// ---------------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow *window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 }
+
+
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
