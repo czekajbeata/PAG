@@ -8,18 +8,18 @@ void processInput(GLFWwindow *window);
 const unsigned int WINDOW_WIDTH = 800;
 const unsigned int WINDOW_HEIGHT = 600;
 
-			/*	const char *vertexShaderSource = "#version 330 core\n"
-				"layout (location = 0) in vec3 aPos;\n"
-				"void main()\n"
-				"{\n"
-				"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-				"}\0";
-				const char *fragmentShaderSource = "#version 330 core\n"
-				"out vec4 FragColor;\n"
-				"void main()\n"
-				"{\n"
-				"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-				"}\n\0"; */
+/*	const char *vertexShaderSource = "#version 330 core\n"
+"layout (location = 0) in vec3 aPos;\n"
+"void main()\n"
+"{\n"
+"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+"}\0";
+const char *fragmentShaderSource = "#version 330 core\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"}\n\0"; */
 
 int main()
 {
@@ -29,7 +29,7 @@ int main()
 	//glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	//glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	
+
 	// glfw window creation
 	// --------------------
 	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "LearnOpenGL", NULL, NULL);
@@ -53,14 +53,14 @@ int main()
 	// wywo³anie w funkcji, zeby obszar renderowania sie zmienial kiedy zmieniamy rozmiar okna
 	// wywo³anie zwrotne - kiedy obiekt okna zosta³ poprawnie stworzony; przed uruchomieniem game loop
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	
+
 
 
 
 
 	///////////////////////////////////
 
-//	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	//	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	// build and compile our shader program
 	// ------------------------------------
@@ -75,8 +75,8 @@ int main()
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 	if (!success)
 	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+	glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+	std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
 	// fragment shader
 	int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -86,8 +86,8 @@ int main()
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
 	if (!success)
 	{
-		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+	glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+	std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
 	// link shaders
 	int shaderProgram = glCreateProgram();
@@ -97,8 +97,8 @@ int main()
 	// check for linking errors
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 	if (!success) {
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+	glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+	std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
 	}
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
@@ -107,10 +107,10 @@ int main()
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
-	
+
 	/////// 1 - wierzcho³ki
 	float vertices[] = {
-	//	0.5f,  0.5f, 0.0f,  // top right
+		//	0.5f,  0.5f, 0.0f,  // top right
 		0.5f, -0.5f, 0.0f,  // bottom right
 		-0.5f, -0.5f, 0.0f,  // bottom left
 		0.0f,  0.5f, 0.0f   // top left				///////////
@@ -161,17 +161,17 @@ int main()
 		// render
 		// ------
 
-	// T£O
-	//	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-	//	glClear(GL_COLOR_BUFFER_BIT);
+		// T£O
+		//	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		//	glClear(GL_COLOR_BUFFER_BIT);
 
 		// draw our first triangle
-		
-	// do shaderow
-	//	glUseProgram(shaderProgram);
-		
+
+		// do shaderow
+		//	glUseProgram(shaderProgram);
+
 		glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-								glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 		//glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 		// glBindVertexArray(0); // no need to unbind it every time 
 
@@ -183,9 +183,9 @@ int main()
 
 	// optional: de-allocate all resources once they've outlived their purpose:
 	// ------------------------------------------------------------------------
-//	glDeleteVertexArrays(1, &VAO);
-//	glDeleteBuffers(1, &VBO);
-//	glDeleteBuffers(1, &EBO);
+	//	glDeleteVertexArrays(1, &VAO);
+	//	glDeleteBuffers(1, &VBO);
+	//	glDeleteBuffers(1, &EBO);
 
 	// glfw: terminate, clearing all previously allocated GLFW resources.
 	// ------------------------------------------------------------------
