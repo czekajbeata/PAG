@@ -3,11 +3,11 @@
 class Mesh
 {
 private:
-//	unsigned int indices[3] = { 0, 1, 3 };
-	float vertices[9] = {
-		-0.5f, -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		0.0f,  0.5f, 0.0f
+	unsigned int indices[3] = { 0, 1, 3 };
+	float vertices[18] = {
+		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // lewy
+		0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, // prawy
+		0.0f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f // górny
 	};
 
 	// VAO - przechowuje kolejne odwo³ania do atrybutu wierzcho³ka; podczas ich konfigurowania

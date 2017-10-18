@@ -27,11 +27,19 @@ Mesh::Mesh()
 
 	//interpretowanie danych z bufora wierzcho³ków dla ka¿dego atrybutu wierzcho³ka
 	// ustawianie wskaŸników atrybutu wierzcho³ka
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
+//	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+//	glEnableVertexAttribArray(0);
 	
 //	glBindBuffer(GL_ARRAY_BUFFER, 0);
 //	glBindVertexArray(0);
+
+	// Atrybut pozycji
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+	// Atrybut koloru
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);
+
 }
 
 

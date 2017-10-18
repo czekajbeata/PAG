@@ -24,6 +24,12 @@ void Core::run()
 		// w³¹cznenie programu cieniuj¹cego, który ma byæ u¿yty do renderowania 
 		glUseProgram(shader->shaderProgram);
 
+		float timeValue = glfwGetTime();
+		float greenValue = sin(timeValue) / 2.0f + 0.5f;
+		int vertexColorLocation = glGetUniformLocation(shader->shaderProgram, "ourColor");
+		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+
+
 		mesh->draw();
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
