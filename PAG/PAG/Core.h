@@ -11,8 +11,6 @@ class Mesh;
 class Shader;
 class Texture;
 
-void processInput(GLFWwindow *window);
-
 class Core
 {
 private:
@@ -20,6 +18,7 @@ private:
 	std::unique_ptr<Mesh> mesh;
 	std::unique_ptr<Shader> shader;
 	std::unique_ptr<Texture> texture;
+	void processInput(GLFWwindow *window);
 public:
 	void run();
 	Core();

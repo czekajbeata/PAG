@@ -4,7 +4,9 @@
 class Texture
 {
 public:
-	GLuint texture;
 	Texture();
 	~Texture();
+private:
+	bool tryToLoadTexture(GLuint& texture);
+	void activateTexture(GLuint texture);
 };

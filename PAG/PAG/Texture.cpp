@@ -1,11 +1,22 @@
 #include "Texture.h"
-#include <stb_image.h>
+#include <stb_image.h>
+
 
 Texture::Texture()
 {
-	// load and create a texture 
-	// -------------------------
-	
+	GLuint texture = NULL;
+	bool loaded = tryToLoadTexture(texture);
+	if (loaded) activateTexture(texture);
+}
+
+Texture::~Texture()
+{
+}
+
+bool Texture::tryToLoadTexture(GLuint& texture)
+{
+	bool isLoaded;
+
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	// ustaw opcje zawijania/filtrowania tekstury (na aktywnym obiekcie tekstury)
@@ -13,7 +24,7 @@ Texture::Texture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// load and generate the texture
+
 	// za³aduj obraz i wygeneruj obiekt tekstury
 	int width, height, nrChannels;
 	unsigned char *data = stbi_load("wall.jpg", &width, &height, &nrChannels, 0);
@@ -21,17 +32,20 @@ Texture::Texture()
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
+		isLoaded = true;
 	}
 	else
 	{
 		std::cout << "Failed to load texture" << std::endl;
+		isLoaded = false;
 	}
 	stbi_image_free(data);
 
-	
+
+	return isLoaded;
 }
 
-
-Texture::~Texture()
+void Texture::activateTexture(GLuint texture)
 {
+	glBindTexture(GL_TEXTURE_2D, texture);
 }

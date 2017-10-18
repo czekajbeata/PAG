@@ -1,6 +1,6 @@
 #include "Core.h"
 #include "Window.h"
-//#include "Mesh.h"
+#include "Mesh.h"
 #include "Shader.h"
 #include "Texture.h"
 #include <exception>
@@ -13,24 +13,17 @@ void Core::run()
 	//render loop
 	while (!glfwWindowShouldClose(window->getWindow()))
 	{
-
+		// zamknij okno na ESC
 		processInput(window->getWindow());
 
 		// clear scene
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearColor(BACKGROUND_COLOR);
 		glClear(GL_COLOR_BUFFER_BIT);
-
-		// korzysta z ProgramObject - po³¹czone shadery 
+		
 		// w³¹cznenie programu cieniuj¹cego, który ma byæ u¿yty do renderowania 
-		glUseProgram(shader->shaderProgram);
-
-		/*float timeValue = glfwGetTime();
-		float greenValue = sin(timeValue) / 2.0f + 0.5f;
-		int vertexColorLocation = glGetUniformLocation(shader->shaderProgram, "ourColor");
-		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
-		*/
-
-		glBindTexture(GL_TEXTURE_2D, texture->texture);
+		shader->activateShaderProgram(shader->shaderProgram);
+	
+		//rysowanie trojkata
 		mesh->draw();
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -63,7 +56,7 @@ Core::~Core()
 {
 }
 
-void processInput(GLFWwindow *window)
+void Core::processInput(GLFWwindow *window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
