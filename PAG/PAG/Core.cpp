@@ -1,6 +1,6 @@
 #include "Core.h"
 #include "Window.h"
-#include "Mesh.h"
+//#include "Mesh.h"
 #include "Shader.h"
 #include "Texture.h"
 #include <exception>
@@ -24,12 +24,13 @@ void Core::run()
 		// w³¹cznenie programu cieniuj¹cego, który ma byæ u¿yty do renderowania 
 		glUseProgram(shader->shaderProgram);
 
-		float timeValue = glfwGetTime();
+		/*float timeValue = glfwGetTime();
 		float greenValue = sin(timeValue) / 2.0f + 0.5f;
 		int vertexColorLocation = glGetUniformLocation(shader->shaderProgram, "ourColor");
 		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+		*/
 
-
+		glBindTexture(GL_TEXTURE_2D, texture->texture);
 		mesh->draw();
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -53,7 +54,7 @@ Core::Core()
 
 	mesh = unique_ptr<Mesh>(new Mesh());
 	shader = unique_ptr<Shader>(new Shader());
-	//texture = unique_ptr<Texture>(new Texture());
+	texture = unique_ptr<Texture>(new Texture());
 
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 }
