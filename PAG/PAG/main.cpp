@@ -10,10 +10,9 @@ int main()
 		Core core;
 		core.run();
 	}
-	catch (std::exception e) {
-		std::cout << e.what() << std::endl;
-		std::system("PAUSE");
-		return -1;
+	catch (std::exception exception) {
+		std::cout << exception.what() << std::endl;
+		std::cin.get();
 	}
 
 	glfwTerminate();

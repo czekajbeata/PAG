@@ -4,12 +4,15 @@
 class Mesh
 {
 private:
-	unsigned int indices[3] = { 0, 1, 2 };
-	float vertices[24] = {
+	unsigned int indices[6] = { 0, 1, 2, 
+							   1, 2, 3 };
+	float vertices[32] = {
 		//pozycje wierzholkow	//kolory			//tekstury
-		-1.0f, -1.0f, 0.0f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f,		// lewy
-		1.0f, -1.0f, 0.0f,		0.0f, 1.0f, 0.0f,	1.0f, 0.0f,		// prawy
-		0.0f,  1.0f, 0.0f,		1.0f, 0.0f, 0.0f,	0.5f, 1.0f		// górny
+		-0.5f, -0.5f, 0.0f,		0.0f, 0.0f, 1.0f,	1.0f, 1.0f,		// lewy
+		0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	0.0f, 1.0f,		// prawy
+		-0.5f,  0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	1.0f, 0.0f,		// górny lewy
+		0.5f,  0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	0.0f, 0.0f		// górny prawy
+
 	};
 
 	GLuint VertexBufferObject = NULL;

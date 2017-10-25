@@ -2,7 +2,8 @@
 
 void Mesh::draw()
 {
-	glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices));
+	//glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices));
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
 Mesh::Mesh()

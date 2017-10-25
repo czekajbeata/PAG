@@ -10,6 +10,9 @@ using namespace std;
 
 void Core::run()
 {
+	glUniform1i(glGetUniformLocation(shader->shaderProgram, "ourTexture1"), 1);
+	glUniform1i(glGetUniformLocation(shader->shaderProgram, "ourTexture2"), 0);
+	
 	//render loop
 	while (!glfwWindowShouldClose(window->getWindow()))
 	{
@@ -19,9 +22,6 @@ void Core::run()
 		// clear scene
 		glClearColor(BACKGROUND_COLOR);
 		glClear(GL_COLOR_BUFFER_BIT);
-		
-		// w³¹cznenie programu cieniuj¹cego, który ma byæ u¿yty do renderowania 
-		shader->activateShaderProgram(shader->shaderProgram);
 	
 		//rysowanie trojkata
 		mesh->draw();
@@ -29,7 +29,6 @@ void Core::run()
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(window->getWindow());
 		glfwPollEvents();
-
 	}
 }
 
@@ -46,7 +45,11 @@ Core::Core()
 		throw runtime_error("Cannot initialize GLAD");
 
 	mesh = unique_ptr<Mesh>(new Mesh());
+
 	shader = unique_ptr<Shader>(new Shader());
+	// w³¹cznenie programu cieniuj¹cego, który ma byæ u¿yty do renderowania 
+	shader->activateShaderProgram(shader->shaderProgram);
+
 	texture = unique_ptr<Texture>(new Texture());
 
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
