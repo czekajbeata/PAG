@@ -47,19 +47,26 @@ void Core::run()
 		//}
 
 		
-		//macierz modelu
-		glm::mat4 model = glm::mat4(1);
-		//glm::translate(model, mesh->cubePositions[1]);
-		model = glm::rotate(model, (float)glfwGetTime() * glm::radians(20.0f), glm::vec3(1.0f, 0.3f, 0.5f));
-		//mesh->Model = glm::rotate(mesh->Model, glm::radians(0.2f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-		GLint modelLoc = glGetUniformLocation(shader->shaderProgram, "model");
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
-		//rysowanie trojkata
+		//macierz modelu 1 
+		glm::mat4 firstModel = glm::mat4(1);
+		firstModel = glm::rotate(firstModel, (float)glfwGetTime() * glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		
+		GLint firstLoc = glGetUniformLocation(shader->shaderProgram, "model");
+		glUniformMatrix4fv(firstLoc, 1, GL_FALSE, glm::value_ptr(firstModel));
+		
 		mesh->draw();
 
 
+		//macierz modelu 1 
+		glm::mat4 secondModel = glm::mat4(1);
+		secondModel = glm::rotate(secondModel, (float)glfwGetTime() * glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // wokó³ s³oñca
+		secondModel = glm::translate(secondModel, glm::vec3(3.0f, 0.0f, 0.0f));
+		secondModel = glm::rotate(secondModel, (float)glfwGetTime() * glm::radians(20.0f), glm::vec3(1.0f, 0.0f, 0.0f)); //wokó³ w³asnej osi
+		
+		GLint secondLoc = glGetUniformLocation(shader->shaderProgram, "model");
+		glUniformMatrix4fv(secondLoc, 1, GL_FALSE, glm::value_ptr(secondModel));
+
+		mesh->draw();
 
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)	

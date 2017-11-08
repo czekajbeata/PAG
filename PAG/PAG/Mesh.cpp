@@ -35,7 +35,7 @@ Mesh::Mesh()
 	//World = glm::mat4(1.0f);
 
 	/* Set view matrix */
-	View = glm::lookAt(glm::vec3(0.0f, 0.0f, -3.0f),  // camera position in world space
+	View = glm::lookAt(glm::vec3(0.0f, 0.0f, -13.0f),  // camera position in world space
 						glm::vec3(0.0f, 0.0f, 0.0f),  // point that camera is looking at
 						glm::vec3(0.0f, 1.0f, 0.0f)); // head is up / (0,-1,0) upside down
 
