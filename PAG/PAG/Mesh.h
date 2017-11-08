@@ -100,9 +100,7 @@ public:
 
 
 	glm::mat4 World;
-	glm::mat4 View;
 	glm::mat4 Projection;
-	//glm::mat4 Model;
 
 	// world space positions of our cubes
 	glm::vec3 cubePositions[10] = {
@@ -118,6 +116,5 @@ public:
 		glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
 
-	glm::mat4 WVP;
 };
 

@@ -34,16 +34,9 @@ Mesh::Mesh()
 	/* Set world matrix to identity matrix - 1 na przek¹tnej*/
 	//World = glm::mat4(1.0f);
 
-	/* Set view matrix */
-	View = glm::lookAt(glm::vec3(0.0f, 0.0f, -13.0f),  // camera position in world space
-						glm::vec3(0.0f, 0.0f, 0.0f),  // point that camera is looking at
-						glm::vec3(0.0f, 1.0f, 0.0f)); // head is up / (0,-1,0) upside down
-
 	/* Set projection matrix  - bli¿ej czy dalej*/
 	Projection = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 50.0f);
 
-	/* Set MVP matrix */
-	//WVP = Projection * View * World;
 }
 
 
