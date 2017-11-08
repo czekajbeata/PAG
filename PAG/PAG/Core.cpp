@@ -4,16 +4,14 @@
 #include "Camera.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "Transform.h"
 #include <exception>
 #include <stdexcept>
 
 using namespace std;
 
 void Core::run()
-{
-	glUniform1i(glGetUniformLocation(shader->shaderProgram, "texture1"), 0);
-	glUniform1i(glGetUniformLocation(shader->shaderProgram, "texture2"), 1);
-	
+{	
 	// ukrywanie i przechwytywanie kursora myszy
 	glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -46,35 +44,102 @@ void Core::run()
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(View));
 
 
-		/* Set model matrix */
-		//macierz modelu 1 
-		glm::mat4 firstModel = glm::mat4(1);
-		firstModel = glm::rotate(firstModel, (float)glfwGetTime() * glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		//	firstModel = glm::rotate(firstModel, glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // not moving
-		GLint firstLoc = glGetUniformLocation(shader->shaderProgram, "model");
-		glUniformMatrix4fv(firstLoc, 1, GL_FALSE, glm::value_ptr(firstModel));
+		///* Set model matrix */
+		Transform center = Transform();
+		center.rotate((float)glfwGetTime() * glm::radians(60.0f), glm::vec3(0.0f, 1.0f, 0.5f));
+		center.scale(glm::vec3(2, 2, 2));
+		glUniformMatrix4fv(glGetUniformLocation(shader->shaderProgram, "model"), 1, GL_FALSE, &center.transform[0][0]);
+		texture->setActiveTexture(0);
 		mesh->draw();
 
-		//macierz modelu 1 
-		glm::mat4 secondModel = glm::mat4(1);
-		secondModel = glm::rotate(secondModel, (float)glfwGetTime() * glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // wokó³ s³oñca
-		secondModel = glm::translate(secondModel, glm::vec3(3.0f, 0.0f, 0.0f));
-		secondModel = glm::rotate(secondModel, (float)glfwGetTime() * glm::radians(20.0f), glm::vec3(1.0f, 0.0f, 0.0f)); //wokó³ w³asnej osi
-		GLint secondLoc = glGetUniformLocation(shader->shaderProgram, "model");
-		glUniformMatrix4fv(secondLoc, 1, GL_FALSE, glm::value_ptr(secondModel));
+		Transform planet1 = Transform();
+		planet1.transform = center.transform;
+		planet1.rotate((float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // wokó³ centrum
+		planet1.translate(glm::vec3(4.5f, 0.0f, 0.0f)); // zmienia siê po³o¿enie
+		planet1.rotate((float)glfwGetTime() * glm::radians(60.0f), glm::vec3(0.0f, 1.0f, 1.0f)); // wokó³ swojej osi
+		glUniformMatrix4fv(glGetUniformLocation(shader->shaderProgram, "model"), 1, GL_FALSE, &planet1.transform[0][0]);
+		texture->setActiveTexture(1);
 		mesh->draw();
 
-		//for (unsigned int i = 0; i < 1; i++)
-		//{
-		//	// calculate the model matrix for each object and pass it to shader before drawing
-		//	mesh->Model = glm::translate(mesh->Model, mesh->cubePositions[i]);
-		//	float angle = 20.0f * i;
-		//	mesh->Model = glm::rotate(mesh->Model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-		//	GLint modelLoc = glGetUniformLocation(shader->shaderProgram, "model");
-		//	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(mesh->Model));
-		//	//rysowanie trojkata
-		//	mesh->draw();
-		//}
+		Transform planet1Moon = Transform();
+		planet1Moon.transform = planet1.transform; // pocz¹tkowe po³o¿enie jak rodzica
+		planet1Moon.rotate((float)glfwGetTime() * glm::radians(-500.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // wokó³ rodzica
+		planet1Moon.translate(glm::vec3(1.5f, 0.0f, 0.0f)); // przesuniêcie od rodzica
+		planet1Moon.rotate((float)glfwGetTime() * glm::radians(-60.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // wokó³ w³asnej osi
+		planet1Moon.scale(glm::vec3(0.25f, 0.25f, 0.25f));
+		glUniformMatrix4fv(glGetUniformLocation(shader->shaderProgram, "model"), 1, GL_FALSE, &planet1Moon.transform[0][0]);
+		texture->setActiveTexture(2);
+		mesh->draw();
+
+		Transform planet2 = Transform();
+		planet2.transform = center.transform;
+		planet2.rotate((float)glfwGetTime() * glm::radians(150.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		planet2.translate(glm::vec3(13.0f, 0.0f, 0.0f));
+		planet2.rotate((float)glfwGetTime() * glm::radians(360.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		planet2.scale(glm::vec3(0.5f, 0.5f, 0.5f));
+		glUniformMatrix4fv(glGetUniformLocation(shader->shaderProgram, "model"), 1, GL_FALSE, &planet2.transform[0][0]);
+		texture->setActiveTexture(0);
+		mesh->draw();
+
+		Transform planet3 = Transform();
+		planet3.transform = center.transform;
+		planet3.rotate((float)glfwGetTime() * glm::radians(170.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		planet3.translate(glm::vec3(5.0f, 0.0f, 0.0f));
+		planet3.rotate((float)glfwGetTime() * glm::radians(60.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		planet3.scale(glm::vec3(0.55f, 0.55f, 0.55f));
+		glUniformMatrix4fv(glGetUniformLocation(shader->shaderProgram, "model"), 1, GL_FALSE, &planet3.transform[0][0]);
+		texture->setActiveTexture(1);
+		mesh->draw();
+
+		Transform planet3Moon1 = Transform();
+		planet3Moon1.transform = planet3.transform; // pocz¹tkowe po³o¿enie jak rodzica
+		planet3Moon1.rotate((float)glfwGetTime() * glm::radians(-50.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // wokó³ rodzica
+		planet3Moon1.translate(glm::vec3(1.2f, 0.0f, 0.0f)); // przesuniêcie od rodzica
+		planet3Moon1.rotate((float)glfwGetTime() * glm::radians(-60.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // wokó³ w³asnej osi
+		planet3Moon1.scale(glm::vec3(0.25f, 0.25f, 0.25f));
+		glUniformMatrix4fv(glGetUniformLocation(shader->shaderProgram, "model"), 1, GL_FALSE, &planet3Moon1.transform[0][0]);
+		texture->setActiveTexture(2);
+		mesh->draw();
+
+		Transform planet3Moon2 = Transform();
+		planet3Moon2.transform = planet3.transform; // pocz¹tkowe po³o¿enie jak rodzica
+		planet3Moon2.rotate((float)glfwGetTime() * glm::radians(-400.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // wokó³ rodzica
+		planet3Moon2.translate(glm::vec3(1.4f, 0.0f, 0.0f)); // przesuniêcie od rodzica
+		planet3Moon2.rotate((float)glfwGetTime() * glm::radians(-300.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // wokó³ w³asnej osi
+		planet3Moon2.scale(glm::vec3(0.2f, 0.2f, 0.2f));
+		glUniformMatrix4fv(glGetUniformLocation(shader->shaderProgram, "model"), 1, GL_FALSE, &planet3Moon2.transform[0][0]);
+		texture->setActiveTexture(1);
+		mesh->draw();
+
+		Transform planet4 = Transform();
+		planet4.transform = center.transform;
+		planet4.rotate((float)glfwGetTime() * glm::radians(120.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		planet4.translate(glm::vec3(0.0f, 3.0f, 0.0f));
+		planet4.rotate((float)glfwGetTime() * glm::radians(130.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		planet4.scale(glm::vec3(0.15f, 0.15f, 0.15f));
+		glUniformMatrix4fv(glGetUniformLocation(shader->shaderProgram, "model"), 1, GL_FALSE, &planet4.transform[0][0]);
+		texture->setActiveTexture(0);
+		mesh->draw();
+
+		Transform planet5 = Transform();
+		planet5.transform = center.transform;
+		planet5.rotate((float)glfwGetTime() * glm::radians(70.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		planet5.translate(glm::vec3(10.0f, 0.0f, 0.0f));
+		planet5.rotate((float)glfwGetTime() * glm::radians(260.0f), glm::vec3(0.0f, 1.0f, 1.0f));
+		planet5.scale(glm::vec3(0.75f, 0.75f, 0.75f));
+		glUniformMatrix4fv(glGetUniformLocation(shader->shaderProgram, "model"), 1, GL_FALSE, &planet5.transform[0][0]);
+		texture->setActiveTexture(2);
+		mesh->draw();
+
+		Transform planet5Moon1 = Transform();
+		planet5Moon1.transform = planet3.transform; // pocz¹tkowe po³o¿enie jak rodzica
+		planet5Moon1.rotate((float)glfwGetTime() * glm::radians(-150.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // wokó³ rodzica
+		planet5Moon1.translate(glm::vec3(0.0f, 2.0f, 0.0f)); // przesuniêcie od rodzica
+		planet5Moon1.rotate((float)glfwGetTime() * glm::radians(-60.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // wokó³ w³asnej osi
+		planet5Moon1.scale(glm::vec3(0.25f, 0.25f, 0.25f));
+		glUniformMatrix4fv(glGetUniformLocation(shader->shaderProgram, "model"), 1, GL_FALSE, &planet5Moon1.transform[0][0]);
+		texture->setActiveTexture(1);
+		mesh->draw();
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)	
 		//		-- update
@@ -99,13 +164,14 @@ Core::Core() // -- init
 	/* pozwala na ustalenie który wielok¹t przes³ania który */
 	glEnable(GL_DEPTH_TEST);
 
-	shader = unique_ptr<Shader>(new Shader());
-	// w³¹cznenie programu cieniuj¹cego, który ma byæ u¿yty do renderowania 
-	shader->activateShaderProgram(shader->shaderProgram);
-
 	mesh = unique_ptr<Mesh>(new Mesh());
 	camera = unique_ptr<Camera>(new Camera());
 	texture = unique_ptr<Texture>(new Texture());
+
+	shader = unique_ptr<Shader>(new Shader());
+	// w³¹cznenie programu cieniuj¹cego, który ma byæ u¿yty do renderowania 
+	shader->activateShaderProgram(shader->shaderProgram);
+	glUniform1i(glGetUniformLocation(shader->shaderProgram, "texture"), 0);
 
 	glfwGetCursorPos(window->getWindow(), &camera->lastX, &camera->lastY);
 
@@ -139,16 +205,8 @@ void Core::processInput(GLFWwindow *window)
 
 void Core::processMouse(GLFWwindow *pWindow)
 {
-
 	double mousePosX, mousePosY;
 	glfwGetCursorPos(pWindow, &mousePosX, &mousePosY);
-
-	if (camera->firstMouse)
-	{
-		camera->lastX = mousePosX;
-		camera->lastY = mousePosY;
-		camera->firstMouse = false;
-	}
 
 	float offsetX = (mousePosX - camera->lastX) * mouseSensivity;
 	float offsetY = (camera->lastY - mousePosY) * mouseSensivity; // Odwrócone, poniewa¿ wspó³rzêdne y zmieniaj¹ siê od do³u do góry
