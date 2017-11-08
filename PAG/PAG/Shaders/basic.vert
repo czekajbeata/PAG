@@ -1,16 +1,22 @@
 #version 440 core
 layout (location = 0) in vec3 position; // zmienna position ma lokalizacjê 0
-layout (location = 1) in vec3 color;  // zmienna color ma lokalizacjê 1
-layout (location = 2) in vec2 texCoord; // zmienna texCoord - lok 3
   
-out vec3 outPosition; // przeka¿ kolor do FS
-out vec3 ourColor; // przeka¿ kolor do FS
-out vec2 TexCoord; // przeka¿ tekstury
- 
+out vec3 outPosition; // przeka¿ pozycje do FS
+
+//uniform mat4 wvp;	// przesy³a dane do shadera jak in, nie zmienia swoich wartoœci
+					// w trakcie wywo³ywania kodu shadera dla poszczególnych wierzcho³ków
+
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
 void main()
 {
-    gl_Position = vec4(position, 1.0);
-    ourColor = color; // ustaw ourColor na kolor wejœciowy z atrybutu wierzcho³ka
+	
+
+    gl_Position = projection * view * model * vec4(position, 1.0f);
+	
 	outPosition = position;
-	TexCoord = texCoord;
+
+	//gl_Position = wvp * vec4(position, 1.0f);
 }
