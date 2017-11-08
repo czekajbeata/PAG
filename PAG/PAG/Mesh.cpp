@@ -21,22 +21,20 @@ Mesh::Mesh()
 	glEnableVertexAttribArray(0); 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
+
+
 	//macierz modelu
-	Model = glm::rotate(Model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
+	//Model = glm::rotate(Model, glm::radians(135.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	/* Set world matrix to identity matrix - 1 na przek¹tnej*/
-	World = glm::mat4(1.0f);
+	//World = glm::mat4(1.0f);
 
 	/* Set view matrix */
-	//View = glm::lookAt(glm::vec3(1.5f, 0.0f, 1.5f),  // camera position in world space
-	//					glm::vec3(0.0f, 0.0f, 0.0f),  // point that camera is looking at
-	//					glm::vec3(0.0f, 1.0f, 0.0f)); // head is up / (0,-1,0) upside down
+	View = glm::lookAt(glm::vec3(0.5f, 0.0f, 2.5f),  // camera position in world space
+						glm::vec3(0.0f, 0.0f, 0.0f),  // point that camera is looking at
+						glm::vec3(0.0f, 1.0f, 0.0f)); // head is up / (0,-1,0) upside down
 
-	View  = glm::translate(View, glm::vec3(0.0f, 0.0f, -3.0f));
-
-	/* Set projection matrix */
-	//Projection = glm::perspective(45.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.001f, 50.0f);
-
+	/* Set projection matrix  - bli¿ej czy dalej*/
 	Projection = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
 
 	/* Set MVP matrix */

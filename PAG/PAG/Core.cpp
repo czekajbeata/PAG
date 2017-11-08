@@ -26,28 +26,39 @@ void Core::run()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 
-		////macierz modelu
-		//mesh->Model = glm::rotate(mesh->Model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
-
-		///* Set view matrix */
-		//mesh->View = glm::translate(mesh->View, glm::vec3(0.0f, 0.0f, -3.0f));
-
-		///* Set projection matrix */
-		//mesh->Projection = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
-
-
-
-
-		GLint modelLoc = glGetUniformLocation(shader->shaderProgram, "model");
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(mesh->Model));
 		GLint viewLoc = glGetUniformLocation(shader->shaderProgram, "view");
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(mesh->View));
 		GLint projLoc = glGetUniformLocation(shader->shaderProgram, "projection");
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(mesh->Projection));
 
+		//for (unsigned int i = 0; i < 1; i++)
+		//{
+		//	// calculate the model matrix for each object and pass it to shader before drawing
+		//	mesh->Model = glm::translate(mesh->Model, mesh->cubePositions[i]);
+		//	float angle = 20.0f * i;
+		//	mesh->Model = glm::rotate(mesh->Model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+
+		//	GLint modelLoc = glGetUniformLocation(shader->shaderProgram, "model");
+		//	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(mesh->Model));
+
+
+		//	//rysowanie trojkata
+		//	mesh->draw();
+		//}
+
+		
+		//macierz modelu
+		//mesh->Model = glm::translate(mesh->Model, mesh->cubePositions[0]);
+		mesh->Model = glm::rotate(mesh->Model, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+
+		GLint modelLoc = glGetUniformLocation(shader->shaderProgram, "model");
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(mesh->Model));
 
 		//rysowanie trojkata
 		mesh->draw();
+
+
+
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)	
 		//		-- update
