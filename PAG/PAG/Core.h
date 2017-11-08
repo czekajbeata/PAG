@@ -22,13 +22,15 @@ private:
 	std::unique_ptr<Mesh> mesh;
 	std::unique_ptr<Shader> shader;
 	std::unique_ptr<Texture> texture;
-	void processInput(GLFWwindow *window);
 	std::unique_ptr<Camera> camera;
+	void processInput(GLFWwindow *window);
+	void processMouse(GLFWwindow *pWindow);
 	//void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 	GLfloat deltaTime = 0.0f;  // Czas pomiêdzy obecn¹ i poprzedni¹ klatk¹
 	GLfloat lastFrame = 0.0f;    // Czas ostatniej ramki
-	float cameraSpeed = 0.07f; // dopasuj do swoich potrzeb
+	float cameraSpeed = 0.05f; // dopasuj do swoich potrzeb
+	float mouseSensivity = 0.05f;
 
 public:
 	void run();

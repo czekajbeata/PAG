@@ -14,6 +14,9 @@ void Core::run()
 	glUniform1i(glGetUniformLocation(shader->shaderProgram, "texture1"), 0);
 	glUniform1i(glGetUniformLocation(shader->shaderProgram, "texture2"), 1);
 	
+	// ukrywanie i przechwytywanie kursora myszy
+	glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 	//render loop
 	while (!glfwWindowShouldClose(window->getWindow()))
 	{
@@ -24,6 +27,9 @@ void Core::run()
 
 		// zamknij okno na ESC
 		processInput(window->getWindow());
+		processMouse(window->getWindow());
+		
+		// -- DISPLAY --
 
 		// clear scene			-- render
 		glClearColor(BACKGROUND_COLOR);
@@ -85,13 +91,6 @@ Core::Core() // -- init
 
 	window = unique_ptr<Window>(new Window());
 
-
-
-	// ukrywanie i przechwytywanie kursora myszy
-	//glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-
-
 	// glad: load all OpenGL function pointers
 	if (!gladLoadGL())
 		throw runtime_error("Cannot initialize GLAD");
@@ -105,21 +104,10 @@ Core::Core() // -- init
 	shader->activateShaderProgram(shader->shaderProgram);
 
 	mesh = unique_ptr<Mesh>(new Mesh());
-
 	camera = unique_ptr<Camera>(new Camera());
-
-	/* Get uniform location and send MVP matrix there */
-//	GLuint wvpLoc = glGetUniformLocation(shader->shaderProgram, "wvp");
-//	glUniformMatrix4fv(wvpLoc, 1, GL_FALSE, &(mesh->WVP[0][0]));
-	/*	lokalizacja zmiennej w programie cieniuj¹cym - przyjmuje "uchwyt" 
-	do programu, który ma shadery i nazwê zmiennej w shaderze
-		wysy³anie macierzy z CPU do GPU - lokalizacja, iloœæ wysy³anych macierzy,
-	?transponowaæ, adres pierwszego elementu macierzy*/
-
-
 	texture = unique_ptr<Texture>(new Texture());
 
-
+	glfwGetCursorPos(window->getWindow(), &camera->lastX, &camera->lastY);
 
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 }
@@ -147,4 +135,26 @@ void Core::processInput(GLFWwindow *window)
 	wektor kierunku od wektora po³o¿enia.Jeœli chcemy przesuwaæ siê na boki,
 	wykonujemy iloczyn wektorowy, aby utworzyæ prawy wektor i odpowiednio 
 	poruszaæ siê wzd³u¿ tego wektora w prawo. */
+}
+
+void Core::processMouse(GLFWwindow *pWindow)
+{
+
+	double mousePosX, mousePosY;
+	glfwGetCursorPos(pWindow, &mousePosX, &mousePosY);
+
+	if (camera->firstMouse)
+	{
+		camera->lastX = mousePosX;
+		camera->lastY = mousePosY;
+		camera->firstMouse = false;
+	}
+
+	float offsetX = (mousePosX - camera->lastX) * mouseSensivity;
+	float offsetY = (camera->lastY - mousePosY) * mouseSensivity; // Odwrócone, poniewa¿ wspó³rzêdne y zmieniaj¹ siê od do³u do góry
+
+	camera->lastX = mousePosX;
+	camera->lastY = mousePosY;
+
+	camera->rotateByOffset(offsetX, offsetY);
 }
