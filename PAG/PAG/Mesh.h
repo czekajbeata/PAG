@@ -20,33 +20,77 @@ private:
 
 	//};
 
-	glm::vec3 vertices[18] = { 
-		glm::vec3(-0.5f, -0.5f,  0.5f), //basis
-		glm::vec3(0.5f, -0.5f,  0.5f),
-		glm::vec3(0.5f, -0.5f, -0.5f),
-		glm::vec3(-0.5f, -0.5f,  0.5f),
-		glm::vec3(0.5f, -0.5f, -0.5f),
-		glm::vec3(-0.5f, -0.5f, -0.5f),
-		
-		glm::vec3(-0.5f, -0.5f, -0.5f), //left side
-		glm::vec3(-0.5f, -0.5f,  0.5f),
-		glm::vec3(0.0f,  0.5f,  0.0f),
-		
-		glm::vec3(0.5f, -0.5f,  0.5f), //right side
-		glm::vec3(0.5f, -0.5f, -0.5f),
-		glm::vec3(0.0f,  0.5f,  0.0f),
-		
-		glm::vec3(-0.5f, -0.5f,  0.5f), //front side
-		glm::vec3(0.5f, -0.5f,  0.5f),
-		glm::vec3(0.0f,  0.5f,  0.0f),
-		
-		glm::vec3(0.5f, -0.5f, -0.5f), //back side
-		glm::vec3(-0.5f, -0.5f, -0.5f),
-		glm::vec3(0.0f,  0.5f,  0.0f) };
+	//glm::vec3 vertices[18] = { 
+	//	glm::vec3(-0.5f, -0.5f,  0.5f), //basis
+	//	glm::vec3(0.5f, -0.5f,  0.5f),
+	//	glm::vec3(0.5f, -0.5f, -0.5f),
+	//	glm::vec3(-0.5f, -0.5f,  0.5f),
+	//	glm::vec3(0.5f, -0.5f, -0.5f),
+	//	glm::vec3(-0.5f, -0.5f, -0.5f),
+	//	
+	//	glm::vec3(-0.5f, -0.5f, -0.5f), //left side
+	//	glm::vec3(-0.5f, -0.5f,  0.5f),
+	//	glm::vec3(0.0f,  0.5f,  0.0f),
+	//	
+	//	glm::vec3(0.5f, -0.5f,  0.5f), //right side
+	//	glm::vec3(0.5f, -0.5f, -0.5f),
+	//	glm::vec3(0.0f,  0.5f,  0.0f),
+	//	
+	//	glm::vec3(-0.5f, -0.5f,  0.5f), //front side
+	//	glm::vec3(0.5f, -0.5f,  0.5f),
+	//	glm::vec3(0.0f,  0.5f,  0.0f),
+	//	
+	//	glm::vec3(0.5f, -0.5f, -0.5f), //back side
+	//	glm::vec3(-0.5f, -0.5f, -0.5f),
+	//	glm::vec3(0.0f,  0.5f,  0.0f) };
 
+
+	float vertices[180] = {
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+		0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+		0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+	};
 	
 	GLuint VertexBufferObject = NULL;
-	//GLuint VertexArrayObject = NULL;
+	GLuint VertexArrayObject = NULL;
 	//GLuint ElementObjectBuffer = NULL;
 
 public:
@@ -58,7 +102,7 @@ public:
 	glm::mat4 World;
 	glm::mat4 View;
 	glm::mat4 Projection;
-	glm::mat4 Model;
+	//glm::mat4 Model;
 
 	// world space positions of our cubes
 	glm::vec3 cubePositions[10] = {

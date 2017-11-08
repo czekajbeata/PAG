@@ -10,8 +10,8 @@ using namespace std;
 
 void Core::run()
 {
-	glUniform1i(glGetUniformLocation(shader->shaderProgram, "ourTexture1"), 1);
-	glUniform1i(glGetUniformLocation(shader->shaderProgram, "ourTexture2"), 0);
+	glUniform1i(glGetUniformLocation(shader->shaderProgram, "texture1"), 0);
+	glUniform1i(glGetUniformLocation(shader->shaderProgram, "texture2"), 1);
 	
 	//render loop
 	while (!glfwWindowShouldClose(window->getWindow()))
@@ -48,11 +48,13 @@ void Core::run()
 
 		
 		//macierz modelu
-		//mesh->Model = glm::translate(mesh->Model, mesh->cubePositions[0]);
-		mesh->Model = glm::rotate(mesh->Model, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 model = glm::mat4(1);
+		//glm::translate(model, mesh->cubePositions[1]);
+		model = glm::rotate(model, (float)glfwGetTime() * glm::radians(20.0f), glm::vec3(1.0f, 0.3f, 0.5f));
+		//mesh->Model = glm::rotate(mesh->Model, glm::radians(0.2f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 		GLint modelLoc = glGetUniformLocation(shader->shaderProgram, "model");
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(mesh->Model));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
 		//rysowanie trojkata
 		mesh->draw();
@@ -98,7 +100,7 @@ Core::Core() // -- init
 	?transponowaæ, adres pierwszego elementu macierzy*/
 
 
-	//texture = unique_ptr<Texture>(new Texture());
+	texture = unique_ptr<Texture>(new Texture());
 
 
 
