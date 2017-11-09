@@ -29,7 +29,7 @@ private:
 
 	GLfloat deltaTime = 0.0f;  // Czas pomiêdzy obecn¹ i poprzedni¹ klatk¹
 	GLfloat lastFrame = 0.0f;    // Czas ostatniej ramki
-	float cameraSpeed = 0.05f; // dopasuj do swoich potrzeb
+	float cameraSpeed = 10.0f; // dopasuj do swoich potrzeb
 	float mouseSensivity = 0.05f;
 
 public:

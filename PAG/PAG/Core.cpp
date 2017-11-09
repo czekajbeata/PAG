@@ -74,7 +74,7 @@ void Core::run()
 		Transform planet2 = Transform();
 		planet2.transform = center.transform;
 		planet2.rotate((float)glfwGetTime() * glm::radians(150.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		planet2.translate(glm::vec3(13.0f, 0.0f, 0.0f));
+		planet2.translate(glm::vec3(9.0f, 0.0f, 0.0f));
 		planet2.rotate((float)glfwGetTime() * glm::radians(360.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		planet2.scale(glm::vec3(0.5f, 0.5f, 0.5f));
 		glUniformMatrix4fv(glGetUniformLocation(shader->shaderProgram, "model"), 1, GL_FALSE, &planet2.transform[0][0]);
@@ -187,15 +187,15 @@ void Core::processInput(GLFWwindow *window)
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 
-	GLfloat cameraSpeed = 2.5f * deltaTime;
+	GLfloat speed = cameraSpeed * deltaTime;
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera->cameraPos += cameraSpeed * camera->cameraFront;
+		camera->cameraPos += speed * camera->cameraFront;
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera->cameraPos -= cameraSpeed * camera->cameraFront;
+		camera->cameraPos -= speed * camera->cameraFront;
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera->cameraPos -= glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * cameraSpeed;
+		camera->cameraPos -= glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * speed;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera->cameraPos += glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * cameraSpeed;
+		camera->cameraPos += glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * speed;
 
 	/* Jeœli chcemy poruszaæ siê do przodu lub do ty³u, dodajemy lub odejmujemy 
 	wektor kierunku od wektora po³o¿enia.Jeœli chcemy przesuwaæ siê na boki,
