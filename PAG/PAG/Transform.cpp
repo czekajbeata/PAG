@@ -25,3 +25,15 @@ void Transform::scale(glm::vec3 vec)
 {
 	transform = glm::scale(transform, vec);
 }
+
+glm::vec3 Transform::getPosition()
+{
+	glm::mat4 transformation = transform; // your transformation matrix.
+	glm::vec3 scale;
+	glm::quat rotation;
+	glm::vec3 translation;
+	glm::vec3 skew;
+	glm::vec4 perspective;
+	glm::decompose(transformation, scale, rotation, translation, skew, perspective);
+	return translation;
+}

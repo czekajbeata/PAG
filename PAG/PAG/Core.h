@@ -32,6 +32,8 @@ private:
 	float cameraSpeed = 10.0f; // dopasuj do swoich potrzeb
 	float mouseSensivity = 0.05f;
 
+	float currentTime;
+
 public:
 	void run();
 	Core();
