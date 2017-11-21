@@ -12,6 +12,7 @@ class Shader;
 class Texture;
 class Camera;
 class Scene;
+class Model;
 
 class Core
 {
@@ -22,6 +23,7 @@ private:
 	std::unique_ptr<Texture> texture;
 	std::unique_ptr<Camera> camera;
 	std::unique_ptr<Scene> scene;
+	std::unique_ptr<Model> model;
 	
 	float currentTime;
 
