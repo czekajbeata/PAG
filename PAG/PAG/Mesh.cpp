@@ -1,4 +1,9 @@
 #include "Mesh.h"
+#include "Const.h"
+#include "TextureLoader.h"
+#include "Shader.h"
+
+using namespace std;
 
 
 Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures)

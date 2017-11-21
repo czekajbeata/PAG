@@ -4,9 +4,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "Const.h"
-#include "Texture.h"
-#include "Shader.h"
 #include <vector>
 #include <memory>
 #include <string>
@@ -32,53 +29,6 @@ struct Texture {
 class Mesh
 {
 private:
-	//unsigned int indices[6] = { 0, 1, 2, 
-	//						   1, 2, 3 };
-
-	//float vertices[180] = {
-	//	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-	//	0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-	//	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	//	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	//	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-	//	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-
-	//	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	//	0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	//	0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-	//	0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-	//	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-	//	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-	//	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	//	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	//	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	//	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	//	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	//	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-	//	0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	//	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	//	0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	//	0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	//	0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	//	0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-	//	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	//	0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-	//	0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	//	0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	//	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	//	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-	//	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-	//	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	//	0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	//	0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	//	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-	//	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-	//};
-	
 	GLuint VertexBufferObject = NULL;
 	GLuint VertexArrayObject = NULL;
 	GLuint ElementObjectBuffer = NULL;

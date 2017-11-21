@@ -1,6 +1,5 @@
 #include <GLFW/glfw3.h>
 #include <stdexcept>
-#include "Const.h"
 
 class Window
 {

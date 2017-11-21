@@ -1,5 +1,7 @@
 #include "Scene.h"
 #include "Shader.h"
+#include "Const.h"
+#include "Camera.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 Scene::Scene()

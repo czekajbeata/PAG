@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "Const.h"
 #include <iostream>
 
 Camera::Camera()

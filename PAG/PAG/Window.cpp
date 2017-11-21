@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "Const.h"
 
 Window::Window() : Window(WINDOW_WIDTH, WINDOW_HEIGHT, "Window") {}
 

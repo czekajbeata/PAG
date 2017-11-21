@@ -4,9 +4,10 @@
 #include "Camera.h"
 #include "Shader.h"
 #include "Scene.h"
-#include "Texture.h"
+#include "TextureLoader.h"
 #include "Transform.h"
 #include "Model.h"
+#include "Const.h"
 #include <exception>
 #include <stdexcept>
 
@@ -14,8 +15,9 @@ using namespace std;
 
 void Core::run()
 {	
+	Model model("C:/Users/BeataPC/Downloads/PAG-models/PAG/Objects/nanosuit.obj");
 	// ukrywanie i przechwytywanie kursora myszy
-	glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+//	glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//render loop
 	while (!glfwWindowShouldClose(window->getWindow()))
@@ -42,12 +44,12 @@ void Core::run()
 		scene->updateSpace(shader->shaderProgram);
 
 
-		glm::mat4 newModel;
+		glm::mat4 newModel = glm::mat4(1);
 		newModel = glm::translate(newModel, glm::vec3(0.0f, -1.75f, 0.0f)); // translate it down so it's at the center of the scene
 		newModel = glm::scale(newModel, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
 		glUniformMatrix4fv(glGetUniformLocation(shader->shaderProgram, "model"), 1, GL_FALSE, &newModel[0][0]);
 
-		model->Draw(shader->shaderProgram);
+		model.Draw(shader->shaderProgram);
 		
 		// after center - always facing front
 		//glm::vec3 F = glm::normalize(camera->cameraPos - center.getPosition());
@@ -154,8 +156,8 @@ Core::Core() // -- init
 	glEnable(GL_DEPTH_TEST);
 
 	//mesh = unique_ptr<Mesh>(new Mesh());
-	camera = unique_ptr<Camera>(new Camera());
-	//texture = unique_ptr<Texture>(new Texture());
+	camera = unique_ptr<Camera>(new Camera());	
+	texture = std::make_unique<TextureLoader>();
 
 	shader = unique_ptr<Shader>(new Shader());
 	// w³¹cznenie programu cieniuj¹cego, który ma byæ u¿yty do renderowania 
@@ -164,7 +166,7 @@ Core::Core() // -- init
 	
 	scene = unique_ptr<Scene>(new Scene());
 
-	model = unique_ptr<Model>(new Model("source/Dio.obj"));
+	//model = unique_ptr<Model>(new Model("source/Dio.obj"));
 
 
 	glfwGetCursorPos(window->getWindow(), &camera->lastX, &camera->lastY);
