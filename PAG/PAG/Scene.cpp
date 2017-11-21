@@ -24,5 +24,4 @@ void Scene::updateSpace(GLuint shader)
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(ViewSpace));
 }
 
-
 Scene::~Scene() {}

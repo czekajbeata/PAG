@@ -40,14 +40,42 @@ glm::vec3 Transform::getPosition() {
 void Transform::rotate(float rad, glm::vec3 axis)
 {
 	_transform = glm::rotate(_transform, rad, axis);
+	if (!(_children.empty()))
+	{
+		for each(auto& child in _children)
+		{
+			child->rotate(rad, axis);
+		}
+	}
 }
 
 void Transform::translate(glm::vec3 vec)
 {
 	_transform = glm::translate(_transform, vec);
+	if (!(_children.empty()))
+	{
+		for each(auto& child in _children)
+		{
+			child->translate(vec);
+		}
+	}
 }
 
 void Transform::scale(glm::vec3 vec)
 {
 	_transform = glm::scale(_transform, vec);
+	if (!(_children.empty()))
+	{
+		for each(auto& child in _children)
+		{
+			child->scale(vec);
+		}
+	}
 }
+
+void Transform::setParent(Transform& parent)
+{
+	_parent = std::make_shared<Transform>(parent);
+	parent._children.push_back(std::make_unique<Transform>(*this));
+}
+

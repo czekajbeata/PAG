@@ -16,8 +16,9 @@ private:
 	glm::vec3 _skew;
 	glm::vec4 _perspective;
 
-	std::vector<Transform> _children;
-	std::unique_ptr<Transform> _parent;
+	std::vector<std::unique_ptr<Transform>> _children;
+	std::shared_ptr<Transform> _parent;
+
 public:
 	Transform();
 	Transform(const Transform &);
@@ -31,5 +32,8 @@ public:
 	void rotate(float rad, glm::vec3 axis);
 	void translate(glm::vec3 vec);
 	void scale(glm::vec3 vec);
+
+	void setParent(Transform& parent);
+
 };
 
