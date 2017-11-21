@@ -4,7 +4,7 @@
 Camera::Camera()
 {	
 	firstMouse = true;
-	yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
+	yaw = -90.0f;
 	pitch = 0.0f;
 	lastX = WINDOW_WIDTH / 2.0f;
 	lastY = WINDOW_HEIGHT / 2.0f;
@@ -39,4 +39,39 @@ void Camera::updateCameraVectors()
 Camera::~Camera()
 {
 
+}
+
+void Camera::processInput(GLFWwindow *window)
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
+
+	GLfloat speed = cameraSpeed * deltaTime;
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		cameraPos += speed * cameraFront;
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		cameraPos -= speed * cameraFront;
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * speed;
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * speed;
+
+	/* Jeœli chcemy poruszaæ siê do przodu lub do ty³u, dodajemy lub odejmujemy
+	wektor kierunku od wektora po³o¿enia.Jeœli chcemy przesuwaæ siê na boki,
+	wykonujemy iloczyn wektorowy, aby utworzyæ prawy wektor i odpowiednio
+	poruszaæ siê wzd³u¿ tego wektora w prawo. */
+}
+
+void Camera::processMouse(GLFWwindow *pWindow)
+{
+	double mousePosX, mousePosY;
+	glfwGetCursorPos(pWindow, &mousePosX, &mousePosY);
+
+	float offsetX = (mousePosX - lastX) * mouseSensivity;
+	float offsetY = (lastY - mousePosY) * mouseSensivity; // Odwrócone, poniewa¿ wspó³rzêdne y zmieniaj¹ siê od do³u do góry
+
+	lastX = mousePosX;
+	lastY = mousePosY;
+
+	rotateByOffset(offsetX, offsetY);
 }

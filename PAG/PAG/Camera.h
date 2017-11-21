@@ -9,27 +9,30 @@ class Camera
 {
 private:
 	void Camera::updateCameraVectors();
+	void Camera::rotateByOffset(float pOffsetX, float pOffsetY);
+	
+	float cameraSpeed = 10.0f; 
+	float mouseSensivity = 0.05f;
 
 public:
 	Camera();
 	~Camera();
 
-	glm::vec3 cameraPos; 
-	glm::vec3 cameraFront;
-	glm::vec3 cameraUp; 
-
-
 	//camera set-up
 	bool firstMouse;
-	float yaw;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
+	float yaw;
 	float pitch;
 	double lastX;
 	double lastY;
 	float fov;
 
-	void Camera::rotateByOffset(float pOffsetX, float pOffsetY);
-
-
-
+	glm::vec3 cameraPos; 
+	glm::vec3 cameraFront;
+	glm::vec3 cameraUp; 
+	GLfloat deltaTime = 0.0f;  // Czas pomiêdzy obecn¹ i poprzedni¹ klatk¹
+	GLfloat lastFrame = 0.0f;    // Czas ostatniej ramki
+	
+	void processInput(GLFWwindow *window);
+	void processMouse(GLFWwindow *pWindow);
 };
 
