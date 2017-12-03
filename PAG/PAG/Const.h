@@ -7,5 +7,7 @@
 
 #define BACKGROUND_COLOR 0.0f,0.0f,0.0f,1.0f
 
+#define GL_VERTEX_SHADER_PATH "../Shaders/basic.vert"
+#define GL_FRAGMENT_SHADER_PATH "../Shaders/basic.frag"
 
 #endif Const_h

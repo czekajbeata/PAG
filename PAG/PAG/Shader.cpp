@@ -1,119 +1,75 @@
 #include "Shader.h"
+#include "Scene.h"
 
 Shader::Shader()
 {
-	shaderProgram = glCreateProgram();
-	if (shaderProgram == 0)
+	program = glCreateProgram();
+
+	if (!program)
 	{
-		fprintf(stderr, "Error creating program object.\n");
+		throw std::runtime_error("Error while creating shader");
 	}
 
-	/* Shader load from file and compile */
-	loadAndCompileShader(GL_VERTEX_SHADER, "Shaders/basic.vert", shaderProgram);
-	loadAndCompileShader(GL_FRAGMENT_SHADER, "Shaders/basic.frag", shaderProgram);
-	glLinkProgram(shaderProgram);
+	loadShader(GL_VERTEX_SHADER, GL_VERTEX_SHADER_PATH);
+	loadShader(GL_FRAGMENT_SHADER, GL_FRAGMENT_SHADER_PATH);
 
-	// sprawdzenie linkowania programu zawieraj¹cego vertex shader i fragment shader
-	checkLinkingProgram(shaderProgram);
+	glLinkProgram(program);
+
+	GLint status;
+	glGetProgramiv(program, GL_LINK_STATUS, &status);
+
+	if (!status)
+	{
+		std::string errorMessage = "Failed to link shader program";
+		GLint logLen;
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLen);
+
+		if (logLen > 0)
+		{
+			const auto log = static_cast<char*>(malloc(logLen));
+			GLsizei written;
+			glGetProgramInfoLog(program, logLen, &written, log);
+			errorMessage += ". ";
+			errorMessage += log;
+			free(log);
+		}
+		throw std::runtime_error(errorMessage);
+	}
 }
+
 
 Shader::~Shader()
 {
 }
 
-std::string Shader::loadShader(std::string fileName)
+void Shader::loadShader(GLint type, std::string fileName)
 {
-	std::string filetext;
-	std::string line;
-	std::ifstream inFile(fileName);
+	GLuint shaderObject = glCreateShader(type);
 
-	if (!inFile)
+	if (!shaderObject)
 	{
-		fprintf(stderr, "Could not open file %s", fileName.c_str());
-		inFile.close();
-
-		return NULL;
+		throw std::runtime_error(std::string("Error creating %s.\n", fileName.c_str()));
 	}
-	else
-	{
-		while (inFile.good())
-		{
-			getline(inFile, line);
-			filetext.append(line + "\n");
-		}
 
-		inFile.close();
-
-		return filetext;
-	}
-}
-
-void Shader::loadAndCompileShader(GLint shaderType, std::string fileName, GLuint & shaderProgram)
-{
-	GLuint shaderObject = glCreateShader(shaderType);
-
-	 if (shaderObject == 0)
-	{
-		fprintf(stderr, "Error creating %s.\n", fileName.c_str());
-		return;
-	} 
-
-	std::string shaderCodeString = loadShader(fileName);
+	std::string shaderCodeString = FileReader::readFile(fileName);
 
 	if (shaderCodeString.empty())
 	{
-		printf("Shader code is empty! Shader name %s\n", fileName.c_str());
-		return;
+		throw std::runtime_error(std::string("Shader code is empty! Shader name %s\n", fileName.c_str()));
 	}
 
-	const char * shaderCode = shaderCodeString.c_str();
+	const char* shaderCode = shaderCodeString.c_str();
 	const GLint codeSize = shaderCodeString.size();
 
 	glShaderSource(shaderObject, 1, &shaderCode, &codeSize);
 	glCompileShader(shaderObject);
 
 	GLint result;
-	checkCompilingShader(shaderObject, fileName, result);
-
-	if (result) 
-	{
-		glAttachShader(shaderProgram, shaderObject);
-		glDeleteShader(shaderObject);
-	}
-}
-
-void Shader::checkLinkingProgram(GLuint shaderProgram)
-{
-	GLint status;
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &status);
-
-	if (status == GL_FALSE)
-	{
-		fprintf(stderr, "Failed to link shader program!\n");
-
-		GLint logLen;
-		glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &logLen);
-
-		if (logLen > 0)
-		{
-			char* log = (char*)malloc(logLen);
-			GLsizei written;
-			glGetProgramInfoLog(shaderProgram, logLen, &written, log);
-
-			fprintf(stderr, "Program log: \n%s", log);
-			free(log);
-		}
-	}
-}
-
-void Shader::checkCompilingShader(GLuint shaderObject, std::string fileName, GLint& result)
-{
-
 	glGetShaderiv(shaderObject, GL_COMPILE_STATUS, &result);
 
-	if (result == GL_FALSE)
+	if (!result)
 	{
-		fprintf(stderr, "%s compilation failed!\n", fileName.c_str());
+		std::string errorMessage = std::string("%s compilation failed!\n", fileName.c_str());
 
 		GLint logLen;
 		glGetShaderiv(shaderObject, GL_INFO_LOG_LENGTH, &logLen);
@@ -125,15 +81,88 @@ void Shader::checkCompilingShader(GLuint shaderObject, std::string fileName, GLi
 			GLsizei written;
 			glGetShaderInfoLog(shaderObject, logLen, &written, log);
 
-			fprintf(stderr, "Shader log: \n%s", log);
+			errorMessage += std::string("Shader log: \n");
+			errorMessage.append(log);
+
 			free(log);
 		}
-
-		return;
+		throw std::runtime_error(errorMessage);
 	}
+
+	glAttachShader(program, shaderObject);
+	glDeleteShader(shaderObject);
 }
 
-void Shader::activateShaderProgram(GLuint shaderProgram)
+GLuint Shader::getProgram()
 {
-	glUseProgram(shaderProgram);
+	return program;
+}
+
+void Shader::updateScene(Scene scene)
+{
+	setMat4("projection", scene.getProjectionSpace());
+	setMat4("view", scene.getViewSpace());
+}
+
+void Shader::use()
+{
+	glUseProgram(program);
+}
+// utility uniform functions
+// ------------------------------------------------------------------------
+void Shader::setBool(const std::string &name, bool value) const
+{
+	glUniform1i(glGetUniformLocation(program, name.c_str()), (int)value);
+}
+// ------------------------------------------------------------------------
+void Shader::setInt(const std::string &name, int value) const
+{
+	glUniform1i(glGetUniformLocation(program, name.c_str()), value);
+}
+// ------------------------------------------------------------------------
+void Shader::setFloat(const std::string &name, float value) const
+{
+	glUniform1f(glGetUniformLocation(program, name.c_str()), value);
+}
+
+void Shader::setVec2(const std::string &name, const glm::vec2 &value) const
+{
+	glUniform2fv(glGetUniformLocation(program, name.c_str()), 1, &value[0]);
+}
+void Shader::setVec2(const std::string &name, float x, float y) const
+{
+	glUniform2f(glGetUniformLocation(program, name.c_str()), x, y);
+}
+// ------------------------------------------------------------------------
+void Shader::setVec3(const std::string &name, const glm::vec3 &value) const
+{
+	glUniform3fv(glGetUniformLocation(program, name.c_str()), 1, &value[0]);
+}
+void Shader::setVec3(const std::string &name, float x, float y, float z) const
+{
+	glUniform3f(glGetUniformLocation(program, name.c_str()), x, y, z);
+}
+// ------------------------------------------------------------------------
+void Shader::setVec4(const std::string &name, const glm::vec4 &value) const
+{
+	glUniform4fv(glGetUniformLocation(program, name.c_str()), 1, &value[0]);
+}
+void Shader::setVec4(const std::string &name, float x, float y, float z, float w)
+{
+	glUniform4f(glGetUniformLocation(program, name.c_str()), x, y, z, w);
+}
+// ------------------------------------------------------------------------
+void Shader::setMat2(const std::string &name, const glm::mat2 &mat) const
+{
+	glUniformMatrix2fv(glGetUniformLocation(program, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+}
+// ------------------------------------------------------------------------
+void Shader::setMat3(const std::string &name, const glm::mat3 &mat) const
+{
+	glUniformMatrix3fv(glGetUniformLocation(program, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+}
+// ------------------------------------------------------------------------
+void Shader::setMat4(const std::string &name, const glm::mat4 &mat) const
+{
+	glUniformMatrix4fv(glGetUniformLocation(program, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }

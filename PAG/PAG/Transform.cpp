@@ -1,20 +1,22 @@
 #include "Transform.h"
 
+
+#pragma region Constructors/Destructors
 Transform::Transform()
 {
-	_transform = glm::mat4(1);
-	_parent = nullptr;
+	setTransform(glm::mat4(1));
+	_parent = std::shared_ptr<Transform>();
+	sharedPtrOfThis = std::make_shared<Transform>(*this);
 }
 
-Transform::Transform(const Transform &)
+Transform::Transform(const Transform & value)
 {
+	setTransform(value._transform);
+	_parent = value._parent;
 }
+#pragma endregion
 
-
-Transform::~Transform()
-{
-}
-
+#pragma region Getters/Setters
 glm::mat4 Transform::getTransform()
 {
 	return _transform;
@@ -23,59 +25,63 @@ glm::mat4 Transform::getTransform()
 void Transform::setTransform(glm::mat4 transform)
 {
 	this->_transform = transform;
-	glm::decompose(this->_transform, _scale, _rotation, _translation, _skew, _perspective);
+	glm::decompose(transform, _scale, _rotation, _position, _skew, _perspective);
 }
 
 glm::vec3 Transform::getPosition() {
-	glm::mat4 transformation = _transform; // your transformation matrix.
-	glm::vec3 scale;
-	glm::quat rotation;
-	glm::vec3 translation;
-	glm::vec3 skew;
-	glm::vec4 perspective;
-	glm::decompose(transformation, scale, rotation, translation, skew, perspective);
-	return translation;
+	return _position;
 }
 
-void Transform::rotate(float rad, glm::vec3 axis)
+glm::vec3 Transform::getScale()
 {
-	_transform = glm::rotate(_transform, rad, axis);
-	if (!(_children.empty()))
-	{
-		for each(auto& child in _children)
-		{
-			child->rotate(rad, axis);
-		}
-	}
+	return _scale;
 }
 
-void Transform::translate(glm::vec3 vec)
+glm::quat Transform::getRotation()
 {
-	_transform = glm::translate(_transform, vec);
-	if (!(_children.empty()))
-	{
-		for each(auto& child in _children)
-		{
-			child->translate(vec);
-		}
-	}
+	return _rotation;
 }
 
-void Transform::scale(glm::vec3 vec)
+std::vector<std::shared_ptr<Transform>>& Transform::getChildren()
 {
-	_transform = glm::scale(_transform, vec);
-	if (!(_children.empty()))
-	{
-		for each(auto& child in _children)
-		{
-			child->scale(vec);
-		}
-	}
+	return _children;
+}
+
+Transform& Transform::getParent()
+{
+	return *_parent;
 }
 
 void Transform::setParent(Transform& parent)
 {
-	_parent = std::make_shared<Transform>(parent);
-	parent._children.push_back(std::make_unique<Transform>(*this));
+	_parent.reset(&parent);
+	parent.getChildren().push_back(std::make_shared<Transform>(*this));
+}
+#pragma endregion
+
+void Transform::rotate(float rad, glm::vec3 axis)
+{
+	setTransform(glm::rotate(_transform, rad, axis));
+	for each (auto child in _children)
+	{
+		child->rotate(rad, axis);
+	}
 }
 
+void Transform::translate(glm::vec3 translation)
+{
+	setTransform(glm::translate(_transform, translation));
+	for each (auto child in _children)
+	{
+		child->translate(translation);
+	}
+}
+
+void Transform::scale(glm::vec3 scale)
+{
+	setTransform(glm::scale(_transform, scale));
+	for each (auto child in _children)
+	{
+		child->scale(scale);
+	}
+}

@@ -1,25 +1,32 @@
-#pragma once
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <iostream>
-#include <fstream>
 #include <string>
+#include "FileReader.h"
+#include "Const.h"
+#include <glm/glm.hpp>
+
+class Scene;
+
 class Shader
 {
+private:
+	GLuint program;
+	void loadShader(GLint type, std::string fileName);
 public:
+	GLuint getProgram();
+	void updateScene(Scene scene);
+	void use();
+	void setBool(const std::string & name, bool value) const;
+	void setInt(const std::string & name, int value) const;
+	void setFloat(const std::string & name, float value) const;
+	void setVec2(const std::string & name, const glm::vec2 & value) const;
+	void setVec2(const std::string & name, float x, float y) const;
 	Shader();
 	~Shader();
-	GLuint shaderProgram = NULL;
-	void activateShaderProgram(GLuint shaderProgram);
-	
-private:
-	std::string loadShader(std::string fileName);
-	void loadAndCompileShader(GLint shaderType, std::string fileName, GLuint& shaderProgram);
-	void checkLinkingProgram(GLuint shaderProgram);
-	void checkCompilingShader(GLuint shaderObject, std::string fileName, GLint& result);
-
+	void setVec3(const std::string & name, const glm::vec3 & value) const;
+	void setVec3(const std::string & name, float x, float y, float z) const;
+	void setVec4(const std::string & name, const glm::vec4 & value) const;
+	void setVec4(const std::string & name, float x, float y, float z, float w);
+	void setMat2(const std::string & name, const glm::mat2 & mat) const;
+	void setMat3(const std::string & name, const glm::mat3 & mat) const;
+	void setMat4(const std::string & name, const glm::mat4 & mat) const;
 };
-
-
-
-
