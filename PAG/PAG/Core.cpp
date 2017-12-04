@@ -9,6 +9,7 @@
 #include "Transform.h"
 #include "Camera.h"
 #include "Scene.h"
+#include "Material.h"
 #include <stdexcept>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -34,31 +35,61 @@ void Core::run()
 		deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
 
+		shader->use();
+		shader->setInt("texture", 0);
+		
+
+		//copper
+		glm::vec3 matAmbient = glm::vec3(0.19125f, 0.0735f, 0.0225f);
+		glm::vec3 matDiffuse = glm::vec3(0.7038f, 0.27048f, 0.0828f);
+		glm::vec3 matSpecular = glm::vec3(0.256777f, 0.137622f, 0.086014f);
+		float shininess = 12.8f;
+
+		unique_ptr<Material> cube = make_unique<Material>(matAmbient, matDiffuse, matSpecular, shininess);
+
+		shader->setVec3("mambient", matAmbient);
+		shader->setVec3("mdiffuse", matDiffuse);
+		shader->setVec3("mspecular", matSpecular);
+		shader->setFloat("mshininess", shininess);
+
+		glm::vec3 lightColor = glm::vec3(sin(currentTime) * 1.0f, sin(currentTime) *  0.2f, sin(currentTime) *  0.7f);
+		//shader->setVec3("lightColor", lightColor);
+
+		glm::vec3 ligDiffuse = lightColor * glm::vec3(0.6f);
+		glm::vec3 ligAmbient = ligDiffuse * glm::vec3(0.3f);
+		glm::vec3 ligSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
+
+		shader->setVec3("lambient", ligAmbient);
+		shader->setVec3("ldiffuse", ligDiffuse);
+		shader->setVec3("lspecular", ligSpecular);
+
+
+		// TO DO: rotates with the smaller cube
+		glm::vec3 lightPosition = glm::vec3(0.0f + sin(currentTime)/2.0f, 0.0f , 1.0f);
+		shader->setVec3("lightPosition", lightPosition);
+		shader->setVec3("viewPosition", camera->cameraPos);
+
+
+
 		processInput();
 		processMouse();
 
 		scene->updateViewSpace(*camera);
 		shader->updateScene(*scene);
-
-		shader->use();
-
-		// TO DO: rotates with the smaller cube
-		glm::vec3 lightPosition = glm::vec3(0.0f, 1.0f, 0.0f);
-		shader->setVec3("lightPosition", lightPosition);
-
+		
 		planet1.setParent(center);
 		planet1.setTransform(center.getTransform());
-		//planet1.translate(glm::vec3(2.0f, 0.0f, 0.0f));
+		planet1.translate(glm::vec3(0.0f, 0.0f, 1.0f));
 		//planet1.rotate(glm::radians(180.0f) * currentTime, glm::vec3(0.0f, 1.0f, 0.0f));
 		shader->setMat4("model", planet1.getTransform());
-		texture->setActiveTexture(1);
+		texture->setActiveTexture(2);
 		mesh->draw();
 
 		//light source
-		planet1Moon.setParent(planet1);
+		planet1Moon.setParent(center);
 		planet1Moon.setTransform(planet1.getTransform());
-		planet1Moon.rotate(glm::radians(180.0f) * currentTime, glm::vec3(0.0f, 1.0f, 0.0f));
-		planet1Moon.translate(glm::vec3(1.5f, 0.0f, 0.0f));
+	//	planet1Moon.rotate(glm::radians(180.0f) * currentTime, glm::vec3(0.0f, 1.0f, 0.0f));
+		planet1Moon.translate(glm::vec3(-1.5f, 1.0f, 1.0f));
 		planet1Moon.scale(glm::vec3(0.5f, 0.5f, 0.5f));
 		shader->setMat4("model", planet1Moon.getTransform());
 		texture->setActiveTexture(2);
@@ -93,21 +124,9 @@ Core::Core()
 
 	shader = std::make_unique<Shader>();
 
-	shader->use();
-	shader->setInt("texture", 0);
-
-	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
-	shader->setVec3("lightColor", lightColor);
-	float ambientStrength = 0.1;
-	glm::vec3 ambient = ambientStrength * lightColor;
-	shader->setVec3("ambient", ambient);
-
-
-
-	
-
 	camera = std::make_unique<Camera>();
 	glfwGetCursorPos(window->getWindow(), &camera->lastX, &camera->lastY);
+
 
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 

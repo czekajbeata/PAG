@@ -159,6 +159,7 @@
     <ClCompile Include="FileReader.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -176,6 +177,7 @@
     <ClInclude Include="Core.h" />
     <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="FileReader.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="Scene.h" />
