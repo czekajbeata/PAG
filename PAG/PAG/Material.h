@@ -1,18 +1,18 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#ifndef Material_h
+#define Material_h
+
+#include <vector>
 #include <glm/glm.hpp>
 
-class Material
+
+struct Material
 {
-private:
+	std::vector<int> mDiffuseTextureID;
+	glm::vec3 mDiffuseColor = glm::vec3(0.25f, 0.25f, 0.5f);
+	std::vector<int> mSpecularTextureID;
+	glm::vec3 mSpecularLevel = glm::vec3(1, 1, 1);
+	std::vector<int> mNomralTextureID;
+	Material() {};
+};
 
-public:
-	glm::vec3 ambient;
-	glm::vec3 diffuse;
-	glm::vec3 specular;
-	float shininess;
-
-	Material(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float shininess);
-	
-	~Material();
-}; 
+#endif /* Material_h */

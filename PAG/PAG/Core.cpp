@@ -6,6 +6,7 @@
 #include "Mesh.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "Textures.h"
 #include "Transform.h"
 #include "Camera.h"
 #include "Scene.h"
@@ -45,7 +46,7 @@ void Core::run()
 		glm::vec3 matSpecular = glm::vec3(0.256777f, 0.137622f, 0.086014f);
 		float shininess = 12.8f;
 
-		unique_ptr<Material> cube = make_unique<Material>(matAmbient, matDiffuse, matSpecular, shininess);
+		//unique_ptr<Material> cube = make_unique<Material>(matAmbient, matDiffuse, matSpecular, shininess);
 
 		shader->setVec3("mambient", matAmbient);
 		shader->setVec3("mdiffuse", matDiffuse);
@@ -76,24 +77,24 @@ void Core::run()
 
 		scene->updateViewSpace(*camera);
 		shader->updateScene(*scene);
-		
-		planet1.setParent(center);
-		planet1.setTransform(center.getTransform());
-		planet1.translate(glm::vec3(0.0f, 0.0f, 1.0f));
-		//planet1.rotate(glm::radians(180.0f) * currentTime, glm::vec3(0.0f, 1.0f, 0.0f));
-		shader->setMat4("model", planet1.getTransform());
-		texture->setActiveTexture(2);
-		mesh->draw();
-
-		//light source
-		planet1Moon.setParent(center);
-		planet1Moon.setTransform(planet1.getTransform());
-	//	planet1Moon.rotate(glm::radians(180.0f) * currentTime, glm::vec3(0.0f, 1.0f, 0.0f));
-		planet1Moon.translate(glm::vec3(-1.5f, 1.0f, 1.0f));
-		planet1Moon.scale(glm::vec3(0.5f, 0.5f, 0.5f));
-		shader->setMat4("model", planet1Moon.getTransform());
-		texture->setActiveTexture(2);
-		mesh->draw();
+//		
+//		planet1.setParent(center);
+//		planet1.setTransform(center.getTransform());
+//		planet1.translate(glm::vec3(0.0f, 0.0f, 1.0f));
+//		//planet1.rotate(glm::radians(180.0f) * currentTime, glm::vec3(0.0f, 1.0f, 0.0f));
+//		shader->setMat4("model", planet1.getTransform());
+////		texture->setActiveTexture(2);
+//	//	mesh->draw();
+//
+//		//light source
+//		planet1Moon.setParent(center);
+//		planet1Moon.setTransform(planet1.getTransform());
+//	//	planet1Moon.rotate(glm::radians(180.0f) * currentTime, glm::vec3(0.0f, 1.0f, 0.0f));
+//		planet1Moon.translate(glm::vec3(-1.5f, 1.0f, 1.0f));
+//		planet1Moon.scale(glm::vec3(0.5f, 0.5f, 0.5f));
+//		shader->setMat4("model", planet1Moon.getTransform());
+////		texture->setActiveTexture(2);
+////		mesh->draw();
 
 
 		glfwSwapBuffers(window->getWindow());
@@ -117,10 +118,10 @@ Core::Core()
 
 	glEnable(GL_DEPTH_TEST);
 
-	mesh = std::make_unique<Mesh>();
-	mesh->loadContent();
+//	mesh = std::make_unique<Mesh>();
+//	mesh->loadContent();
 
-	texture = std::make_unique<Texture>();
+	//texture = std::make_unique<Texture>();
 
 	shader = std::make_unique<Shader>();
 

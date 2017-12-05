@@ -2,72 +2,42 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include "Const.h"
-#include "Transform.h"
+#include <vector>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+#include "Material.h"
+
+class Shader;
+class Textures;
+
+struct Vertex
+{
+	glm::vec3 position;
+	glm::vec3 normals;
+	glm::vec2 texture;
+	glm::vec3 tangent;
+	glm::vec3 bitangent;
+};
+
 class Mesh
 {
-	struct Vertex
-	{
-		glm::vec3 points;
-		glm::vec3 color;
-		glm::vec2 texture;
-		Vertex(glm::vec3 points) : points(points) {}
-		Vertex(glm::vec3 points, glm::vec3 color) : points(points), color(color) {}
-		Vertex(glm::vec3 points, glm::vec2 texture) : points(points), texture(texture) {}
-		Vertex(glm::vec3 points, glm::vec3 color, glm::vec2 texture) : points(points), color(color), texture(texture) {}
-	};
-
-	Vertex vertices[36] = {
-		Vertex(glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec2(0.0f, 0.0f)),
-		Vertex(glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec2(1.0f, 0.0f)),
-		Vertex(glm::vec3(0.5f,  0.5f, -0.5f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec2(1.0f, 1.0f)),
-		Vertex(glm::vec3(0.5f,  0.5f, -0.5f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec2(1.0f, 1.0f)),
-		Vertex(glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec2(0.0f, 1.0f)),
-		Vertex(glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec2(0.0f, 0.0f)),
-
-		Vertex(glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(0.0f,  0.0f, 1.0f), glm::vec2(0.0f, 0.0f)),
-		Vertex(glm::vec3(0.5f, -0.5f,  0.5f), glm::vec3(0.0f,  0.0f, 1.0f), glm::vec2(1.0f, 0.0f)),
-		Vertex(glm::vec3(0.5f,  0.5f,  0.5f), glm::vec3(0.0f,  0.0f, 1.0f), glm::vec2(1.0f, 1.0f)),
-		Vertex(glm::vec3(0.5f,  0.5f,  0.5f), glm::vec3(0.0f,  0.0f, 1.0f), glm::vec2(1.0f, 1.0f)),
-		Vertex(glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(0.0f,  0.0f, 1.0f), glm::vec2(0.0f, 1.0f)),
-		Vertex(glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(0.0f,  0.0f, 1.0f), glm::vec2(0.0f, 0.0f)),
-
-		Vertex(glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec2(1.0f, 0.0f)),
-		Vertex(glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec2(1.0f, 1.0f)),
-		Vertex(glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec2(0.0f, 1.0f)),
-		Vertex(glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec2(0.0f, 1.0f)),
-		Vertex(glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec2(0.0f, 0.0f)),
-		Vertex(glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec2(1.0f, 0.0f)),
-
-		Vertex(glm::vec3(0.5f,  0.5f,  0.5f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec2(1.0f, 0.0f)),
-		Vertex(glm::vec3(0.5f,  0.5f, -0.5f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec2(1.0f, 1.0f)),
-		Vertex(glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec2(0.0f, 1.0f)),
-		Vertex(glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec2(0.0f, 1.0f)),
-		Vertex(glm::vec3(0.5f, -0.5f,  0.5f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec2(0.0f, 0.0f)),
-		Vertex(glm::vec3(0.5f,  0.5f,  0.5f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec2(1.0f, 0.0f)),
-
-		Vertex(glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec2(0.0f, 1.0f)),
-		Vertex(glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec2(1.0f, 1.0f)),
-		Vertex(glm::vec3(0.5f, -0.5f,  0.5f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec2(1.0f, 0.0f)),
-		Vertex(glm::vec3(0.5f, -0.5f,  0.5f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec2(1.0f, 0.0f)),
-		Vertex(glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec2(0.0f, 0.0f)),
-		Vertex(glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec2(0.0f, 1.0f)),
-
-		Vertex(glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(0.0f, 1.0f,  0.0f), glm::vec2(0.0f, 0.0f)),
-		Vertex(glm::vec3(0.5f,  0.5f, -0.5f), glm::vec3(0.0f, 1.0f,  0.0f), glm::vec2(1.0f, 0.0f)),
-		Vertex(glm::vec3(0.5f,  0.5f,  0.5f), glm::vec3(0.0f, 1.0f,  0.0f), glm::vec2(1.0f, 1.0f)),
-		Vertex(glm::vec3(0.5f,  0.5f,  0.5f), glm::vec3(0.0f, 1.0f,  0.0f), glm::vec2(1.0f, 1.0f)),
-		Vertex(glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(0.0f, 1.0f,  0.0f), glm::vec2(0.0f, 1.0f)),
-		Vertex(glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(0.0f, 1.0f,  0.0f), glm::vec2(0.0f, 0.0f))
-	};
+	std::vector<unsigned int> indices;
+	std::vector<Vertex> vertices;
+	Material mMaterial;
+	bool isSelected;
 
 public:
-	Transform transform;
+	void setIsSelected(bool isSelected);
 	GLuint VertexBufferObject = NULL;
 	GLuint VertexArrayObject = NULL;
 	GLuint ElementObjectBuffer = NULL;
-	void loadContent();
-	void draw();
-	Mesh();
+	void setupMesh();
+	void drawContent(Shader* const pShader, Textures* const pTextures);
+	Mesh(std::vector<Vertex>, std::vector<unsigned int> indices);
+	void setMaterial(const Material& pMaterial);
 	~Mesh();
+	const std::pair<glm::vec4, glm::vec4> getMinMaxVerticles();
+	const bool checkRayIntersections(const glm::vec3 & pRaySource, const glm::vec3 & pRayDirection, const glm::mat4 & pTransform, float & pDistanceOutput);
 };
 

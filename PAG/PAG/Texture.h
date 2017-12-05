@@ -1,20 +1,25 @@
-#ifndef Texture_hpp
+#ifndef Texture_h
+#define Texture_h
+
+#include <stdio.h>
+#include <string>
 #include <glad/glad.h>
-#include <glm/glm.hpp>
-#include <stb_image.h>
-#include <stdexcept>
+#include <GLFW/glfw3.h>
 
 class Texture
 {
 private:
-	unsigned int textures[24];
+	std::string mTexturePath;
+	GLuint mTexture;
+
+	void loadTexture(const std::string& pTexturePath);
 public:
-	void setActiveTexture(int id);
-	unsigned int getTexture(int id);
-	Texture();
-	void loadTexture(std::string name, int id);
+	Texture(const std::string& pTexturePath);
+	Texture(const Texture& pSourceTexture);
 	~Texture();
+	static void deselectAllTextures();
+	void selectActiveTexture(const std::string& pTextureType, const unsigned int& pTextureNumber);
+	const std::string& getTexturePath();
 };
 
-
-#endif /* Texture_hpp */
+#endif /* Texture_h */

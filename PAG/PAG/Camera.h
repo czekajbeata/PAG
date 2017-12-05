@@ -8,7 +8,7 @@
 class Camera
 {
 private:
-	void Camera::updateCameraVectors();
+	void updateCameraVectors();
 
 public:
 	Camera();
@@ -18,6 +18,8 @@ public:
 	glm::vec3 cameraFront;
 	glm::vec3 cameraUp;
 
+	glm::mat4 getViewMatrix();
+
 	bool firstMouse;
 	float yaw;
 	float pitch;
@@ -25,6 +27,6 @@ public:
 	double lastY;
 	float fov;
 
-	void Camera::rotateByOffset(float pOffsetX, float pOffsetY);
+	void rotateByOffset(float pOffsetX, float pOffsetY);
 };
 

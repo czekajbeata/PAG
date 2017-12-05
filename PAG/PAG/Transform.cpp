@@ -1,5 +1,5 @@
 #include "Transform.h"
-
+#include <assimp/scene.h>
 
 #pragma region Constructors/Destructors
 Transform::Transform()
@@ -28,6 +28,14 @@ void Transform::setTransform(glm::mat4 transform)
 	glm::decompose(transform, _scale, _rotation, _position, _skew, _perspective);
 }
 
+void Transform::update() {
+	glm::mat4 transform = glm::mat4(1);
+	transform = glm::translate(transform, _position);
+	transform = glm::rotate(transform, _rotationAngle, _rotationAxis);
+	transform = glm::scale(transform, _scale);
+	setTransform(transform);
+}
+
 glm::vec3 Transform::getPosition() {
 	return _position;
 }
@@ -42,46 +50,62 @@ glm::quat Transform::getRotation()
 	return _rotation;
 }
 
-std::vector<std::shared_ptr<Transform>>& Transform::getChildren()
+void Transform::setPosition(glm::vec3 position)
 {
-	return _children;
+	_position = position;
+	update();
 }
 
-Transform& Transform::getParent()
+const std::pair<glm::vec3, float> Transform::getRotationAxisAndAngle()
 {
-	return *_parent;
+	return std::pair<glm::vec3, float>(_rotationAxis, _rotationAngle);
 }
 
-void Transform::setParent(Transform& parent)
+void Transform::setScale(glm::vec3 scale)
 {
-	_parent.reset(&parent);
-	parent.getChildren().push_back(std::make_shared<Transform>(*this));
+	_scale = scale;
+	update();
+}
+void Transform::setRotation(float rad, glm::vec3 axis)
+{
+	_rotationAngle = rad;
+	_rotationAxis = axis;
+	update();
 }
 #pragma endregion
 
 void Transform::rotate(float rad, glm::vec3 axis)
 {
+	_rotationAngle = rad;
+	_rotationAxis = axis;
 	setTransform(glm::rotate(_transform, rad, axis));
-	for each (auto child in _children)
-	{
-		child->rotate(rad, axis);
-	}
 }
 
 void Transform::translate(glm::vec3 translation)
 {
 	setTransform(glm::translate(_transform, translation));
-	for each (auto child in _children)
-	{
-		child->translate(translation);
-	}
 }
 
 void Transform::scale(glm::vec3 scale)
 {
 	setTransform(glm::scale(_transform, scale));
-	for each (auto child in _children)
-	{
-		child->scale(scale);
-	}
+}
+
+void Transform::importAiTransform(aiMatrix4x4 pMatrix)
+{
+	aiVector3t<float> aiScale, aiPosition;
+	aiQuaterniont<float> aiRotation;
+
+	glm::quat gRotation;
+
+	pMatrix.Decompose(aiScale, aiRotation, aiPosition);
+
+	gRotation.w = aiRotation.w;
+	gRotation.x = aiRotation.x;
+	gRotation.y = aiRotation.y;
+	gRotation.z = aiRotation.z;
+
+	translate(glm::vec3(aiPosition.x, aiPosition.y, aiPosition.z));
+	scale(glm::vec3(aiScale.x, aiScale.y, aiScale.z));
+	rotate(glm::angle(gRotation), glm::axis(gRotation));
 }

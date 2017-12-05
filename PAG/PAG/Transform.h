@@ -5,8 +5,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
 #include <memory>
+#include <assimp/matrix4x4.h>
 
-class Transform : std::enable_shared_from_this<Transform>
+class Transform : public std::enable_shared_from_this<Transform>
 {
 private:
 	glm::mat4 _transform;
@@ -17,23 +18,31 @@ private:
 	glm::vec3 _skew;
 	glm::vec4 _perspective;
 
+	glm::vec3 _rotationAxis = glm::vec3(1.0f, 0, 0);
+	float _rotationAngle = 0.0f;
+
 	std::vector<std::shared_ptr<Transform>> _children;
 	std::shared_ptr<Transform> _parent;
 	std::shared_ptr<Transform> sharedPtrOfThis;
+	void update();
 public:
 	Transform();
 	Transform(const Transform & value);
 
+	void importAiTransform(aiMatrix4x4 pMatrix);
 	glm::mat4 getTransform();
 	void setTransform(glm::mat4 transform);
+
 
 	glm::vec3 getPosition();
 	glm::vec3 getScale();
 	glm::quat getRotation();
 
-	std::vector<std::shared_ptr<Transform>>& getChildren();
-	Transform& getParent();
-	void setParent(Transform& parent);
+
+	void setPosition(glm::vec3 position);
+	const std::pair<glm::vec3, float> getRotationAxisAndAngle();
+	void setScale(glm::vec3 rotation);
+	void setRotation(float rad, glm::vec3 axis);
 
 	void rotate(float rad, glm::vec3 axis);
 	void translate(glm::vec3 vec);
