@@ -1,6 +1,6 @@
-#include "UserInterface.hpp"
-#include "Node.hpp"
-#include "Transform.hpp"
+#include "UserInterface.h"
+#include "Node.h"
+#include "Transform.h"
 #include "imgui.h"
 #include "imgui_impl_glfw_gl3.h"
 

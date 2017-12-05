@@ -15,6 +15,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <vector>
+#include "Model.h"
+#include "MousePicker.h"
+#include <iostream>
+#include "Node.h"
+#include "UserInterface.h"
 
 using namespace std;
 
@@ -22,22 +28,28 @@ void Core::run()
 {
 	//glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	Transform center = Transform();
-	Transform planet1 = Transform();
-	Transform planet1Moon = Transform();
+	//Transform center = Transform();
+	//Transform planet1 = Transform();
+	//Transform planet1Moon = Transform();
+
+	Model model("D:/Studia/Sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
+	model.getRootNode()->getNodeTransform()->scale(glm::vec3(0.005, 0.005, 0.005));
 
 	while (!glfwWindowShouldClose(window->getWindow()))
 	{
+		processInput();
+		processMouse(*scene, &model);
+
 		glClearColor(BACKGROUND_COLOR);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glBindVertexArray(mesh->VertexArrayObject);
+//		glBindVertexArray(mesh->VertexArrayObject);
 
 		GLfloat currentTime = glfwGetTime();
 		deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
 
 		shader->use();
-		shader->setInt("texture", 0);
+		//shader->setInt("texture", 0);
 		
 
 		//copper
@@ -72,8 +84,7 @@ void Core::run()
 
 
 
-		processInput();
-		processMouse();
+
 
 		scene->updateViewSpace(*camera);
 		shader->updateScene(*scene);
@@ -96,6 +107,8 @@ void Core::run()
 ////		texture->setActiveTexture(2);
 ////		mesh->draw();
 
+		model.draw(shader.get());
+		ui->draw();
 
 		glfwSwapBuffers(window->getWindow());
 		glfwPollEvents();
@@ -109,6 +122,10 @@ Core::Core()
 	// glfw: initialize and configure
 	if (!glfwInit())
 		throw runtime_error("Cannot initialize GLFW");
+
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	window = std::make_unique<Window>();
 
@@ -124,14 +141,16 @@ Core::Core()
 	//texture = std::make_unique<Texture>();
 
 	shader = std::make_unique<Shader>();
+	shader->use();
 
 	camera = std::make_unique<Camera>();
 	glfwGetCursorPos(window->getWindow(), &camera->lastX, &camera->lastY);
 
-
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	scene = std::make_unique<Scene>();
+	ui = std::make_unique<UserInterface>(window->getWindow());
+	mousePicker = std::make_unique<MousePicker>(*camera, scene->getProjectionSpace());
 }
 
 Core::~Core()
@@ -154,7 +173,7 @@ void Core::processInput()
 		camera->cameraPos += glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * speed;
 }
 
-void Core::processMouse()
+void Core::processMouse(Scene scene, Model* model)
 {
 
 	double mousePosX, mousePosY;
@@ -174,4 +193,20 @@ void Core::processMouse()
 	camera->lastY = mousePosY;
 
 	camera->rotateByOffset(offsetX, offsetY);
+
+	std::pair<int, int> screenSize;
+	std::pair<double, double> mousePos;
+	glfwGetWindowSize(window->getWindow(), &screenSize.first, &screenSize.second);
+
+	if (glfwGetMouseButton(window->getWindow(), GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+		for each(auto node in model->getAllNodes()) {
+			node->setIsSelected(false);
+		}
+		mousePicker->update(mousePosX, mousePosY);
+		auto selectedNode = mousePicker->getSelectedNode(&scene, model, screenSize, mousePos);
+		ui->setSelectedNode(selectedNode);
+		if (selectedNode != nullptr) {
+			selectedNode->setIsSelected(true);
+		}
+	}
 }
