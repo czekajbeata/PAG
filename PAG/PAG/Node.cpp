@@ -148,7 +148,7 @@ Node::~Node()
 
 std::pair<bool, float> Node::tryGetIntersection(const glm::vec3& pRaySource, const glm::vec3& pRayDirection) {
 	std::pair<bool, float> output;
-	output.second = false;
+	output.first = false;
 	if (mMeshes.size() <= 0) {
 		return output;
 	}

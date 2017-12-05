@@ -32,7 +32,8 @@ void Core::run()
 	//Transform planet1 = Transform();
 	//Transform planet1Moon = Transform();
 
-	Model model("D:/Studia/Sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
+	//Model model("D:/Studia/Sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
+	Model model("D:/Studia/Sem V/PAG/PAG/Objects/Cubes/source/Cubes.fbx", shader.get());
 	model.getRootNode()->getNodeTransform()->scale(glm::vec3(0.005, 0.005, 0.005));
 
 	while (!glfwWindowShouldClose(window->getWindow()))
@@ -78,7 +79,7 @@ void Core::run()
 
 
 		// TO DO: rotates with the smaller cube
-		glm::vec3 lightPosition = glm::vec3(0.0f + sin(currentTime)/2.0f, 0.0f , 1.0f);
+		glm::vec3 lightPosition = glm::vec3(0.0f, 0.0f , 1.0f);
 		shader->setVec3("lightPosition", lightPosition);
 		shader->setVec3("viewPosition", camera->cameraPos);
 
