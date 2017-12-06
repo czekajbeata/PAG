@@ -29,9 +29,9 @@ uniform bool shouldUseDiffuseTexture;
 uniform sampler2D diffuse0;
 uniform vec3 diffuseColor;
 //uniform sampler2D specular0;
-//uniform vec3 mambient;
-//uniform vec3 mdiffuse;
-//uniform vec3 mspecular;
+uniform vec3 mambient;
+uniform vec3 mdiffuse;
+uniform vec3 mspecular;
 uniform float mshininess;
 
 
@@ -39,19 +39,20 @@ void main()
 {
 	// DIRECTIONAL LIGHT
 	// zmiana koloru w czasie
-	vec3 directionalColors = sin(currentTime) * lightColor;
+	vec3 directionalColors = lightColor;
+	directionalColors[0] = directionalColors[0] * sin(currentTime);
 		// dlambient
-	vec3 dlambient = directionalColors * vec3(0.6f) * vec3(0.9f) * texture(diffuse0, fragVertexTexture).rgb;
+	vec3 dlambient = mambient * directionalColors * vec3(0.8f) * vec3(0.9f) * texture(diffuse0, fragVertexTexture).rgb;
 		// dldiffuse
 	vec3 norm = normalize(Normal);
 	vec3 lightDir = normalize(-lightDirection);  
 	float diff = max(dot(norm, lightDir), 0.0);
-	vec3 dldiffuse = directionalColors * vec3(0.6f) * diff * texture(diffuse0, fragVertexTexture).rgb; 	
+	vec3 dldiffuse = mdiffuse * directionalColors * vec3(0.8f) * diff * texture(diffuse0, fragVertexTexture).rgb; 	
 		// dlspecular
 	vec3 viewDir = normalize(viewPosition - FragPos);
     vec3 reflectDir = reflect(-lightDir, norm);  
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), mshininess);
-	vec3 dlspecular = vec3(1.0f, 1.0f, 1.0f) * spec * sin(currentTime);
+	vec3 dlspecular = mspecular * vec3(1.0f, 1.0f, 1.0f) * spec * sin(currentTime);
 	// vec3 dlspecular = vec3(1.0f, 1.0f, 1.0f) * spec * texture(specular0, TexCoords).rgb;  
 
 	vec3 directionalLight = dlambient + dldiffuse + dlspecular;
@@ -60,7 +61,6 @@ void main()
 
 	// POINT LIGHT
 	// przemieszczanie w czasie
-	//pointLightPosition += vec3((float)(sin(currentTime)), 0.0f, 0.0f);
 	float constant = 1.0f;
     float linear = 0.09f;
     float quadratic = 0.032f;
@@ -68,15 +68,15 @@ void main()
     float distance = length(pointLightPosition - FragPos);
     float attenuation = 1.0 / (constant + linear * distance + quadratic * (distance * distance)); 	  
 		// plambient	
-	vec3 plambient = lightColor * vec3(0.6f) * vec3(0.9f) * texture(diffuse0, fragVertexTexture).rgb;
+	vec3 plambient = mambient *  lightColor * vec3(0.8f) * vec3(0.9f) * texture(diffuse0, fragVertexTexture).rgb;
 		// pldiffuse
 	lightDir = normalize(pointLightPosition - FragPos);  
 	diff = max(dot(norm, lightDir), 0.0);
-	vec3 pldiffuse = lightColor * vec3(0.6f) * diff * texture(diffuse0, fragVertexTexture).rgb * attenuation; 
+	vec3 pldiffuse = mdiffuse * lightColor * vec3(0.8f) * diff * texture(diffuse0, fragVertexTexture).rgb * attenuation; 
 		// plspecular
     reflectDir = reflect(-lightDir, norm);  
     spec = pow(max(dot(viewDir, reflectDir), 0.0), mshininess);
-	vec3 plspecular = vec3(1.0f, 1.0f, 1.0f) * spec * attenuation;
+	vec3 plspecular = mspecular *  vec3(1.0f, 1.0f, 1.0f) * spec * attenuation;
     // vec3 plspecular = vec3(1.0f, 1.0f, 1.0f) * spec * texture(specular0, TexCoords).rgb * attenuation;
 
 	vec3 pointLight = plambient + pldiffuse + plspecular;
@@ -93,10 +93,10 @@ void main()
     distance = length(spotLightPosition - FragPos);
     attenuation = 1.0 / (constant + linear * distance + quadratic * (distance * distance)); 	
 	// slambient
-	vec3 slambient = lightColor * vec3(0.6f) * vec3(0.9f) * texture(diffuse0, fragVertexTexture).rgb * attenuation;
+	vec3 slambient = mambient * lightColor * vec3(1.8f) * texture(diffuse0, fragVertexTexture).rgb * attenuation;
 	// sldiffuse
 	diff = max(dot(norm, lightDir), 0.0);
-	vec3 sldiffuse = lightColor * vec3(0.6f) * diff * texture(diffuse0, fragVertexTexture).rgb * intensity * attenuation;  		
+	vec3 sldiffuse = mdiffuse * lightColor * vec3(1.2f) * diff * texture(diffuse0, fragVertexTexture).rgb * intensity * attenuation;  		
 	// slspecular
 	reflectDir = reflect(-lightDir, norm);
 	spec = pow(max(dot(viewDir, reflectDir), 0.0), mshininess); 
@@ -105,9 +105,9 @@ void main()
 
 	vec3 spotLight = slambient + sldiffuse + slspecular;
 
+	vec3 lights = directionalLight + pointLight + spotLight;
 
-
-	vec3 lights = spotLight;
+	//vec3 lights = spotLight;
 
 	vec4 texel0;
 	texel0=texture(diffuse0, fragVertexTexture);

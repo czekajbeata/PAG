@@ -58,14 +58,17 @@ void Core::run()
 		//glm::vec3 matAmbient = glm::vec3(0.19125f, 0.0735f, 0.0225f);
 		//glm::vec3 matDiffuse = glm::vec3(0.7038f, 0.27048f, 0.0828f);
 		//glm::vec3 matSpecular = glm::vec3(0.256777f, 0.137622f, 0.086014f);
-		//float shininess = 12.8f;
+		glm::vec3 matAmbient = glm::vec3(1.0f, 1.0f, 1.0f);
+		glm::vec3 matDiffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+		glm::vec3 matSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
+		float shininess = 12.8f;
 
 		////unique_ptr<Material> cube = make_unique<Material>(matAmbient, matDiffuse, matSpecular, shininess);
 
-		//shader->setVec3("mambient", matAmbient);
-		//shader->setVec3("mdiffuse", matDiffuse);
-		//shader->setVec3("mspecular", matSpecular);
-		//shader->setFloat("mshininess", shininess);
+		shader->setVec3("mambient", matAmbient);
+		shader->setVec3("mdiffuse", matDiffuse);
+		shader->setVec3("mspecular", matSpecular);
+		shader->setFloat("mshininess", shininess);
 
 	
 		//glm::vec3 ligDiffuse = lightColor * glm::vec3(0.6f);
@@ -90,14 +93,14 @@ void Core::run()
 		shader->setVec3("lightDirection", lightDirection);
 
 		//point light
-		glm::vec3 pointLightPosition = glm::vec3(3.0f, 1.0f, 3.0f);
+		glm::vec3 pointLightPosition = glm::vec3(2*sin(currentTime), 0.5f, 1.0f);
 		shader->setVec3("pointLightPosition", pointLightPosition);
 
 		//spotlight
 		shader->setVec3("spotLightPosition", camera->cameraPos);
 		shader->setVec3("spotLightDirection", camera->cameraFront);
-		shader->setFloat("lightCutOff", glm::cos(glm::radians(3.5f)));
-		shader->setFloat("outerLightCutOff", glm::cos(glm::radians(5.5f)));
+		shader->setFloat("lightCutOff", glm::cos(glm::radians(4.0f + sin(currentTime))));
+		shader->setFloat("outerLightCutOff", glm::cos(glm::radians(6.0f + 2*sin(currentTime))));
 
 
 
