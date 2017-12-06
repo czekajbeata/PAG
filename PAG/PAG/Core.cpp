@@ -84,7 +84,9 @@ void Core::run()
 
 		//for spotlight
 		shader->setVec3("lightDirection", camera->cameraFront);
-		shader->setFloat("lightCutOff", glm::cos(glm::radians(3.5f)));
+		shader->setFloat("lightCutOff", glm::cos(glm::radians(2.5f)));
+
+		shader->setFloat("outerLightCutOff", glm::cos(glm::radians(4.5f)));
 
 		//color for point light  - zmienia intensywnosc w czasie
 		glm::vec3 pointLightColor = glm::vec3(1.0f, 1.0f, 1.0f);

@@ -6,9 +6,16 @@ in vec3 FragPos;
 
 out vec4 fragColor; //Zmienna wyjœciowa dla koloru fragmentu
 
-
 uniform sampler2D diffuse0;
 uniform sampler2D specular0;
+
+//Directional light
+
+//Point light - reflektor
+
+//Spot light - latarka
+
+
 uniform vec3 lightColor;
 uniform vec3 lightPosition;
 uniform vec3 lightDirection;
@@ -24,6 +31,7 @@ uniform float pconstant;
 uniform float plinear;
 uniform float pquadratic;
 uniform float lightCutOff;
+uniform float outerLightCutOff;
 
 uniform bool shouldUseDiffuseTexture;
 uniform vec3 diffuseColor;
@@ -35,9 +43,11 @@ void main()
 	vec3 lightDir = normalize(lightPosition - FragPos);  
 
 	float theta = dot(lightDir, normalize(-lightDirection));
-    
-	if(theta > lightCutOff) 
-	{       
+    float epsilon   = lightCutOff - outerLightCutOff;
+		float intensity = clamp((theta - outerLightCutOff) / epsilon, 0.0, 1.0);    
+
+
+	     
 	  
 		// ambient
 		vec3 ambient = lambient * texture(diffuse0, fragVertexTexture).rgb;
@@ -55,11 +65,15 @@ void main()
 		vec3 specular = lspecular * spec;  
 		//vec3 specular = lspecular * spec * texture(specular0, fragVertexTexture).rgb;
 
+
+		diffuse   *= intensity;
+        specular *= intensity;
+
 		// attenuation
         float distance    = length(viewPosition - FragPos);
         float attenuation = 1.0 / (pconstant + plinear * distance + pquadratic * (distance * distance));    
 
-        // ambient  *= attenuation; // remove attenuation from ambient, as otherwise at large distances the light would be darker inside than outside the spotlight due the ambient term in the else branche
+         ambient  *= attenuation; // remove attenuation from ambient, as otherwise at large distances the light would be darker inside than outside the spotlight due the ambient term in the else branche
         diffuse   *= attenuation;
         specular *= attenuation;   
 
@@ -71,19 +85,6 @@ void main()
 		   fragColor=texel0 * vec4(lights, 1.0);
 		else
 			fragColor=vec4(diffuseColor,1) * vec4(lights, 1.0);
-	}
-	else  // else, use ambient light so scene isn't completely dark outside the spotlight.
-	  fragColor = vec4(lambient * vec3(texture(diffuse0, fragVertexTexture)), 1.0);
-
-
-	
-
-
-
-
-
-	
-
 
 
 }
