@@ -32,10 +32,10 @@ void Core::run()
 	//Transform planet1 = Transform();
 	//Transform planet1Moon = Transform();
 
-	//Model model("D:/Studia/Sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
+	Model model("D:/Studia/Sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
 	//Model model("D:/Studia/Sem V/PAG/PAG/Objects/Cubes/source/Cubes.fbx", shader.get());
 	//Model model("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/Cubes/source/Cubes.fbx", shader.get());
-	Model model("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
+	//Model model("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
 	model.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
 
 	while (!glfwWindowShouldClose(window->getWindow()))
@@ -45,7 +45,6 @@ void Core::run()
 
 		glClearColor(BACKGROUND_COLOR);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//		glBindVertexArray(mesh->VertexArrayObject);
 
 		GLfloat currentTime = glfwGetTime();
 		deltaTime = currentTime - lastTime;
@@ -68,67 +67,42 @@ void Core::run()
 		//shader->setVec3("mspecular", matSpecular);
 		//shader->setFloat("mshininess", shininess);
 
-		//color for directional light - zmienia kolor w czasie 
-		glm::vec3 lightColor = glm::vec3(sin(currentTime) * 2.0f , sin(currentTime) *  1.0f , sin(currentTime) *  3.0f);
-		//shader->setVec3("lightColor", lightColor);
-		glm::vec3 ligDiffuse = lightColor * glm::vec3(0.6f);
-		glm::vec3 ligAmbient = ligDiffuse * glm::vec3(0.9f);
-		glm::vec3 ligSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
-		//shader->setVec3("lambient", ligAmbient);
-		//shader->setVec3("ldiffuse", ligDiffuse);
-		//shader->setVec3("lspecular", ligSpecular);
-		shader->setVec3("lambient", 0.2f, 0.2f, 0.2f);
-		shader->setVec3("ldiffuse", 0.5f, 0.5f, 0.5f);
-		shader->setVec3("lspecular", 1.0f, 1.0f, 1.0f);
-		//shader->setVec3("lightDirection", -0.2f, -1.0f, -0.3f);
+	
+		//glm::vec3 ligDiffuse = lightColor * glm::vec3(0.6f);
+		//glm::vec3 ligAmbient = ligDiffuse * glm::vec3(0.9f);
+		//glm::vec3 ligSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
+		////shader->setVec3("lambient", ligAmbient);
+		////shader->setVec3("ldiffuse", ligDiffuse);
+		////shader->setVec3("lspecular", ligSpecular);
+		//shader->setVec3("lambient", 0.2f, 0.2f, 0.2f);
+		//shader->setVec3("ldiffuse", 0.5f, 0.5f, 0.5f);
+		//shader->setVec3("lspecular", 1.0f, 1.0f, 1.0f);
 
-		//for spotlight
-		shader->setVec3("lightDirection", camera->cameraFront);
-		shader->setFloat("lightCutOff", glm::cos(glm::radians(2.5f)));
-
-		shader->setFloat("outerLightCutOff", glm::cos(glm::radians(4.5f)));
-
-		//color for point light  - zmienia intensywnosc w czasie
-		glm::vec3 pointLightColor = glm::vec3(1.0f, 1.0f, 1.0f);
-		shader->setVec3("pointLightColor", pointLightColor);
-
-		shader->setFloat("pconstant", 1.0f);
-		shader->setFloat("plinear", 0.09f);
-		shader->setFloat("pquadratic", 0.032f);
-
-
-
-
-		// TO DO: rotates with the smaller cube
-		glm::vec3 lightPosition = glm::vec3(0.0f, 2.0f , 3.0f);
-
-		shader->setVec3("lightPosition", lightPosition);
+		//every light
+		glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+		shader->setVec3("lightColor", lightColor);
+		shader->setFloat("currentTime", currentTime);
 		shader->setVec3("viewPosition", camera->cameraPos);
 
 
+		//directional light
+		glm::vec3 lightDirection = glm::vec3(-0.2f, -3.0f, -1.3f);
+		shader->setVec3("lightDirection", lightDirection);
+
+		//point light
+		glm::vec3 pointLightPosition = glm::vec3(3.0f, 1.0f, 3.0f);
+		shader->setVec3("pointLightPosition", pointLightPosition);
+
+		//spotlight
+		shader->setVec3("spotLightPosition", camera->cameraPos);
+		shader->setVec3("spotLightDirection", camera->cameraFront);
+		shader->setFloat("lightCutOff", glm::cos(glm::radians(3.5f)));
+		shader->setFloat("outerLightCutOff", glm::cos(glm::radians(5.5f)));
 
 
 
 		scene->updateViewSpace(*camera);
 		shader->updateScene(*scene);
-//		
-//		planet1.setParent(center);
-//		planet1.setTransform(center.getTransform());
-//		planet1.translate(glm::vec3(0.0f, 0.0f, 1.0f));
-//		//planet1.rotate(glm::radians(180.0f) * currentTime, glm::vec3(0.0f, 1.0f, 0.0f));
-//		shader->setMat4("model", planet1.getTransform());
-////		texture->setActiveTexture(2);
-//	//	mesh->draw();
-//
-//		//light source
-//		planet1Moon.setParent(center);
-//		planet1Moon.setTransform(planet1.getTransform());
-//	//	planet1Moon.rotate(glm::radians(180.0f) * currentTime, glm::vec3(0.0f, 1.0f, 0.0f));
-//		planet1Moon.translate(glm::vec3(-1.5f, 1.0f, 1.0f));
-//		planet1Moon.scale(glm::vec3(0.5f, 0.5f, 0.5f));
-//		shader->setMat4("model", planet1Moon.getTransform());
-////		texture->setActiveTexture(2);
-////		mesh->draw();
 
 		model.draw(shader.get());
 		ui->draw();
@@ -157,11 +131,6 @@ Core::Core()
 		throw runtime_error("Cannot initialize GLAD");
 
 	glEnable(GL_DEPTH_TEST);
-
-//	mesh = std::make_unique<Mesh>();
-//	mesh->loadContent();
-
-	//texture = std::make_unique<Texture>();
 
 	shader = std::make_unique<Shader>();
 	shader->use();
