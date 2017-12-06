@@ -33,8 +33,10 @@ void Core::run()
 	//Transform planet1Moon = Transform();
 
 	//Model model("D:/Studia/Sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
-	Model model("D:/Studia/Sem V/PAG/PAG/Objects/Cubes/source/Cubes.fbx", shader.get());
-	model.getRootNode()->getNodeTransform()->scale(glm::vec3(0.005, 0.005, 0.005));
+	//Model model("D:/Studia/Sem V/PAG/PAG/Objects/Cubes/source/Cubes.fbx", shader.get());
+	//Model model("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/Cubes/source/Cubes.fbx", shader.get());
+	Model model("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
+	model.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
 
 	while (!glfwWindowShouldClose(window->getWindow()))
 	{
@@ -53,33 +55,51 @@ void Core::run()
 		//shader->setInt("texture", 0);
 		
 
-		//copper
-		glm::vec3 matAmbient = glm::vec3(0.19125f, 0.0735f, 0.0225f);
-		glm::vec3 matDiffuse = glm::vec3(0.7038f, 0.27048f, 0.0828f);
-		glm::vec3 matSpecular = glm::vec3(0.256777f, 0.137622f, 0.086014f);
-		float shininess = 12.8f;
+		////copper
+		//glm::vec3 matAmbient = glm::vec3(0.19125f, 0.0735f, 0.0225f);
+		//glm::vec3 matDiffuse = glm::vec3(0.7038f, 0.27048f, 0.0828f);
+		//glm::vec3 matSpecular = glm::vec3(0.256777f, 0.137622f, 0.086014f);
+		//float shininess = 12.8f;
 
-		//unique_ptr<Material> cube = make_unique<Material>(matAmbient, matDiffuse, matSpecular, shininess);
+		////unique_ptr<Material> cube = make_unique<Material>(matAmbient, matDiffuse, matSpecular, shininess);
 
-		shader->setVec3("mambient", matAmbient);
-		shader->setVec3("mdiffuse", matDiffuse);
-		shader->setVec3("mspecular", matSpecular);
-		shader->setFloat("mshininess", shininess);
+		//shader->setVec3("mambient", matAmbient);
+		//shader->setVec3("mdiffuse", matDiffuse);
+		//shader->setVec3("mspecular", matSpecular);
+		//shader->setFloat("mshininess", shininess);
 
-		glm::vec3 lightColor = glm::vec3(sin(currentTime) * 1.0f, sin(currentTime) *  0.2f, sin(currentTime) *  0.7f);
+		//color for directional light - zmienia kolor w czasie 
+		glm::vec3 lightColor = glm::vec3(sin(currentTime) * 2.0f , sin(currentTime) *  1.0f , sin(currentTime) *  3.0f);
 		//shader->setVec3("lightColor", lightColor);
-
 		glm::vec3 ligDiffuse = lightColor * glm::vec3(0.6f);
-		glm::vec3 ligAmbient = ligDiffuse * glm::vec3(0.3f);
+		glm::vec3 ligAmbient = ligDiffuse * glm::vec3(0.9f);
 		glm::vec3 ligSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
+		//shader->setVec3("lambient", ligAmbient);
+		//shader->setVec3("ldiffuse", ligDiffuse);
+		//shader->setVec3("lspecular", ligSpecular);
+		shader->setVec3("lambient", 0.2f, 0.2f, 0.2f);
+		shader->setVec3("ldiffuse", 0.5f, 0.5f, 0.5f);
+		shader->setVec3("lspecular", 1.0f, 1.0f, 1.0f);
+		//shader->setVec3("lightDirection", -0.2f, -1.0f, -0.3f);
 
-		shader->setVec3("lambient", ligAmbient);
-		shader->setVec3("ldiffuse", ligDiffuse);
-		shader->setVec3("lspecular", ligSpecular);
+		//for spotlight
+		shader->setVec3("lightDirection", camera->cameraFront);
+		shader->setFloat("lightCutOff", glm::cos(glm::radians(3.5f)));
+
+		//color for point light  - zmienia intensywnosc w czasie
+		glm::vec3 pointLightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+		shader->setVec3("pointLightColor", pointLightColor);
+
+		shader->setFloat("pconstant", 1.0f);
+		shader->setFloat("plinear", 0.09f);
+		shader->setFloat("pquadratic", 0.032f);
+
+
 
 
 		// TO DO: rotates with the smaller cube
-		glm::vec3 lightPosition = glm::vec3(0.0f, 0.0f , 1.0f);
+		glm::vec3 lightPosition = glm::vec3(0.0f, 2.0f , 3.0f);
+
 		shader->setVec3("lightPosition", lightPosition);
 		shader->setVec3("viewPosition", camera->cameraPos);
 

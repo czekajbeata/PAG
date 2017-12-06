@@ -50,6 +50,7 @@ void Textures::loadTextures(const aiScene* const pScene)
 					catch (std::runtime_error err) { throw err; }
 				}
 			}
+
 			//Normal
 			for (j = 0; j<pScene->mMaterials[i]->GetTextureCount(aiTextureType_NORMALS); j++)
 			{

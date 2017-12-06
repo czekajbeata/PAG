@@ -18,7 +18,7 @@ class Core
 private:
 	GLfloat deltaTime = 0.0f;		// Czas pomiêdzy obecn¹ i poprzedni¹ klatk¹
 	GLfloat lastTime = 0.0f;		// Czas ostatniej ramki
-	float cameraSpeed = 5.0f;
+	float cameraSpeed = 2.0f;
 	float mouseSensivity = 0.15f;
 
 	void processInput();
