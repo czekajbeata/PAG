@@ -88,8 +88,7 @@ void main()
 	float theta = dot(lightDir, normalize(-spotLightDirection));
     float epsilon   = lightCutOff - outerLightCutOff;
 	float intensity = clamp((theta - outerLightCutOff) / epsilon, 0.0, 1.0);   
-	intensity = 2* intensity - sin(currentTime);
-	 
+	intensity = 2 * intensity - 2*sin(currentTime);	 
 	// attenuation
     distance = length(spotLightPosition - FragPos);
     attenuation = 1.0 / (constant + linear * distance + quadratic * (distance * distance)); 	
@@ -106,7 +105,9 @@ void main()
 
 	vec3 spotLight = slambient + sldiffuse + slspecular;
 
+	
 	vec3 lights = directionalLight + pointLight + spotLight;
+	//vec3 lights = directionalLight +  spotLight;
 
 	//vec3 lights = spotLight;
 
