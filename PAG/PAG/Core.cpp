@@ -32,6 +32,8 @@ void Core::run()
 	//Transform planet1 = Transform();
 	//Transform planet1Moon = Transform();
 
+	std::vector<Model*> models;
+
 	//Model model("D:/Studia/Sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
 	//Model model("D:/Studia/Sem V/PAG/PAG/Objects/Cubes/source/Cubes.fbx", shader.get());
 	Model cubes("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/Cubes/source/Cubes.fbx", shader.get());
@@ -39,11 +41,13 @@ void Core::run()
 	Model nanosuit("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
 	nanosuit.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
 
+	models.push_back(&cubes);
+	models.push_back(&nanosuit);
+
 	while (!glfwWindowShouldClose(window->getWindow()))
 	{
 		processInput();
-		processMouse(*scene, &nanosuit);
-		processMouse(*scene, &cubes);
+		processMouse(*scene, models);
 
 		glClearColor(BACKGROUND_COLOR);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -57,12 +61,12 @@ void Core::run()
 		
 
 		////copper
-		//glm::vec3 matAmbient = glm::vec3(0.19125f, 0.0735f, 0.0225f);
-		//glm::vec3 matDiffuse = glm::vec3(0.7038f, 0.27048f, 0.0828f);
-		//glm::vec3 matSpecular = glm::vec3(0.256777f, 0.137622f, 0.086014f);
+		glm::vec3 matAmbient = glm::vec3(0.19125f, 0.0735f, 0.0225f);
+		glm::vec3 matDiffuse = glm::vec3(0.7038f, 0.27048f, 0.0828f);
+		glm::vec3 matSpecular = glm::vec3(0.256777f, 0.137622f, 0.086014f);/*
 		glm::vec3 matAmbient = glm::vec3(1.0f, 1.0f, 1.0f);
 		glm::vec3 matDiffuse = glm::vec3(1.0f, 1.0f, 1.0f);
-		glm::vec3 matSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
+		glm::vec3 matSpecular = glm::vec3(1.0f, 1.0f, 1.0f);*/
 		float shininess = 12.8f;
 
 		////unique_ptr<Material> cube = make_unique<Material>(matAmbient, matDiffuse, matSpecular, shininess);
@@ -84,21 +88,21 @@ void Core::run()
 		//shader->setVec3("lspecular", 1.0f, 1.0f, 1.0f);
 
 		//every light
-		glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+		glm::vec3 lightColor = glm::vec3(2.0f, 2.0f, 2.0f);
 		shader->setVec3("lightColor", lightColor);
 		shader->setFloat("currentTime", currentTime);
 		shader->setVec3("viewPosition", camera->cameraPos);
 
 
 		//directional light
-		glm::vec3 lightDirection = glm::vec3(-0.2f, -3.0f, -1.3f);
+		glm::vec3 lightDirection = glm::normalize(glm::vec3(-0.2f, -3.0f, -1.3f));
 		shader->setVec3("lightDirection", lightDirection);
-		glm::vec3 directionalColors = glm::vec3(1.0f * sin(currentTime), 1.0f, 1.0f);
+		glm::vec3 directionalColors = glm::vec3( 0.0f, cos(currentTime), 0.0f);
 		shader->setVec3("directionalColors", directionalColors);
 
 		//point light
-		glm::vec3 pointLightPosition = glm::vec3(2*sin(currentTime), 0.5f, 1.0f);
-		//glm::vec3 pointLightPosition = glm::vec3(2.0f, 2 * sin(currentTime), 1.0f);
+		//glm::vec3 pointLightPosition = glm::vec3(1, 1, 1.0f);
+		glm::vec3 pointLightPosition = glm::vec3(2 * sin(currentTime), 2.0f, 1.0f);
 		shader->setVec3("pointLightPosition", pointLightPosition);
 
 		//spotlight
@@ -112,8 +116,11 @@ void Core::run()
 		scene->updateViewSpace(*camera);
 		shader->updateScene(*scene);
 
-		nanosuit.draw(shader.get());
-		cubes.draw(shader.get());
+		for each (Model* model in models)
+		{
+			model->draw(shader.get());
+		}
+
 		ui->draw();
 
 		glfwSwapBuffers(window->getWindow());
@@ -174,7 +181,7 @@ void Core::processInput()
 		camera->cameraPos += glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * speed;
 }
 
-void Core::processMouse(Scene scene, Model* model)
+void Core::processMouse(Scene scene, std::vector<Model*> models)
 {
 
 	double mousePosX, mousePosY;
@@ -202,11 +209,14 @@ void Core::processMouse(Scene scene, Model* model)
 	glfwGetWindowSize(window->getWindow(), &screenSize.first, &screenSize.second);
 
 	if (glfwGetMouseButton(window->getWindow(), GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-		for each(auto node in model->getAllNodes()) {
-			node->setIsSelected(false);
+		for each (Model* model in models)
+		{
+			for each(auto node in model->getAllNodes()) {
+				node->setIsSelected(false);
+			}
 		}
 		mousePicker->update(mousePosX, mousePosY);
-		auto selectedNode = mousePicker->getSelectedNode(&scene, model, screenSize, mousePos);
+		auto selectedNode = mousePicker->getSelectedNode(&scene, models, screenSize, mousePos);
 		ui->setSelectedNode(selectedNode);
 		if (selectedNode != nullptr) {
 			selectedNode->setIsSelected(true);

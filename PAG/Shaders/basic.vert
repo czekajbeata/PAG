@@ -4,7 +4,7 @@ layout (location = 1) in vec3 vertexNormal;
 layout (location = 2) in vec2 vertexTexture;
 
 out vec2 fragVertexTexture;
-out vec3 Normal;
+smooth out vec3 Normal;
 out vec3 FragPos;
 
 uniform mat4 model;

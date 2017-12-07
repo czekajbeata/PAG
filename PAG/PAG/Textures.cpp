@@ -51,7 +51,7 @@ void Textures::loadTextures(const aiScene* const pScene)
 				}
 			}
 
-			//Normal
+			//normalTransform*Normal
 			for (j = 0; j<pScene->mMaterials[i]->GetTextureCount(aiTextureType_NORMALS); j++)
 			{
 				aiString textureName;
@@ -125,7 +125,7 @@ const Material Textures::findTexturesForMaterial(aiMaterial* const pMaterial)
 		for (j = 0; j<mSpecularTextures.size(); j++)
 			if (mSpecularTextures[j].getTexturePath().compare(texturePath) == 0) output.mSpecularTextureID.push_back(j);
 	}
-	//Normal
+	//normalTransform*Normal
 	for (i = 0; i<pMaterial->GetTextureCount(aiTextureType_NORMALS); i++)
 	{
 		aiString textureName;
