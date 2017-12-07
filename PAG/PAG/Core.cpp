@@ -40,9 +40,11 @@ void Core::run()
 	cubes.getRootNode()->getNodeTransform()->scale(glm::vec3(0.002, 0.002, 0.002));
 	Model nanosuit("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
 	nanosuit.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
+	Model plane("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/plane.FBX", shader.get());
 
 	models.push_back(&cubes);
 	models.push_back(&nanosuit);
+	models.push_back(&plane);
 
 	while (!glfwWindowShouldClose(window->getWindow()))
 	{
@@ -61,12 +63,12 @@ void Core::run()
 		
 
 		////copper
-		glm::vec3 matAmbient = glm::vec3(0.19125f, 0.0735f, 0.0225f);
-		glm::vec3 matDiffuse = glm::vec3(0.7038f, 0.27048f, 0.0828f);
-		glm::vec3 matSpecular = glm::vec3(0.256777f, 0.137622f, 0.086014f);/*
-		glm::vec3 matAmbient = glm::vec3(1.0f, 1.0f, 1.0f);
-		glm::vec3 matDiffuse = glm::vec3(1.0f, 1.0f, 1.0f);
-		glm::vec3 matSpecular = glm::vec3(1.0f, 1.0f, 1.0f);*/
+		//glm::vec3 matAmbient = glm::vec3(0.19125f, 0.0735f, 0.0225f);
+		//glm::vec3 matDiffuse = glm::vec3(0.7038f, 0.27048f, 0.0828f);
+		//glm::vec3 matSpecular = glm::vec3(0.256777f, 0.137622f, 0.086014f);/*
+		glm::vec3 matAmbient = glm::vec3(0.2f, 0.2f, 0.2f);
+		glm::vec3 matDiffuse = glm::vec3(0.2f, 0.2f, 0.2f);
+		glm::vec3 matSpecular = glm::vec3(0.2f, 0.2f, 0.2f);
 		float shininess = 12.8f;
 
 		////unique_ptr<Material> cube = make_unique<Material>(matAmbient, matDiffuse, matSpecular, shininess);
@@ -97,12 +99,12 @@ void Core::run()
 		//directional light
 		glm::vec3 lightDirection = glm::normalize(glm::vec3(-0.2f, -3.0f, -1.3f));
 		shader->setVec3("lightDirection", lightDirection);
-		glm::vec3 directionalColors = glm::vec3( 0.0f, sin(currentTime) + 1.0f, cos(currentTime)+3.0f);
+		glm::vec3 directionalColors = glm::vec3( 0.0f, sin(currentTime) + 1.0f, cos(currentTime)+1.0f);
 		shader->setVec3("directionalColors", directionalColors);
 
 		//point light
 		//glm::vec3 pointLightPosition = glm::vec3(1, 1, 1.0f);
-		glm::vec3 pointLightPosition = glm::vec3(15 * sin(currentTime), 2.0f, 1.0f);
+		glm::vec3 pointLightPosition = glm::vec3(10*sin(currentTime), 2.0f, 1.0f);
 		shader->setVec3("pointLightPosition", pointLightPosition);
 
 		//spotlight

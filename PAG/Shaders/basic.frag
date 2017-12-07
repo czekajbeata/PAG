@@ -42,7 +42,7 @@ void main()
 	// DIRECTIONAL LIGHT
 	// zmiana koloru w czasie
 		// dlambient
-	vec3 dlambient = mambient * directionalColors * vec3(0.7);
+	vec3 dlambient = mambient * directionalColors * vec3(0.2);
 		// dldiffuse
 	vec3 norm = normalize(normalTransform*Normal);
 	vec3 lightDir = normalize(-lightDirection);  
