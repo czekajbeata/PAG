@@ -97,12 +97,12 @@ void Core::run()
 		//directional light
 		glm::vec3 lightDirection = glm::normalize(glm::vec3(-0.2f, -3.0f, -1.3f));
 		shader->setVec3("lightDirection", lightDirection);
-		glm::vec3 directionalColors = glm::vec3( 0.0f, cos(currentTime), 0.0f);
+		glm::vec3 directionalColors = glm::vec3( 0.0f, sin(currentTime) + 1.0f, cos(currentTime)+3.0f);
 		shader->setVec3("directionalColors", directionalColors);
 
 		//point light
 		//glm::vec3 pointLightPosition = glm::vec3(1, 1, 1.0f);
-		glm::vec3 pointLightPosition = glm::vec3(2 * sin(currentTime), 2.0f, 1.0f);
+		glm::vec3 pointLightPosition = glm::vec3(15 * sin(currentTime), 2.0f, 1.0f);
 		shader->setVec3("pointLightPosition", pointLightPosition);
 
 		//spotlight
@@ -183,7 +183,6 @@ void Core::processInput()
 
 void Core::processMouse(Scene scene, std::vector<Model*> models)
 {
-
 	double mousePosX, mousePosY;
 	glfwGetCursorPos(window->getWindow(), &mousePosX, &mousePosY);
 
@@ -200,7 +199,11 @@ void Core::processMouse(Scene scene, std::vector<Model*> models)
 	camera->lastX = mousePosX;
 	camera->lastY = mousePosY;
 
-	camera->rotateByOffset(offsetX, offsetY);
+	if (isCameraMoving) {
+
+		camera->rotateByOffset(offsetX, offsetY);
+	}
+	
 
 	std::pair<int, int> screenSize;
 	std::pair<double, double> mousePos;
@@ -208,7 +211,17 @@ void Core::processMouse(Scene scene, std::vector<Model*> models)
 	mousePos.second = mousePosY;
 	glfwGetWindowSize(window->getWindow(), &screenSize.first, &screenSize.second);
 
+	if (glfwGetMouseButton(window->getWindow(), GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS) {
+		if (isCameraMoving) {
+			isCameraMoving = false;
+		}
+		else {
+			isCameraMoving = true;
+		}
+	}
+
 	if (glfwGetMouseButton(window->getWindow(), GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+
 		for each (Model* model in models)
 		{
 			for each(auto node in model->getAllNodes()) {

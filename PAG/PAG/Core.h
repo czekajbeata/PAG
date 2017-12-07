@@ -32,6 +32,7 @@ private:
 	std::unique_ptr<MousePicker> mousePicker;
 	std::unique_ptr<UserInterface> ui;
 public:
+	bool isCameraMoving = true;
 	void run();
 	Core();
 	~Core();

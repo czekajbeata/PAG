@@ -65,7 +65,7 @@ void UserInterface::draw()
 		ImGui::SetNextWindowPos(ImVec2(0, mainMenuHeight));
 		ImGui::SetNextWindowSize(ImVec2(240, 480));
 		ImGui::Begin("Selected node", temporaryBool, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
-		ImGui::Text("  Node level %i", mSelectedNode->getNodeLevel());
+		//ImGui::Text("  Node level %i", mSelectedNode->getNodeLevel());
 		//ImGui::Text("  Transform level %i", mSelectedTransform->getTransformLevel());
 		if (mSelectedNode->getParentNode() != NULL && mSelectedNode->getNodeLevel() > 0 && ImGui::Button("Select parent"))
 		{
