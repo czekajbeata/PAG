@@ -32,16 +32,18 @@ void Core::run()
 	//Transform planet1 = Transform();
 	//Transform planet1Moon = Transform();
 
-	Model model("D:/Studia/Sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
+	//Model model("D:/Studia/Sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
 	//Model model("D:/Studia/Sem V/PAG/PAG/Objects/Cubes/source/Cubes.fbx", shader.get());
-	//Model model("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/Cubes/source/Cubes.fbx", shader.get());
-	//Model model("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
-	model.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
+	Model cubes("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/Cubes/source/Cubes.fbx", shader.get());
+	cubes.getRootNode()->getNodeTransform()->scale(glm::vec3(0.002, 0.002, 0.002));
+	Model nanosuit("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
+	nanosuit.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
 
 	while (!glfwWindowShouldClose(window->getWindow()))
 	{
 		processInput();
-		processMouse(*scene, &model);
+		processMouse(*scene, &nanosuit);
+		processMouse(*scene, &cubes);
 
 		glClearColor(BACKGROUND_COLOR);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -91,23 +93,27 @@ void Core::run()
 		//directional light
 		glm::vec3 lightDirection = glm::vec3(-0.2f, -3.0f, -1.3f);
 		shader->setVec3("lightDirection", lightDirection);
+		glm::vec3 directionalColors = glm::vec3(1.0f * sin(currentTime), 1.0f, 1.0f);
+		shader->setVec3("directionalColors", directionalColors);
 
 		//point light
 		glm::vec3 pointLightPosition = glm::vec3(2*sin(currentTime), 0.5f, 1.0f);
+		//glm::vec3 pointLightPosition = glm::vec3(2.0f, 2 * sin(currentTime), 1.0f);
 		shader->setVec3("pointLightPosition", pointLightPosition);
 
 		//spotlight
 		shader->setVec3("spotLightPosition", camera->cameraPos);
 		shader->setVec3("spotLightDirection", camera->cameraFront);
-		shader->setFloat("lightCutOff", glm::cos(glm::radians(4.0f + sin(currentTime))));
-		shader->setFloat("outerLightCutOff", glm::cos(glm::radians(6.0f + 2*sin(currentTime))));
+		shader->setFloat("lightCutOff", glm::cos(glm::radians(3.0f)));
+		shader->setFloat("outerLightCutOff", glm::cos(glm::radians(4.5f)));
 
 
 
 		scene->updateViewSpace(*camera);
 		shader->updateScene(*scene);
 
-		model.draw(shader.get());
+		nanosuit.draw(shader.get());
+		cubes.draw(shader.get());
 		ui->draw();
 
 		glfwSwapBuffers(window->getWindow());
@@ -191,6 +197,8 @@ void Core::processMouse(Scene scene, Model* model)
 
 	std::pair<int, int> screenSize;
 	std::pair<double, double> mousePos;
+	mousePos.first = mousePosX;
+	mousePos.second = mousePosY;
 	glfwGetWindowSize(window->getWindow(), &screenSize.first, &screenSize.second);
 
 	if (glfwGetMouseButton(window->getWindow(), GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {

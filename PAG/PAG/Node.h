@@ -14,7 +14,7 @@ class Textures;
 class Node
 {
 private:
-    Transform* mElementTransform=NULL; //Dla uproszczenia przyjmijmy, że może mieć tylko 1 gałąź dzieci, jest zawsze w parze z mCachedTransform
+    Transform* mElementTransform=NULL; 
     Node* mParentNode=NULL;
     const aiMatrix4x4 mOriginalTransform;
     std::vector<Node> mChildNodes;

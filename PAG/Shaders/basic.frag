@@ -13,6 +13,7 @@ uniform vec3 viewPosition;
 uniform float currentTime;
 
 //Directional light 
+uniform vec3 directionalColors;
 uniform vec3 lightDirection;
 
 //Point light
@@ -39,8 +40,6 @@ void main()
 {
 	// DIRECTIONAL LIGHT
 	// zmiana koloru w czasie
-	vec3 directionalColors = lightColor;
-	directionalColors[0] = directionalColors[0] * sin(currentTime);
 		// dlambient
 	vec3 dlambient = mambient * directionalColors * vec3(0.8f) * vec3(0.9f) * texture(diffuse0, fragVertexTexture).rgb;
 		// dldiffuse
@@ -88,19 +87,21 @@ void main()
 	lightDir = normalize(spotLightPosition - FragPos);  
 	float theta = dot(lightDir, normalize(-spotLightDirection));
     float epsilon   = lightCutOff - outerLightCutOff;
-	float intensity = clamp((theta - outerLightCutOff) / epsilon, 0.0, 1.0);    
+	float intensity = clamp((theta - outerLightCutOff) / epsilon, 0.0, 1.0);   
+	intensity = 2* intensity - sin(currentTime);
+	 
 	// attenuation
     distance = length(spotLightPosition - FragPos);
     attenuation = 1.0 / (constant + linear * distance + quadratic * (distance * distance)); 	
 	// slambient
-	vec3 slambient = mambient * lightColor * vec3(1.8f) * texture(diffuse0, fragVertexTexture).rgb * attenuation;
+	vec3 slambient =  2 * mambient * lightColor * vec3(1.2f) * texture(diffuse0, fragVertexTexture).rgb * attenuation;
 	// sldiffuse
 	diff = max(dot(norm, lightDir), 0.0);
-	vec3 sldiffuse = mdiffuse * lightColor * vec3(1.2f) * diff * texture(diffuse0, fragVertexTexture).rgb * intensity * attenuation;  		
+	vec3 sldiffuse =  2 * mdiffuse * lightColor * vec3(0.8f) * diff * texture(diffuse0, fragVertexTexture).rgb * intensity * attenuation;  		
 	// slspecular
 	reflectDir = reflect(-lightDir, norm);
 	spec = pow(max(dot(viewDir, reflectDir), 0.0), mshininess); 
-	vec3 slspecular = vec3(1.0f, 1.0f, 1.0f) * spec * intensity * attenuation;   
+	vec3 slspecular = 2 * vec3(1.0f, 1.0f, 1.0f) * spec * intensity * attenuation;   
 	//vec3 slspecular = vec3(1.0f, 1.0f, 1.0f) * spec * texture(specular0, fragVertexTexture).rgb * intensity * attenuation; 
 
 	vec3 spotLight = slambient + sldiffuse + slspecular;
