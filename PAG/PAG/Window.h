@@ -1,3 +1,6 @@
+#ifndef Window_hpp
+#define Window_hpp
+
 #include <GLFW/glfw3.h>
 #include <stdexcept>
 
@@ -12,3 +15,6 @@ public:
 };
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+
+
+#endif /* Window_hpp */

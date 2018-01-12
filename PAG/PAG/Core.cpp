@@ -1,9 +1,12 @@
 #include <stdio.h>
-#include <glad/glad.h> 
-#include <GLFW/glfw3.h>
+//#include <glm/glm.hpp>
+//#include <GLFW/glfw3.h>
+//#include <glad/glad.h> 
+
+
+#include "Mesh.h"
 #include "Core.h"
 #include "Window.h"
-#include "Mesh.h"
 #include "Shader.h"
 #include "Texture.h"
 #include "Textures.h"
@@ -11,16 +14,13 @@
 #include "Camera.h"
 #include "Scene.h"
 #include "Material.h"
-#include <stdexcept>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <vector>
-#include "Model.h"
-#include "MousePicker.h"
-#include <iostream>
 #include "Node.h"
 #include "UserInterface.h"
+#include "Model.h"
+#include "MousePicker.h"
+
+
+
 
 using namespace std;
 
@@ -34,13 +34,14 @@ void Core::run()
 
 	std::vector<Model*> models;
 
-	//Model model("D:/Studia/Sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
-	//Model model("D:/Studia/Sem V/PAG/PAG/Objects/Cubes/source/Cubes.fbx", shader.get());
-	Model cubes("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/Cubes/source/Cubes.fbx", shader.get());
+	Model nanosuit("D:/Studia/Sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
+	Model cubes("D:/Studia/Sem V/PAG/PAG/Objects/Cubes/source/Cubes.fbx", shader.get());
+	//Model cubes("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/Cubes/source/Cubes.fbx", shader.get());
 	cubes.getRootNode()->getNodeTransform()->scale(glm::vec3(0.002, 0.002, 0.002));
-	Model nanosuit("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
+	//Model nanosuit("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
 	nanosuit.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
-	Model plane("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/plane.FBX", shader.get());
+	//Model plane("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/plane.FBX", shader.get());
+	Model plane("D:/Studia/Sem V/PAG/PAG/Objects/source/plane.FBX", shader.get());
 
 	models.push_back(&cubes);
 	models.push_back(&nanosuit);
@@ -112,6 +113,13 @@ void Core::run()
 		shader->setVec3("spotLightDirection", camera->cameraFront);
 		shader->setFloat("lightCutOff", glm::cos(glm::radians(3.0f)));
 		shader->setFloat("outerLightCutOff", glm::cos(glm::radians(4.5f)));
+
+
+		//running time
+		//bone transform
+		//set bone transform
+
+
 
 
 

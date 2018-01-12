@@ -1,5 +1,4 @@
 #include "Textures.h"
-#include "Material.h"
 #include "Shader.h"
 #include "Texture.h"
 

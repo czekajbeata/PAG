@@ -1,14 +1,13 @@
 #include "Mesh.h"
 #include "Shader.h"
-#include "Texture.h"
-#include "Material.h"
-#include "Texture.h"
 #include "Textures.h"
 #include "MousePicker.h"
+#include "Texture.h"
+#include "Material.h"
 
 using namespace std;
 
-void Mesh::drawContent(Shader * const pShader, Textures* const pTextures)
+void Mesh::drawContent(Shader * const pShader, Textures* const pTextures) //= skinned mesh: render
 {
 	Material temporaryMaterial;
 	if (!isSelected) {
@@ -48,11 +47,6 @@ void Mesh::setupMesh() {
 	//Bindowanie tablicy obiektów
 	glBindVertexArray(VertexArrayObject);
 
-	//Bindowanie bufora, informacja, ¿e zawiera on tablicê wierzcho³ków
-	glBindBuffer(GL_ARRAY_BUFFER, VertexBufferObject);
-	//Wype³nienie bufora danymi o wierzcho³kach (STATIC_DRAW - wyznaczone raz i odczytywane wielokrotnie)
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
-
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementObjectBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
@@ -60,11 +54,21 @@ void Mesh::setupMesh() {
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0); //Atrybut wierzcho³ków
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(offsetof(Vertex, normals))); //Atrybut koloru - start po wierzcho³kach (glm::vec3)
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(offsetof(Vertex, texture))); //Atrubut textury
-
 																										   //Podanie dostêpu do wierzcho³ków w tablicy o indeksie 0-2
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
+
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(offsetof(Vertex, boneIDs))); //idki koœci
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(offsetof(Vertex, boneWeights)));//wagi koœci
+
+	glEnableVertexAttribArray(3);
+	glEnableVertexAttribArray(4);
+																										  //Bindowanie bufora, informacja, ¿e zawiera on tablicê wierzcho³ków
+	glBindBuffer(GL_ARRAY_BUFFER, VertexBufferObject);
+	//Wype³nienie bufora danymi o wierzcho³kach (STATIC_DRAW - wyznaczone raz i odczytywane wielokrotnie)
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+
 }
 
 Mesh::~Mesh()

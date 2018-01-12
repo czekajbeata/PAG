@@ -1,5 +1,4 @@
 #include "Node.h"
-#include "Mesh.h"
 #include "Transform.h"
 #include "Shader.h"
 #include "Texture.h"
@@ -66,6 +65,7 @@ Mesh Node::processMesh(const aiMesh* const pMesh, const aiScene* const pScene, T
 		}
 		verticles.push_back(temporaryVertex);
 	}
+
 
 	for (i = 0; i < pMesh->mNumFaces; i++)
 	{
@@ -141,6 +141,7 @@ Node* const Node::getChild(const unsigned int& pChildNumber)
 	if (pChildNumber > mChildNodes.size()) throw std::runtime_error("(Node::getChildNode): Żądany numer dziecka jest większy od ilości dzieci");
 	return &mChildNodes[pChildNumber];
 }
+
 
 Node::~Node()
 {

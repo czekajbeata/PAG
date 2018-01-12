@@ -1,12 +1,13 @@
-#pragma once
+#ifndef Mesh_hpp
+#define Mesh_hpp
+
 #include <glad/glad.h>
-#include <glm/glm.hpp>
 #include "Const.h"
 #include <vector>
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
+//#include <assimp/Importer.hpp>
+//#include <assimp/postprocess.h>
 #include "Material.h"
+#include "math.h"
 
 class Shader;
 class Textures;
@@ -16,9 +17,11 @@ struct Vertex
 	glm::vec3 position;
 	glm::vec3 normals;
 	glm::vec2 texture;
-	glm::vec3 tangent;
-	glm::vec3 bitangent;
+	glm::vec3 boneIDs;
+	glm::vec3 boneWeights;
+
 };
+
 
 class Mesh
 {
@@ -26,6 +29,8 @@ class Mesh
 	std::vector<Vertex> vertices;
 	Material mMaterial;
 	bool isSelected;
+
+
 
 public:
 	void setIsSelected(bool isSelected);
@@ -40,3 +45,4 @@ public:
 	const bool checkRayIntersections(const glm::vec3 & pRaySource, const glm::vec3 & pRayDirection, const glm::mat4 & pTransform, float & pDistanceOutput);
 };
 
+#endif /* Mesh_hpp */

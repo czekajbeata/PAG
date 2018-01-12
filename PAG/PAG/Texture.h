@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <string>
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
+//#include <GLFW/glfw3.h>
 
 class Texture
 {

@@ -52,7 +52,7 @@ void main()
 	vec3 viewDir = normalize(viewPosition - FragPos);
     vec3 reflectDir = reflect(-lightDir, norm);  
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), mshininess);
-	vec3 dlspecular = mspecular * vec3(1.0f, 1.0f, 1.0f) * spec * sin(currentTime);
+	vec3 dlspecular = mspecular * vec3(1.0f, 1.0f, 1.0f) * spec;
 
 	vec3 directionalLight = dlambient + dldiffuse + dlspecular;
 
@@ -66,7 +66,7 @@ void main()
     float distance = length(pointLightPosition - FragPos);
     float attenuation = 1.0 / (constant + linear * distance + quadratic * (distance * distance)); 	  
 		// plambient	
-	vec3 plambient = mambient *  lightColor * vec3(0.8f) * vec3(0.9f);
+	vec3 plambient = mambient *  lightColor * vec3(0.8f) * vec3(0.9f) * attenuation; 
 		// pldiffuse
 	lightDir = normalize(pointLightPosition - FragPos);  
 	diff = max(dot(norm, lightDir), 0.0);

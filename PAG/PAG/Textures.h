@@ -1,4 +1,5 @@
-#pragma once
+#ifndef Textures_hpp
+#define Textures_hpp
 #include "Material.h"
 
 #include <assimp/Importer.hpp>
@@ -23,3 +24,4 @@ public:
 	const Material findTexturesForMaterial(aiMaterial* const pMaterial);
 };
 
+#endif /* Textures_hpp */

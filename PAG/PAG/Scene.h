@@ -1,3 +1,6 @@
+#ifndef Scene_hpp
+#define Scene_hpp
+
 #include <stdio.h>
 #include <glm/glm.hpp>
 #include "Const.h"
@@ -18,3 +21,5 @@ public:
 	void updateViewSpace(Camera& camera);
 	~Scene();
 };
+
+#endif /* Scene_hpp */

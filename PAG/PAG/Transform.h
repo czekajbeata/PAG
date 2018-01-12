@@ -1,8 +1,9 @@
-#pragma once
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#ifndef Transfrom_hpp
+#define Transfrom_hpp
+//#include <glm/glm.hpp>
+//#include <glm/gtc/matrix_transform.hpp>
 #include <glm\gtx/matrix_decompose.hpp>
-#include <glm/gtc/type_ptr.hpp>
+//#include <glm/gtc/type_ptr.hpp>
 #include <vector>
 #include <memory>
 #include <assimp/matrix4x4.h>
@@ -50,3 +51,4 @@ public:
 
 };
 
+#endif /* Transfrom_hpp */

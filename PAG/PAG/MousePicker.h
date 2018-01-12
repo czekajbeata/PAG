@@ -1,7 +1,9 @@
-#pragma once
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#ifndef MousePicker_hpp
+#define MousePicker_hpp
+
+//#include <glm/glm.hpp>
+//#include <glm/gtc/matrix_transform.hpp>
+//#include <glm/gtc/type_ptr.hpp>
 #include "Camera.h"
 #include <memory>
 #include <vector>
@@ -29,3 +31,4 @@ public:
 	static const bool checkRayIntersectionTriangle(const glm::vec3 & pRaySource, const glm::vec3 & pRayDirection, const glm::vec3 triangle[3], float & pDistanceOutput);
 	};
 
+#endif /* MousePicker_hpp */

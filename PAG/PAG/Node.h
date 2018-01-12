@@ -3,8 +3,7 @@
 
 #include <stdio.h>
 #include <vector>
-#include <glm/glm.hpp>
-#include <assimp/scene.h>
+#include "Mesh.h"
 
 class Transform;
 class Mesh;
@@ -19,6 +18,8 @@ private:
     const aiMatrix4x4 mOriginalTransform;
     std::vector<Node> mChildNodes;
     std::vector<Mesh> mMeshes;
+	std::string Name;
+
     
     Node(const aiNode* const pNode, const aiScene* const pScene, Node* const pParentNode, Textures* const pTextures);
     void processNode(const aiNode* const pNode, const aiScene* const pScene, Textures* const pTextures);

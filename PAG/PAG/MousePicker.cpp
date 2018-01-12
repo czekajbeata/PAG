@@ -2,7 +2,7 @@
 #include "Model.h"
 #include "Scene.h"
 #include "Node.h"
-#include <glm/gtx/matrix_decompose.hpp>
+//#include <glm/gtx/matrix_decompose.hpp>
 
 glm::vec3 MousePicker::calculateMouseRay(float mouseX, float mouseY)
 {

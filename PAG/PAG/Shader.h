@@ -1,3 +1,6 @@
+#ifndef Shader_hpp
+#define Shader_hpp
+
 #include <glad/glad.h>
 #include <string>
 #include "FileReader.h"
@@ -30,3 +33,4 @@ public:
 	void setMat3(const std::string & name, const glm::mat3 & mat) const;
 	void setMat4(const std::string & name, const glm::mat4 & mat) const;
 };
+#endif /* Shader_hpp */
