@@ -42,10 +42,11 @@ void Core::run()
 	nanosuit.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
 	//Model plane("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/plane.FBX", shader.get());
 	Model plane("D:/Studia/Sem V/PAG/PAG/Objects/source/plane.FBX", shader.get());
-
-	models.push_back(&cubes);
-	models.push_back(&nanosuit);
-	models.push_back(&plane);
+	Model animated("D:/Studia/Sem V/PAG/PAG/Objects/paluxysaurus/source/testI.fbx", shader.get());
+//	models.push_back(&cubes);
+//	models.push_back(&nanosuit);
+//	models.push_back(&plane);
+	models.push_back(&animated);
 
 	while (!glfwWindowShouldClose(window->getWindow()))
 	{
@@ -58,6 +59,20 @@ void Core::run()
 		GLfloat currentTime = glfwGetTime();
 		deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
+
+
+
+		vector<Matrix4f> Transforms;
+		float RunningTime = (float)((double)GetCurrentTimeMillis() - (double)m_startTime) / 1000.0f;
+
+
+
+		animated.BoneTransform(RunningTime, Transforms);
+		for (int i = 0; i < Transforms.size(); i++) {
+			SetBoneTransform(i, Transforms[i]);
+		}
+
+
 
 		shader->use();
 		//shader->setInt("texture", 0);
@@ -121,7 +136,9 @@ void Core::run()
 
 
 
-
+		//przekaz world transform do shadera
+		//Normal = (gWorld * Normal).xyz;
+		//WorldPos0 = (gWorld * FragPos).xyz;
 
 		scene->updateViewSpace(*camera);
 		shader->updateScene(*scene);
@@ -158,8 +175,17 @@ Core::Core()
 
 	glEnable(GL_DEPTH_TEST);
 
+	m_startTime = GetCurrentTimeMillis();
+
 	shader = std::make_unique<Shader>();
 	shader->use();
+
+	for (unsigned int i = 0; i < sizeof(m_boneLocation); i++) {
+		char Name[128];
+		memset(Name, 0, sizeof(Name));
+		_snprintf_s(Name, sizeof(Name), "gBones[%d]", i);
+		m_boneLocation[i] = glGetUniformLocation(shader->getProgram(), Name);
+	}
 
 	camera = std::make_unique<Camera>();
 	glfwGetCursorPos(window->getWindow(), &camera->lastX, &camera->lastY);
@@ -245,4 +271,23 @@ void Core::processMouse(Scene scene, std::vector<Model*> models)
 			selectedNode->setIsSelected(true);
 		}
 	}
+}
+
+long long Core::GetCurrentTimeMillis()
+{
+#ifdef WIN32    
+	return GetTickCount();
+#else
+	timeval t;
+	gettimeofday(&t, NULL);
+
+	long long ret = t.tv_sec * 1000 + t.tv_usec / 1000;
+	return ret;
+#endif    
+}
+void Core::SetBoneTransform(int Index, const Matrix4f& Transform)
+{
+	assert(Index < 100);
+	//Transform.Print();
+	glUniformMatrix4fv(m_boneLocation[Index], 1, GL_TRUE, (const GLfloat*)Transform);
 }

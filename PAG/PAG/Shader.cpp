@@ -102,6 +102,7 @@ void Shader::updateScene(Scene scene)
 {
 	setMat4("projection", scene.getProjectionSpace());
 	setMat4("view", scene.getViewSpace());
+	//setMat4("world", scene.getWorldSpace());
 }
 
 void Shader::use()

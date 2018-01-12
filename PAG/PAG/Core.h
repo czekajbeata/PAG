@@ -10,6 +10,7 @@
 #include <vector>
 #include <iostream>
 
+#define MAX_BONES = 100;
 
 class Window;
 class Mesh;
@@ -28,8 +29,13 @@ private:
 	float cameraSpeed = 2.0f;
 	float mouseSensivity = 0.15f;
 
+	long long m_startTime;
+
 	void processInput();
 	void processMouse(Scene scene, std::vector<Model*> models);
+
+	GLuint m_boneLocation[100];
+	GLuint m_prevBoneLocation[100];
 
 	std::unique_ptr<Window> window;
 	std::unique_ptr<Shader> shader;
@@ -37,6 +43,9 @@ private:
 	std::unique_ptr<Scene> scene;
 	std::unique_ptr<MousePicker> mousePicker;
 	std::unique_ptr<UserInterface> ui;
+
+	void SetBoneTransform(int Index, const Matrix4f& Transform);
+	long long GetCurrentTimeMillis();
 public:
 	bool isCameraMoving = true;
 	void run();
