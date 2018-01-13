@@ -3,7 +3,7 @@
 
 #include "math.h"
 
-#define NUM_BONES_PER_VEREX 6
+#define NUM_BONES_PER_VEREX 5
 
 struct BoneInfo
 {
@@ -19,6 +19,9 @@ struct BoneInfo
 
 struct VertexBoneData
 {
+	glm::vec3 position;
+	glm::vec3 normals;
+	glm::vec2 texture;
 	int IDs[NUM_BONES_PER_VEREX];
 	float Weights[NUM_BONES_PER_VEREX];
 

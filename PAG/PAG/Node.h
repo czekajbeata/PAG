@@ -50,7 +50,7 @@ public:
 	Node* const getParentNode();
 	Node* const getChild(const unsigned int& pChildNumber);
 
-	void Node::LoadBones(const aiMesh * const pMesh, std::vector<VertexBoneData> Bones, int meshIndex, std::map<std::string, int> &m_BoneMapping, int &m_NumBones, std::vector<BoneInfo> &m_BoneInfo);
+	void Node::LoadBones(const aiMesh * const pMesh, std::vector<VertexBoneData>& Bones, int meshIndex, std::map<std::string, int> &m_BoneMapping, int &m_NumBones, std::vector<BoneInfo> &m_BoneInfo);
 };
 
 #endif /* Node_hpp */

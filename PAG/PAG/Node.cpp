@@ -46,16 +46,15 @@ void Node::processNode(const aiNode* const pNode, const aiScene* const pScene, T
 
 Mesh Node::processMesh(const aiMesh* const pMesh, const aiScene* const pScene, Textures* const pTextures, int index, std::map<std::string, int> &m_BoneMapping, int &m_NumBones, std::vector<BoneInfo> &m_BoneInfo)
 {
-	std::vector<Vertex> verticles;
+	std::vector<VertexBoneData> verticles;
 	std::vector<unsigned int> indices;
-	std::vector<VertexBoneData> bones;
 	unsigned int i, j;
 	int NumVertices = 0;
 
 
 	for (i = 0; i < pMesh->mNumVertices; i++)
 	{
-		Vertex temporaryVertex;
+		VertexBoneData temporaryVertex;
 		//Pozycja
 		temporaryVertex.position.x = pMesh->mVertices[i].x;
 		temporaryVertex.position.y = pMesh->mVertices[i].y;
@@ -76,8 +75,7 @@ Mesh Node::processMesh(const aiMesh* const pMesh, const aiScene* const pScene, T
 		verticles.push_back(temporaryVertex);
 	}
 	
-	bones.resize(pMesh->mNumVertices);
-	LoadBones(pMesh, bones, index, m_BoneMapping, m_NumBones, m_BoneInfo);
+	LoadBones(pMesh, verticles, index, m_BoneMapping, m_NumBones, m_BoneInfo);
 
 
 	for (i = 0; i < pMesh->mNumFaces; i++)
@@ -86,7 +84,7 @@ Mesh Node::processMesh(const aiMesh* const pMesh, const aiScene* const pScene, T
 			indices.push_back(pMesh->mFaces[i].mIndices[j]);
 	}
 
-	Mesh output(verticles, indices , bones);
+	Mesh output(verticles, indices);
 	if (pScene->mMaterials[pMesh->mMaterialIndex] != NULL) output.setMaterial(pTextures->findTexturesForMaterial(pScene->mMaterials[pMesh->mMaterialIndex]));
 	else output.setMaterial(Material());
 	return output;
@@ -176,7 +174,7 @@ std::pair<bool, float> Node::tryGetIntersection(const glm::vec3& pRaySource, con
 	return output;
 }
 
-void Node::LoadBones(const aiMesh * const pMesh, std::vector<VertexBoneData> Bones, int meshIndex, std::map<std::string, int> &m_BoneMapping, int &m_NumBones, std::vector<BoneInfo> &m_BoneInfo)
+void Node::LoadBones(const aiMesh * const pMesh, std::vector<VertexBoneData>& Bones, int meshIndex, std::map<std::string, int> &m_BoneMapping, int &m_NumBones, std::vector<BoneInfo> &m_BoneInfo)
 {
 	for (int i = 0; i < pMesh->mNumBones; i++) {
 		int BoneIndex = 0;

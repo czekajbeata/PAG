@@ -42,6 +42,7 @@ void Core::run()
 	//nanosuit.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
 	////Model plane("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/plane.FBX", shader.get());
 	//Model plane("D:/Studia/Sem V/PAG/PAG/Objects/source/plane.FBX", shader.get());
+
 	Model animated("D:/Studia/Sem V/PAG/PAG/Objects/Robot/source/Robot.fbx", shader.get());
 
 	animated.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));

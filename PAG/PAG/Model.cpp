@@ -5,7 +5,6 @@
 #include "Const.h"
 
 #include "MousePicker.h"
-#include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
@@ -22,7 +21,6 @@ Model::Model(const Model& pSourceModel) : mModelDirectory(pSourceModel.mModelDir
 
 void Model::loadModel(const std::string &pModelPath, Shader *const pShader)
 {
-	Assimp::Importer importer;
 	//const aiScene *scene = importer.ReadFile(pModelPath, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
 	scene = importer.ReadFile(pModelPath, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs);
 
@@ -33,16 +31,15 @@ void Model::loadModel(const std::string &pModelPath, Shader *const pShader)
 		throw std::runtime_error(outputMessage);
 	}
 
-	m_GlobalInverseTransform = scene->mRootNode->mTransformation;
-	m_GlobalInverseTransform.Inverse();
-
 	mModelDirectory = pModelPath;
 	mModelDirectory.erase(mModelDirectory.find(MODEL_SOURCE_FOLDER));
 	mModelFilename = pModelPath.substr(pModelPath.rfind(MODEL_SOURCE_FOLDER) + std::string(MODEL_SOURCE_FOLDER).length());
 
 	mTextures = new Textures(scene, mModelDirectory.append(MODEL_TEXTURE_FOLDER), pShader);
 	mRootNode = new Node(scene->mRootNode, scene, mTextures, m_BoneMapping, m_NumBones, m_BoneInfo);
-	animation = scene->mAnimations[0];
+
+	m_GlobalInverseTransform = scene->mRootNode->mTransformation; /////////
+	m_GlobalInverseTransform.Inverse();/////////////
 }
 
 void Model::draw(Shader *const pShader)
@@ -113,11 +110,11 @@ void Model::ReadNodeHeirarchy(float AnimationTime, const aiNode* pNode, const Ma
 
 	Matrix4f GlobalTransformation = ParentTransform * NodeTransformation;
 
-	//if (n_BoneMapping.find(NodeName) != n_BoneMapping.end()) {
-	//	int BoneIndex = n_BoneMapping[NodeName];
-	//	m_BoneInfo[BoneIndex].FinalTransformation = m_GlobalInverseTransform * GlobalTransformation *
-	//		m_BoneInfo[BoneIndex].BoneOffset;
-	//}
+	if (m_BoneMapping.find(NodeName) != m_BoneMapping.end()) {
+		int BoneIndex = m_BoneMapping[NodeName];
+		m_BoneInfo[BoneIndex].FinalTransformation = m_GlobalInverseTransform * GlobalTransformation *
+			m_BoneInfo[BoneIndex].BoneOffset;
+	}
 
 	for (int i = 0; i < pNode->mNumChildren; i++) {
 		ReadNodeHeirarchy(AnimationTime, pNode->mChildren[i], GlobalTransformation);
@@ -165,7 +162,6 @@ void Model::CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTime, con
 	Out = Out.Normalize();
 }
 
-
 void Model::CalcInterpolatedScaling(aiVector3D& Out, float AnimationTime, const aiNodeAnim* pNodeAnim)
 {
 	if (pNodeAnim->mNumScalingKeys == 1) {
@@ -185,7 +181,6 @@ void Model::CalcInterpolatedScaling(aiVector3D& Out, float AnimationTime, const 
 	Out = Start + Factor * Delta;
 }
 
-
 const aiNodeAnim* Model::FindNodeAnim(const aiAnimation* pAnimation, const std::string NodeName)
 {
 	for (int i = 0; i < pAnimation->mNumChannels; i++) {
@@ -199,9 +194,6 @@ const aiNodeAnim* Model::FindNodeAnim(const aiAnimation* pAnimation, const std::
 	return NULL;
 }
 
-
-
-
 int Model::FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim)
 {
 	for (int i = 0; i < pNodeAnim->mNumPositionKeys - 1; i++) {
@@ -214,7 +206,6 @@ int Model::FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim)
 
 	return 0;
 }
-
 
 int Model::FindRotation(float AnimationTime, const aiNodeAnim* pNodeAnim)
 {
@@ -230,7 +221,6 @@ int Model::FindRotation(float AnimationTime, const aiNodeAnim* pNodeAnim)
 
 	return 0;
 }
-
 
 int Model::FindScaling(float AnimationTime, const aiNodeAnim* pNodeAnim)
 {
@@ -252,9 +242,9 @@ void Model::BoneTransform(float TimeInSeconds, std::vector<Matrix4f>& Transforms
 	Matrix4f Identity;
 	Identity.InitIdentity();
 
-	float TicksPerSecond = (float)(animation->mTicksPerSecond != 0 ? animation->mTicksPerSecond : 25.0f);
+	float TicksPerSecond = (float)(scene->mAnimations[0]->mTicksPerSecond != 0 ? scene->mAnimations[0]->mTicksPerSecond : 25.0f);
 	float TimeInTicks = TimeInSeconds * TicksPerSecond;
-	float AnimationTime = fmod(TimeInTicks, (float)animation->mDuration);
+	float AnimationTime = fmod(TimeInTicks, (float)scene->mAnimations[0]->mDuration);
 
 
 	ReadNodeHeirarchy(AnimationTime, scene->mRootNode, Identity);

@@ -6,6 +6,7 @@
 #include <map>
 #include "math.h"
 #include "BoneStruct.h"
+#include <assimp/Importer.hpp>
 
 
 
@@ -21,7 +22,7 @@ private:
 	std::string mModelDirectory;
 	std::string mModelFilename;	
 	const aiScene *scene;
-	const aiAnimation *animation;
+	Assimp::Importer importer;
 		
 	Matrix4f m_GlobalInverseTransform;
 

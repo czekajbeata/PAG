@@ -21,8 +21,9 @@ void Mesh::drawContent(Shader * const pShader, Textures* const pTextures) //= sk
 }
 
 //Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices) : vertices(vertices), indices(indices)
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<VertexBoneData> bones) : vertices(vertices), indices(indices), bones(bones)
+Mesh::Mesh(std::vector<VertexBoneData> verticles, std::vector<unsigned int> indices): indices(indices)
 {
+	this->verticles = verticles;
 	setupMesh();
 }
 
@@ -51,42 +52,34 @@ void Mesh::setupMesh() {
 
 	glBindBuffer(GL_ARRAY_BUFFER, VertexBufferObject);
 	//Wype³nienie bufora danymi o wierzcho³kach (STATIC_DRAW - wyznaczone raz i odczytywane wielokrotnie)
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
-
-
-
+	
+	glBufferData(GL_ARRAY_BUFFER, verticles.size() * sizeof(VertexBoneData), &verticles[0], GL_STATIC_DRAW);
 	//Informacja o interpretacji danych - indeks, rozmiar, typ, czy powinien nrmalizowaæ, odleg³oœæ miêdzy wierzcho³kami (w tablicy), odleg³oœæ od pocz¹tku danych (w tablicy)
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0); //Atrybut wierzcho³ków
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(offsetof(Vertex, normals))); //Atrybut koloru - start po wierzcho³kach (glm::vec3)
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(offsetof(Vertex, texture))); //Atrubut textury
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexBoneData), 0); //Atrybut wierzcho³ków
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexBoneData), (GLvoid*)(offsetof(VertexBoneData, normals))); //Atrybut koloru - start po wierzcho³kach (glm::vec3)
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(VertexBoneData), (GLvoid*)(offsetof(VertexBoneData, texture))); //Atrubut textury
+				
+	glVertexAttribPointer(3, 1, GL_INT, GL_FALSE, sizeof(VertexBoneData), (GLvoid*)(offsetof(VertexBoneData, IDs)));
+	glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(VertexBoneData), (GLvoid*)(offsetof(VertexBoneData, Weights)));
 																										   //Podanie dostêpu do wierzcho³ków w tablicy o indeksie 0-2
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
 
-	//dobre chyba
-	//glBindBuffer(GL_ARRAY_BUFFER, VertexBufferObject);
+
+	//glGenBuffers(1, &BonesBufferObject);
+	//glBindBuffer(GL_ARRAY_BUFFER, BonesBufferObject);
 	//glBufferData(GL_ARRAY_BUFFER, sizeof(bones[0]) * bones.size(), &bones[0], GL_STATIC_DRAW);
-	//glEnableVertexAttribArray(0);
-	//glVertexAttribIPointer(0, 4, GL_INT, sizeof(VertexBoneData), (const GLvoid*)0);
-	//glEnableVertexAttribArray(1);
-	//glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VertexBoneData), (const GLvoid*)16);
 
+	/*glVertexAttribIPointer(3, 5, GL_INT, sizeof(VertexBoneData), (const GLvoid*)0);
+	glVertexAttribPointer(4, 5, GL_FLOAT, GL_FALSE, sizeof(VertexBoneData), (const GLvoid*)25);*/
 
-	//glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(offsetof(Vertex, boneIDs))); //idki koœci
-	//glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(offsetof(Vertex, boneWeights)));//wagi koœci
-
-	//glEnableVertexAttribArray(3);
-	//glEnableVertexAttribArray(4);
-											
-	//Bindowanie bufora, informacja, ¿e zawiera on tablicê wierzcho³ków
-
+	glEnableVertexAttribArray(3);	
+	glEnableVertexAttribArray(4);
 
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementObjectBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
-
-
 }
 
 Mesh::~Mesh()
@@ -104,9 +97,9 @@ const bool Mesh::checkRayIntersections(const glm::vec3& pRaySource, const glm::v
 	for (i = 0; i<indices.size(); i += 3)
 	{
 		//Transformacja
-		triangle[0] = glm::vec3(pTransform*glm::vec4(vertices[indices[i]].position, 1.0f)); //PAMIÊTAÆ NA PRZYSZ£OŒÆ O KOLEJNOŒCI - NIE STRACISZ BEZ SENSU GODZINY
-		triangle[1] = glm::vec3(pTransform*glm::vec4(vertices[indices[i + 1]].position, 1.0f));
-		triangle[2] = glm::vec3(pTransform*glm::vec4(vertices[indices[i + 2]].position, 1.0f));
+		triangle[0] = glm::vec3(pTransform*glm::vec4(verticles[indices[i]].position, 1.0f)); //PAMIÊTAÆ NA PRZYSZ£OŒÆ O KOLEJNOŒCI - NIE STRACISZ BEZ SENSU GODZINY
+		triangle[1] = glm::vec3(pTransform*glm::vec4(verticles[indices[i + 1]].position, 1.0f));
+		triangle[2] = glm::vec3(pTransform*glm::vec4(verticles[indices[i + 2]].position, 1.0f));
 		if (MousePicker::checkRayIntersectionTriangle(pRaySource, pRayDirection, triangle, distance)) distances.push_back(distance);
 	}
 	if (distances.size() == 0) return false;
