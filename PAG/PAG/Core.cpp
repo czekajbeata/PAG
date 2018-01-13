@@ -35,18 +35,25 @@ void Core::run()
 	std::vector<Model*> models;
 
 	Model nanosuit("D:/Studia/Sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
-	Model cubes("D:/Studia/Sem V/PAG/PAG/Objects/Cubes/source/Cubes.fbx", shader.get());
-	//Model cubes("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/Cubes/source/Cubes.fbx", shader.get());
-	cubes.getRootNode()->getNodeTransform()->scale(glm::vec3(0.002, 0.002, 0.002));
-	//Model nanosuit("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
-	nanosuit.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
-	//Model plane("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/plane.FBX", shader.get());
-	Model plane("D:/Studia/Sem V/PAG/PAG/Objects/source/plane.FBX", shader.get());
-	Model animated("D:/Studia/Sem V/PAG/PAG/Objects/paluxysaurus/source/testI.fbx", shader.get());
+	//Model cubes("D:/Studia/Sem V/PAG/PAG/Objects/Cubes/source/Cubes.fbx", shader.get());
+	////Model cubes("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/Cubes/source/Cubes.fbx", shader.get());
+	//cubes.getRootNode()->getNodeTransform()->scale(glm::vec3(0.002, 0.002, 0.002));
+	////Model nanosuit("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
+	//nanosuit.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
+	////Model plane("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/plane.FBX", shader.get());
+	//Model plane("D:/Studia/Sem V/PAG/PAG/Objects/source/plane.FBX", shader.get());
+//	Model animated("D:/Studia/Sem V/PAG/PAG/Objects/paluxysaurus/source/testI.fbx", shader.get());
 //	models.push_back(&cubes);
-//	models.push_back(&nanosuit);
+	models.push_back(&nanosuit);
 //	models.push_back(&plane);
-	models.push_back(&animated);
+//	models.push_back(&animated);
+
+	//for (unsigned int i = 0; i < sizeof(m_boneLocation); i++) {
+	//	char Name[128];
+	//	memset(Name, 0, sizeof(Name));
+	//	_snprintf_s(Name, sizeof(Name), "gBones[%d]", i); //////////////////
+	//	m_boneLocation[i] = glGetUniformLocation(shader->getProgram(), Name);
+	//}
 
 	while (!glfwWindowShouldClose(window->getWindow()))
 	{
@@ -66,11 +73,6 @@ void Core::run()
 		float RunningTime = (float)((double)GetCurrentTimeMillis() - (double)m_startTime) / 1000.0f;
 
 
-
-		animated.BoneTransform(RunningTime, Transforms);
-		for (int i = 0; i < Transforms.size(); i++) {
-			SetBoneTransform(i, Transforms[i]);
-		}
 
 
 
@@ -135,6 +137,11 @@ void Core::run()
 		//set bone transform
 
 
+		//nanosuit.BoneTransform(RunningTime, Transforms);
+		//for (int i = 0; i < Transforms.size(); i++) {
+		//	SetBoneTransform(i, Transforms[i]);
+		//}
+
 
 		//przekaz world transform do shadera
 		//Normal = (gWorld * Normal).xyz;
@@ -179,13 +186,6 @@ Core::Core()
 
 	shader = std::make_unique<Shader>();
 	shader->use();
-
-	for (unsigned int i = 0; i < sizeof(m_boneLocation); i++) {
-		char Name[128];
-		memset(Name, 0, sizeof(Name));
-		_snprintf_s(Name, sizeof(Name), "gBones[%d]", i);
-		m_boneLocation[i] = glGetUniformLocation(shader->getProgram(), Name);
-	}
 
 	camera = std::make_unique<Camera>();
 	glfwGetCursorPos(window->getWindow(), &camera->lastX, &camera->lastY);

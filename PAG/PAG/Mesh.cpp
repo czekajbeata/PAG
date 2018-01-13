@@ -4,6 +4,7 @@
 #include "MousePicker.h"
 #include "Texture.h"
 #include "Material.h"
+#include "Model.h"
 
 using namespace std;
 
@@ -20,6 +21,7 @@ void Mesh::drawContent(Shader * const pShader, Textures* const pTextures) //= sk
 }
 
 Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices) : vertices(vertices), indices(indices)
+//Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<VertexBoneData> bones) : vertices(vertices), indices(indices), bones(bones)
 {
 	setupMesh();
 }
@@ -47,8 +49,11 @@ void Mesh::setupMesh() {
 	//Bindowanie tablicy obiektów
 	glBindVertexArray(VertexArrayObject);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementObjectBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, VertexBufferObject);
+	//Wype³nienie bufora danymi o wierzcho³kach (STATIC_DRAW - wyznaczone raz i odczytywane wielokrotnie)
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+
+
 
 	//Informacja o interpretacji danych - indeks, rozmiar, typ, czy powinien nrmalizowaæ, odleg³oœæ miêdzy wierzcho³kami (w tablicy), odleg³oœæ od pocz¹tku danych (w tablicy)
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0); //Atrybut wierzcho³ków
@@ -59,15 +64,28 @@ void Mesh::setupMesh() {
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
 
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(offsetof(Vertex, boneIDs))); //idki koœci
-	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(offsetof(Vertex, boneWeights)));//wagi koœci
+	//dobre chyba
+	//glBindBuffer(GL_ARRAY_BUFFER, VertexBufferObject);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(bones[0]) * bones.size(), &bones[0], GL_STATIC_DRAW);
+	//glEnableVertexAttribArray(0);
+	//glVertexAttribIPointer(0, 4, GL_INT, sizeof(VertexBoneData), (const GLvoid*)0);
+	//glEnableVertexAttribArray(1);
+	//glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VertexBoneData), (const GLvoid*)16);
 
-	glEnableVertexAttribArray(3);
-	glEnableVertexAttribArray(4);
-																										  //Bindowanie bufora, informacja, ¿e zawiera on tablicê wierzcho³ków
-	glBindBuffer(GL_ARRAY_BUFFER, VertexBufferObject);
-	//Wype³nienie bufora danymi o wierzcho³kach (STATIC_DRAW - wyznaczone raz i odczytywane wielokrotnie)
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+
+	//glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(offsetof(Vertex, boneIDs))); //idki koœci
+	//glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(offsetof(Vertex, boneWeights)));//wagi koœci
+
+	//glEnableVertexAttribArray(3);
+	//glEnableVertexAttribArray(4);
+											
+	//Bindowanie bufora, informacja, ¿e zawiera on tablicê wierzcho³ków
+
+
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementObjectBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+
 
 }
 

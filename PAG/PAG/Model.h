@@ -1,12 +1,10 @@
-#ifndef Model_hpp
-#define Model_hpp
-
 #include <stdio.h>
+#include <glad/glad.h>
+#include <glm/glm.hpp>
 #include <vector>
 #include <string>
 #include <map>
 #include "math.h"
-
 
 #define NUM_BONES_PER_VEREX 4
 
@@ -41,30 +39,31 @@ struct VertexBoneData
 	void AddBoneData(int BoneID, float Weight);
 };
 
+
+
 class Textures;
-class Node;
 class Shader;
+class Node;
 
 class Model
 {
 private:
-	Node* mRootNode = NULL;
+	Node * mRootNode = NULL;
 	Textures* mTextures = NULL;
 	std::string mModelDirectory;
-	std::string mModelFilename;
-	const aiScene *scene;    
-
-
-	std::map<std::string, int> m_BoneMapping; // maps a bone name to its index
-	int m_NumBones;
-	std::vector<BoneInfo> m_BoneInfo;
-
-
+	std::string mModelFilename;	
+	const aiScene *scene;
+		
 	Matrix4f m_GlobalInverseTransform;
+
 	void getChildrenNodes(Node * node, std::vector<Node*>* allNodes);
 
 	void loadModel(const std::string& pModelPath, Shader *const pShader);
 public:
+	std::map<std::string, int> m_BoneMapping; // maps a bone name to its index
+	int m_NumBones;
+	std::vector<BoneInfo> m_BoneInfo;
+
 	Model(const std::string& pModelPath, Shader *const pShader);
 	Model(const Model& pSourceModel);
 	~Model();
@@ -72,8 +71,6 @@ public:
 	Node* const getRootNode();
 	std::vector<Node*> getAllNodes();
 
-	void LoadBones(const aiMesh* const pMesh, std::vector<VertexBoneData> Bones, int meshIndex);
-	void BoneTransform(float TimeInSeconds, std::vector<Matrix4f>& Transforms);
 	void ReadNodeHeirarchy(float AnimationTime, const aiNode* pNode, const Matrix4f& ParentTransform);
 	void CalcInterpolatedScaling(aiVector3D& Out, float AnimationTime, const aiNodeAnim* pNodeAnim);
 	void CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTime, const aiNodeAnim* pNodeAnim);
@@ -84,6 +81,6 @@ public:
 	const aiNodeAnim* FindNodeAnim(const aiAnimation* pAnimation, const std::string NodeName);
 
 
-};
+	void BoneTransform(float TimeInSeconds, std::vector<Matrix4f>& Transforms);
 
-#endif /* Model_hpp */
+};

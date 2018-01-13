@@ -1,9 +1,13 @@
-#include "Model.h"
+ï»¿#include "Model.h"
 #include "Texture.h"
 #include "Textures.h"
-#include "Mesh.h"
 #include "Node.h"
+#include "Const.h"
+
 #include "MousePicker.h"
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 Model::Model(const std::string& pModelPath, Shader *const pShader)
 {
@@ -18,12 +22,13 @@ Model::Model(const Model& pSourceModel) : mModelDirectory(pSourceModel.mModelDir
 
 void Model::loadModel(const std::string &pModelPath, Shader *const pShader)
 {
-	std::vector<VertexBoneData> Bones;
 	Assimp::Importer importer;
-	scene = importer.ReadFile(pModelPath, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
+	//const aiScene *scene = importer.ReadFile(pModelPath, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
+	scene = importer.ReadFile(pModelPath, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs);
+
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
-		std::string outputMessage = "(Model::loadModel): B³¹d wczytywania modelu\n\t(ASSIMP): ";
+		std::string outputMessage = "(Model::loadModel): BÂ³Â¹d wczytywania modelu\n\t(ASSIMP): ";
 		outputMessage += importer.GetErrorString();
 		throw std::runtime_error(outputMessage);
 	}
@@ -37,10 +42,9 @@ void Model::loadModel(const std::string &pModelPath, Shader *const pShader)
 
 	mTextures = new Textures(scene, mModelDirectory.append(MODEL_TEXTURE_FOLDER), pShader);
 	mRootNode = new Node(scene->mRootNode, scene, mTextures);
-	for (int i = 0; i < scene->mRootNode->mNumMeshes; i++) {
-		Bones.resize(scene->mMeshes[scene->mRootNode->mMeshes[i]]->mNumVertices);
-		LoadBones(scene->mMeshes[scene->mRootNode->mMeshes[i]], Bones, i); 
-	}
+
+
+
 }
 
 void Model::draw(Shader *const pShader)
@@ -61,53 +65,21 @@ std::vector<Node*> Model::getAllNodes()
 	return allNodes;
 }
 
-
-void Model::LoadBones(const aiMesh * const pMesh, std::vector<VertexBoneData> Bones, int meshIndex)
+void Model::getChildrenNodes(Node* node, std::vector<Node*>* allNodes)
 {
-	for (int i = 0; i < pMesh->mNumBones; i++) {
-		int BoneIndex = 0;
-		std::string BoneName(pMesh->mBones[i]->mName.data);
-
-		if (m_BoneMapping.find(BoneName) == m_BoneMapping.end()) {
-			// Allocate an index for a new bone
-			BoneIndex = m_NumBones;
-			m_NumBones++;
-			BoneInfo bi;
-			m_BoneInfo.push_back(bi);
-			m_BoneInfo[BoneIndex].BoneOffset = pMesh->mBones[i]->mOffsetMatrix;
-			m_BoneMapping[BoneName] = BoneIndex;
-		}
-		else {
-			BoneIndex = m_BoneMapping[BoneName];
-		}
-
-		for (int j = 0; j < pMesh->mBones[i]->mNumWeights; j++) {
-			int VertexID = pMesh[meshIndex].mNumVertices + pMesh->mBones[i]->mWeights[j].mVertexId;
-			float Weight = pMesh->mBones[i]->mWeights[j].mWeight;
-			Bones[VertexID].AddBoneData(BoneIndex, Weight);
-		}
+	allNodes->push_back(node);
+	for (int i = 0; i < node->getChildrensCount(); i++) {
+		getChildrenNodes(node->getChild(i), allNodes);
 	}
 }
 
-
-void Model::BoneTransform(float TimeInSeconds, std::vector<Matrix4f>& Transforms)
+Model::~Model()
 {
-	Matrix4f Identity;
-	Identity.InitIdentity();
-
-	float TicksPerSecond = scene->mAnimations[0]->mTicksPerSecond != 0 ?
-		scene->mAnimations[0]->mTicksPerSecond : 25.0f;
-	float TimeInTicks = TimeInSeconds * TicksPerSecond;
-	float AnimationTime = fmod(TimeInTicks, scene->mAnimations[0]->mDuration);
-
-	ReadNodeHeirarchy(AnimationTime, scene->mRootNode, Identity);
-
-	Transforms.resize(m_NumBones);
-
-	for (int i = 0; i < m_NumBones; i++) {
-		Transforms[i] = m_BoneInfo[i].FinalTransformation;
-	}
+	if (mRootNode) delete mRootNode;
+	if (mTextures) delete mTextures;
 }
+
+
 
 void Model::ReadNodeHeirarchy(float AnimationTime, const aiNode* pNode, const Matrix4f& ParentTransform)
 {
@@ -143,11 +115,11 @@ void Model::ReadNodeHeirarchy(float AnimationTime, const aiNode* pNode, const Ma
 
 	Matrix4f GlobalTransformation = ParentTransform * NodeTransformation;
 
-	if (m_BoneMapping.find(NodeName) != m_BoneMapping.end()) {
-		int BoneIndex = m_BoneMapping[NodeName];
-		m_BoneInfo[BoneIndex].FinalTransformation = m_GlobalInverseTransform * GlobalTransformation *
-			m_BoneInfo[BoneIndex].BoneOffset;
-	}
+	//if (n_BoneMapping.find(NodeName) != n_BoneMapping.end()) {
+	//	int BoneIndex = n_BoneMapping[NodeName];
+	//	m_BoneInfo[BoneIndex].FinalTransformation = m_GlobalInverseTransform * GlobalTransformation *
+	//		m_BoneInfo[BoneIndex].BoneOffset;
+	//}
 
 	for (int i = 0; i < pNode->mNumChildren; i++) {
 		ReadNodeHeirarchy(AnimationTime, pNode->mChildren[i], GlobalTransformation);
@@ -277,32 +249,21 @@ int Model::FindScaling(float AnimationTime, const aiNodeAnim* pNodeAnim)
 	return 0;
 }
 
-
-void Model::getChildrenNodes(Node* node, std::vector<Node*>* allNodes)
+void Model::BoneTransform(float TimeInSeconds, std::vector<Matrix4f>& Transforms)
 {
-	allNodes->push_back(node);
-	for (int i = 0; i < node->getChildrensCount(); i++) {
-		getChildrenNodes(node->getChild(i), allNodes);
+	Matrix4f Identity;
+	Identity.InitIdentity();
+
+	float TicksPerSecond = scene->mAnimations[0]->mTicksPerSecond != 0 ?
+		scene->mAnimations[0]->mTicksPerSecond : 25.0f;
+	float TimeInTicks = TimeInSeconds * TicksPerSecond;
+	float AnimationTime = fmod(TimeInTicks, scene->mAnimations[0]->mDuration);
+
+	ReadNodeHeirarchy(AnimationTime, scene->mRootNode, Identity);
+
+	Transforms.resize(m_NumBones);
+
+	for (int i = 0; i < m_NumBones; i++) {
+		Transforms[i] = m_BoneInfo[i].FinalTransformation;
 	}
-}
-
-Model::~Model()
-{
-	if (mRootNode) delete mRootNode;
-	if (mTextures) delete mTextures;
-}
-
-
-void VertexBoneData::AddBoneData(int BoneID, float Weight)
-{
-	for (int i = 0; i < sizeof(IDs); i++) {
-		if (Weights[i] == 0.0) {
-			IDs[i] = BoneID;
-			Weights[i] = Weight;
-			return;
-		}
-	}
-
-	// should never get here - more bones than we have space for
-	assert(0);
 }

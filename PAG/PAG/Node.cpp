@@ -1,10 +1,11 @@
 #include "Node.h"
+#include "Mesh.h"
 #include "Transform.h"
 #include "Shader.h"
 #include "Texture.h"
 #include "Textures.h"
 #include "MousePicker.h"
-#include "Mesh.h"
+
 #include <iostream>
 #include <algorithm>
 
@@ -14,7 +15,7 @@ Node::Node(const aiNode* const pNode, const aiScene* const pScene, Textures* con
 {
 	mElementTransform = new Transform();
 	processNode(pNode, pScene, pTextures);
-	updateChildrenPointers(this); 
+	updateChildrenPointers(this);
 }
 
 Node::Node(const Node& pSourceNode) : mParentNode(pSourceNode.mParentNode), mChildNodes(pSourceNode.mChildNodes), mMeshes(pSourceNode.mMeshes), mOriginalTransform(pSourceNode.mOriginalTransform)
@@ -28,7 +29,7 @@ void Node::processNode(const aiNode* const pNode, const aiScene* const pScene, T
 	int i;
 	//Przetwarzanie własnych meshy
 	for (i = 0; i < pNode->mNumMeshes; i++)
-		mMeshes.push_back(processMesh(pScene->mMeshes[pNode->mMeshes[i]], pScene, pTextures));
+		mMeshes.push_back(processMesh(pScene->mMeshes[pNode->mMeshes[i]], pScene, pTextures, i));
 
 	resetNodeTransform();
 
@@ -37,10 +38,11 @@ void Node::processNode(const aiNode* const pNode, const aiScene* const pScene, T
 		mChildNodes.push_back(Node(pNode->mChildren[i], pScene, this, pTextures));
 }
 
-Mesh Node::processMesh(const aiMesh* const pMesh, const aiScene* const pScene, Textures* const pTextures)
+Mesh Node::processMesh(const aiMesh* const pMesh, const aiScene* const pScene, Textures* const pTextures, int index)
 {
 	std::vector<Vertex> verticles;
 	std::vector<unsigned int> indices;
+	//std::vector<VertexBoneData> bones;
 	unsigned int i, j;
 
 	for (i = 0; i < pMesh->mNumVertices; i++)
@@ -66,6 +68,8 @@ Mesh Node::processMesh(const aiMesh* const pMesh, const aiScene* const pScene, T
 		verticles.push_back(temporaryVertex);
 	}
 
+	//LoadBones(pMesh, bones, index);
+
 
 	for (i = 0; i < pMesh->mNumFaces; i++)
 	{
@@ -73,7 +77,7 @@ Mesh Node::processMesh(const aiMesh* const pMesh, const aiScene* const pScene, T
 			indices.push_back(pMesh->mFaces[i].mIndices[j]);
 	}
 
-	Mesh output(verticles, indices);
+	Mesh output(verticles, indices);// , bones);
 	if (pScene->mMaterials[pMesh->mMaterialIndex] != NULL) output.setMaterial(pTextures->findTexturesForMaterial(pScene->mMaterials[pMesh->mMaterialIndex]));
 	else output.setMaterial(Material());
 	return output;
@@ -101,15 +105,16 @@ void Node::drawContent(Shader *const pShader, Textures* const pTextures)
 
 void Node::setIsSelected(const bool& pIsSelected)
 {
-	 int i;
-	 for (i=0;i<mMeshes.size();i++)
-		 mMeshes[i].setIsSelected(pIsSelected);
-	 for (i=0;i<mChildNodes.size();i++)
-		 mChildNodes[i].setIsSelected(pIsSelected);
+	int i;
+	for (i = 0; i<mMeshes.size(); i++)
+		mMeshes[i].setIsSelected(pIsSelected);
+	for (i = 0; i<mChildNodes.size(); i++)
+		mChildNodes[i].setIsSelected(pIsSelected);
 }
 
 void Node::resetNodeTransform() {
-	mElementTransform->importAiTransform(mOriginalTransform); }
+	mElementTransform->importAiTransform(mOriginalTransform);
+}
 
 const unsigned int Node::getNodeLevel()
 {
@@ -142,7 +147,6 @@ Node* const Node::getChild(const unsigned int& pChildNumber)
 	return &mChildNodes[pChildNumber];
 }
 
-
 Node::~Node()
 {
 	if (mElementTransform) delete mElementTransform;
@@ -159,6 +163,48 @@ std::pair<bool, float> Node::tryGetIntersection(const glm::vec3& pRaySource, con
 			output.first = true;
 			return output;
 		}
-	}	
+	}
 	return output;
 }
+
+//void Node::LoadBones(const aiMesh * const pMesh, std::vector<VertexBoneData> Bones, int meshIndex)
+//{
+//	for (int i = 0; i < pMesh->mNumBones; i++) {
+//		int BoneIndex = 0;
+//		std::string BoneName(pMesh->mBones[i]->mName.data);
+//
+//		if (m_BoneMapping.find(BoneName) == m_BoneMapping.end()) {
+//			// Allocate an index for a new bone
+//			BoneIndex = m_NumBones;
+//			m_NumBones++;
+//			BoneInfo bi;
+//			m_BoneInfo.push_back(bi);
+//			m_BoneInfo[BoneIndex].BoneOffset = pMesh->mBones[i]->mOffsetMatrix;
+//			m_BoneMapping[BoneName] = BoneIndex;
+//		}
+//		else {
+//			BoneIndex = m_BoneMapping[BoneName];
+//		}
+//
+//		for (int j = 0; j < pMesh->mBones[i]->mNumWeights; j++) {
+//			int VertexID = pMesh[meshIndex].mNumVertices + pMesh->mBones[i]->mWeights[j].mVertexId;
+//			float Weight = pMesh->mBones[i]->mWeights[j].mWeight;
+//			Bones[VertexID].AddBoneData(BoneIndex, Weight);
+//		}
+//	}
+//}
+
+//
+//void VertexBoneData::AddBoneData(int BoneID, float Weight)
+//{
+//	for (int i = 0; i < sizeof(IDs); i++) {
+//		if (Weights[i] == 0.0) {
+//			IDs[i] = BoneID;
+//			Weights[i] = Weight;
+//			return;
+//		}
+//	}
+//
+//	// should never get here - more bones than we have space for
+//	assert(0);
+//}
