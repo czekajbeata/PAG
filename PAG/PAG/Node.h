@@ -24,16 +24,16 @@ private:
 	std::vector<Node> mChildNodes;
 	std::vector<Mesh> mMeshes;
 	std::string Name;
-	Model* model;
+	//Model* model;
 
-	Node(const aiNode* const pNode, const aiScene* const pScene, Node* const pParentNode, Textures* const pTextures, Model* model);
-	void processNode(const aiNode* const pNode, const aiScene* const pScene, Textures* const pTextures);
-	Mesh processMesh(const aiMesh* const pMesh, const aiScene* const pScene, Textures* const pTextures, int index);
+	Node(const aiNode* const pNode, const aiScene* const pScene, Node* const pParentNode, Textures* const pTextures, std::map<std::string, int> &m_BoneMapping,	int &m_NumBones,	std::vector<BoneInfo> &m_BoneInfo);
+	void processNode(const aiNode* const pNode, const aiScene* const pScene, Textures* const pTextures, std::map<std::string, int> &m_BoneMapping, int &m_NumBones, std::vector<BoneInfo> &m_BoneInfo);
+	Mesh processMesh(const aiMesh* const pMesh, const aiScene* const pScene, Textures* const pTextures, int index, std::map<std::string, int> &m_BoneMapping, int &m_NumBones, std::vector<BoneInfo> &m_BoneInfo);
 	void updateChildrenPointers(Node* const pParent);
 public:
 
 
-	Node(const aiNode* const pNode, const aiScene* const pScene, Textures* const pTextures, Model* model);
+	Node(const aiNode* const pNode, const aiScene* const pScene, Textures* const pTextures, std::map<std::string, int> &m_BoneMapping, int &m_NumBones, std::vector<BoneInfo> &m_BoneInfo);
 	Node(const Node& pSourceNode);
 	~Node();
 	std::pair<bool, float> tryGetIntersection(const glm::vec3 & pRaySource, const glm::vec3 & pRayDirection);
@@ -50,7 +50,7 @@ public:
 	Node* const getParentNode();
 	Node* const getChild(const unsigned int& pChildNumber);
 
-	void LoadBones(const aiMesh* const pMesh, std::vector<VertexBoneData> Bones, int meshIndex);
+	void Node::LoadBones(const aiMesh * const pMesh, std::vector<VertexBoneData> Bones, int meshIndex, std::map<std::string, int> &m_BoneMapping, int &m_NumBones, std::vector<BoneInfo> &m_BoneInfo);
 };
 
 #endif /* Node_hpp */

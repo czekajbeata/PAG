@@ -41,10 +41,8 @@ void Model::loadModel(const std::string &pModelPath, Shader *const pShader)
 	mModelFilename = pModelPath.substr(pModelPath.rfind(MODEL_SOURCE_FOLDER) + std::string(MODEL_SOURCE_FOLDER).length());
 
 	mTextures = new Textures(scene, mModelDirectory.append(MODEL_TEXTURE_FOLDER), pShader);
-	mRootNode = new Node(scene->mRootNode, scene, mTextures, (this));
-
-
-
+	mRootNode = new Node(scene->mRootNode, scene, mTextures, m_BoneMapping, m_NumBones, m_BoneInfo);
+	animation = scene->mAnimations[0];
 }
 
 void Model::draw(Shader *const pShader)
@@ -254,10 +252,10 @@ void Model::BoneTransform(float TimeInSeconds, std::vector<Matrix4f>& Transforms
 	Matrix4f Identity;
 	Identity.InitIdentity();
 
-	float TicksPerSecond = scene->mAnimations[0]->mTicksPerSecond != 0 ?
-		scene->mAnimations[0]->mTicksPerSecond : 25.0f;
+	float TicksPerSecond = (float)(animation->mTicksPerSecond != 0 ? animation->mTicksPerSecond : 25.0f);
 	float TimeInTicks = TimeInSeconds * TicksPerSecond;
-	float AnimationTime = fmod(TimeInTicks, scene->mAnimations[0]->mDuration);
+	float AnimationTime = fmod(TimeInTicks, (float)animation->mDuration);
+
 
 	ReadNodeHeirarchy(AnimationTime, scene->mRootNode, Identity);
 

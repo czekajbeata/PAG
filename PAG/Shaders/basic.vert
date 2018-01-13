@@ -10,6 +10,7 @@ out vec3 FragPos;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform mat4 gBones[100];
 
 void main()
 {

@@ -3,7 +3,7 @@
 
 #include "math.h"
 
-#define NUM_BONES_PER_VEREX 4
+#define NUM_BONES_PER_VEREX 6
 
 struct BoneInfo
 {
@@ -29,6 +29,8 @@ struct VertexBoneData
 
 	void Reset()
 	{
+		memset(IDs, 0, sizeof(IDs));
+		memset(Weights, 0, sizeof(Weights));
 		/*	ZERO_MEM(IDs);
 		ZERO_MEM(Weights);*/
 	}

@@ -10,14 +10,13 @@
 #include <iostream>
 #include <algorithm>
 
-Node::Node(const aiNode* const pNode, const aiScene* const pScene, Node* pParentNode, Textures* const pTextures, Model* _model) : Node(pNode, pScene, pTextures, _model) { mParentNode = pParentNode; }
+Node::Node(const aiNode* const pNode, const aiScene* const pScene, Node* pParentNode, Textures* const pTextures, std::map<std::string, int> &m_BoneMapping, int &m_NumBones, std::vector<BoneInfo> &m_BoneInfo) : Node(pNode, pScene, pTextures, m_BoneMapping, m_NumBones, m_BoneInfo) { mParentNode = pParentNode; }
 
-Node::Node(const aiNode* const pNode, const aiScene* const pScene, Textures* const pTextures, Model* _model) : mOriginalTransform(pNode->mTransformation)
+Node::Node(const aiNode* const pNode, const aiScene* const pScene, Textures* const pTextures, std::map<std::string, int> &m_BoneMapping, int &m_NumBones, std::vector<BoneInfo> &m_BoneInfo) : mOriginalTransform(pNode->mTransformation)
 {
 	mElementTransform = new Transform();
-	processNode(pNode, pScene, pTextures);
+	processNode(pNode, pScene, pTextures, m_BoneMapping, m_NumBones, m_BoneInfo);
 	updateChildrenPointers(this);
-	model = _model;
 }
 
 Node::Node(const Node& pSourceNode) : mParentNode(pSourceNode.mParentNode), mChildNodes(pSourceNode.mChildNodes), mMeshes(pSourceNode.mMeshes), mOriginalTransform(pSourceNode.mOriginalTransform)
@@ -26,26 +25,33 @@ Node::Node(const Node& pSourceNode) : mParentNode(pSourceNode.mParentNode), mChi
 	updateChildrenPointers(this);
 }
 
-void Node::processNode(const aiNode* const pNode, const aiScene* const pScene, Textures* const pTextures)
+void Node::processNode(const aiNode* const pNode, const aiScene* const pScene, Textures* const pTextures, std::map<std::string, int> &m_BoneMapping, int &m_NumBones, std::vector<BoneInfo> &m_BoneInfo)
 {
 	int i;
 	//Przetwarzanie własnych meshy
+
+	//int NumVertices = 0;
+	//for (i = 0; i < pScene->mNumMeshes; i++)
+	//	NumVertices += pScene->mMeshes[i]->mNumVertices;
+
 	for (i = 0; i < pNode->mNumMeshes; i++)
-		mMeshes.push_back(processMesh(pScene->mMeshes[pNode->mMeshes[i]], pScene, pTextures, i));
+		mMeshes.push_back(processMesh(pScene->mMeshes[pNode->mMeshes[i]], pScene, pTextures, i, m_BoneMapping, m_NumBones, m_BoneInfo));
 
 	resetNodeTransform();
 
 	//Przetwarzanie dzieci
 	for (i = 0; i < pNode->mNumChildren; i++)
-		mChildNodes.push_back(Node(pNode->mChildren[i], pScene, this, pTextures, model));
+		mChildNodes.push_back(Node(pNode->mChildren[i], pScene, this, pTextures, m_BoneMapping, m_NumBones, m_BoneInfo));
 }
 
-Mesh Node::processMesh(const aiMesh* const pMesh, const aiScene* const pScene, Textures* const pTextures, int index)
+Mesh Node::processMesh(const aiMesh* const pMesh, const aiScene* const pScene, Textures* const pTextures, int index, std::map<std::string, int> &m_BoneMapping, int &m_NumBones, std::vector<BoneInfo> &m_BoneInfo)
 {
 	std::vector<Vertex> verticles;
 	std::vector<unsigned int> indices;
 	std::vector<VertexBoneData> bones;
 	unsigned int i, j;
+	int NumVertices = 0;
+
 
 	for (i = 0; i < pMesh->mNumVertices; i++)
 	{
@@ -69,8 +75,9 @@ Mesh Node::processMesh(const aiMesh* const pMesh, const aiScene* const pScene, T
 		}
 		verticles.push_back(temporaryVertex);
 	}
-
-	LoadBones(pMesh, bones, index);
+	
+	bones.resize(pMesh->mNumVertices);
+	LoadBones(pMesh, bones, index, m_BoneMapping, m_NumBones, m_BoneInfo);
 
 
 	for (i = 0; i < pMesh->mNumFaces; i++)
@@ -169,27 +176,28 @@ std::pair<bool, float> Node::tryGetIntersection(const glm::vec3& pRaySource, con
 	return output;
 }
 
-void Node::LoadBones(const aiMesh * const pMesh, std::vector<VertexBoneData> Bones, int meshIndex)
+void Node::LoadBones(const aiMesh * const pMesh, std::vector<VertexBoneData> Bones, int meshIndex, std::map<std::string, int> &m_BoneMapping, int &m_NumBones, std::vector<BoneInfo> &m_BoneInfo)
 {
 	for (int i = 0; i < pMesh->mNumBones; i++) {
 		int BoneIndex = 0;
 		std::string BoneName(pMesh->mBones[i]->mName.data);
 
-		if (model->m_BoneMapping.find(BoneName) == model->m_BoneMapping.end()) {
+		if (m_BoneMapping.find(BoneName) == m_BoneMapping.end()) {
 			// Allocate an index for a new bone
-			BoneIndex = model->m_NumBones;
-			model->m_NumBones++;
+			BoneIndex = m_NumBones;
+			m_NumBones++;
 			BoneInfo bi;
-			model->m_BoneInfo.push_back(bi);
-			model->m_BoneInfo[BoneIndex].BoneOffset = pMesh->mBones[i]->mOffsetMatrix;
-			model->m_BoneMapping[BoneName] = BoneIndex;
+			m_BoneInfo.push_back(bi);
+			m_BoneInfo[BoneIndex].BoneOffset = pMesh->mBones[i]->mOffsetMatrix;
+			m_BoneMapping[BoneName] = BoneIndex;
 		}
 		else {
-			BoneIndex = model->m_BoneMapping[BoneName];
+			BoneIndex = m_BoneMapping[BoneName];
 		}
 
-		for (int j = 0; j < pMesh->mBones[i]->mNumWeights; j++) {
-			int VertexID = pMesh[meshIndex].mNumVertices + pMesh->mBones[i]->mWeights[j].mVertexId;
+		for (int j = 1; j < pMesh->mBones[i]->mNumWeights; j++) {
+			//int VertexID = pMesh[meshIndex].mNumVertices + pMesh->mBones[i]->mWeights[j].mVertexId;
+			int VertexID = pMesh->mBones[i]->mWeights[j].mVertexId;
 			float Weight = pMesh->mBones[i]->mWeights[j].mWeight;
 			Bones[VertexID].AddBoneData(BoneIndex, Weight);
 		}

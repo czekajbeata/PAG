@@ -21,6 +21,7 @@ private:
 	std::string mModelDirectory;
 	std::string mModelFilename;	
 	const aiScene *scene;
+	const aiAnimation *animation;
 		
 	Matrix4f m_GlobalInverseTransform;
 
