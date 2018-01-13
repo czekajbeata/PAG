@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <vector>
 #include <iostream>
+#include "math.h"
 
 #define MAX_BONES = 100;
 

@@ -285,6 +285,7 @@ long long Core::GetCurrentTimeMillis()
 	return ret;
 #endif    
 }
+
 void Core::SetBoneTransform(int Index, const Matrix4f& Transform)
 {
 	assert(Index < 100);

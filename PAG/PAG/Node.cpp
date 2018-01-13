@@ -4,7 +4,7 @@
 #include "Texture.h"
 #include "Textures.h"
 #include "MousePicker.h"
-
+#include "Mesh.h"
 #include <iostream>
 #include <algorithm>
 

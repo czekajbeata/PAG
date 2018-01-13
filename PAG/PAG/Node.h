@@ -3,7 +3,8 @@
 
 #include <stdio.h>
 #include <vector>
-#include "Mesh.h"
+#include <glm/glm.hpp>
+#include <assimp/scene.h>
 
 class Transform;
 class Mesh;

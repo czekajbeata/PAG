@@ -2,12 +2,13 @@
 #define Mesh_hpp
 
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 #include "Const.h"
 #include <vector>
-//#include <assimp/Importer.hpp>
-//#include <assimp/postprocess.h>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 #include "Material.h"
-#include "math.h"
 
 class Shader;
 class Textures;
