@@ -44,7 +44,7 @@ Mesh Node::processMesh(const aiMesh* const pMesh, const aiScene* const pScene, T
 {
 	std::vector<Vertex> verticles;
 	std::vector<unsigned int> indices;
-	//std::vector<VertexBoneData> bones;
+	std::vector<VertexBoneData> bones;
 	unsigned int i, j;
 
 	for (i = 0; i < pMesh->mNumVertices; i++)
@@ -70,7 +70,7 @@ Mesh Node::processMesh(const aiMesh* const pMesh, const aiScene* const pScene, T
 		verticles.push_back(temporaryVertex);
 	}
 
-	//LoadBones(pMesh, bones, index);
+	LoadBones(pMesh, bones, index);
 
 
 	for (i = 0; i < pMesh->mNumFaces; i++)
@@ -79,7 +79,7 @@ Mesh Node::processMesh(const aiMesh* const pMesh, const aiScene* const pScene, T
 			indices.push_back(pMesh->mFaces[i].mIndices[j]);
 	}
 
-	Mesh output(verticles, indices);// , bones);
+	Mesh output(verticles, indices , bones);
 	if (pScene->mMaterials[pMesh->mMaterialIndex] != NULL) output.setMaterial(pTextures->findTexturesForMaterial(pScene->mMaterials[pMesh->mMaterialIndex]));
 	else output.setMaterial(Material());
 	return output;
@@ -169,44 +169,30 @@ std::pair<bool, float> Node::tryGetIntersection(const glm::vec3& pRaySource, con
 	return output;
 }
 
-//void Node::LoadBones(const aiMesh * const pMesh, std::vector<VertexBoneData> Bones, int meshIndex)
-//{
-//	for (int i = 0; i < pMesh->mNumBones; i++) {
-//		int BoneIndex = 0;
-//		std::string BoneName(pMesh->mBones[i]->mName.data);
-//
-//		if (m_BoneMapping.find(BoneName) == m_BoneMapping.end()) {
-//			// Allocate an index for a new bone
-//			BoneIndex = m_NumBones;
-//			m_NumBones++;
-//			BoneInfo bi;
-//			m_BoneInfo.push_back(bi);
-//			m_BoneInfo[BoneIndex].BoneOffset = pMesh->mBones[i]->mOffsetMatrix;
-//			m_BoneMapping[BoneName] = BoneIndex;
-//		}
-//		else {
-//			BoneIndex = m_BoneMapping[BoneName];
-//		}
-//
-//		for (int j = 0; j < pMesh->mBones[i]->mNumWeights; j++) {
-//			int VertexID = pMesh[meshIndex].mNumVertices + pMesh->mBones[i]->mWeights[j].mVertexId;
-//			float Weight = pMesh->mBones[i]->mWeights[j].mWeight;
-//			Bones[VertexID].AddBoneData(BoneIndex, Weight);
-//		}
-//	}
-//}
+void Node::LoadBones(const aiMesh * const pMesh, std::vector<VertexBoneData> Bones, int meshIndex)
+{
+	for (int i = 0; i < pMesh->mNumBones; i++) {
+		int BoneIndex = 0;
+		std::string BoneName(pMesh->mBones[i]->mName.data);
 
-//
-//void Node::AddBoneData(int BoneID, float Weight)
-//{
-//	for (int i = 0; i < sizeof(IDs); i++) {
-//		if (Weights[i] == 0.0) {
-//			IDs[i] = BoneID;
-//			Weights[i] = Weight;
-//			return;
-//		}
-//	}
-//
-//	// should never get here - more bones than we have space for
-//	assert(0);
-//}
+		if (model->m_BoneMapping.find(BoneName) == model->m_BoneMapping.end()) {
+			// Allocate an index for a new bone
+			BoneIndex = model->m_NumBones;
+			model->m_NumBones++;
+			BoneInfo bi;
+			model->m_BoneInfo.push_back(bi);
+			model->m_BoneInfo[BoneIndex].BoneOffset = pMesh->mBones[i]->mOffsetMatrix;
+			model->m_BoneMapping[BoneName] = BoneIndex;
+		}
+		else {
+			BoneIndex = model->m_BoneMapping[BoneName];
+		}
+
+		for (int j = 0; j < pMesh->mBones[i]->mNumWeights; j++) {
+			int VertexID = pMesh[meshIndex].mNumVertices + pMesh->mBones[i]->mWeights[j].mVertexId;
+			float Weight = pMesh->mBones[i]->mWeights[j].mWeight;
+			Bones[VertexID].AddBoneData(BoneIndex, Weight);
+		}
+	}
+}
+

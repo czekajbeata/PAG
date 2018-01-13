@@ -20,8 +20,8 @@ void Mesh::drawContent(Shader * const pShader, Textures* const pTextures) //= sk
 	glBindVertexArray(NULL);
 }
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices) : vertices(vertices), indices(indices)
-//Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<VertexBoneData> bones) : vertices(vertices), indices(indices), bones(bones)
+//Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices) : vertices(vertices), indices(indices)
+Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<VertexBoneData> bones) : vertices(vertices), indices(indices), bones(bones)
 {
 	setupMesh();
 }

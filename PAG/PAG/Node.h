@@ -51,9 +51,6 @@ public:
 	Node* const getChild(const unsigned int& pChildNumber);
 
 	void LoadBones(const aiMesh* const pMesh, std::vector<VertexBoneData> Bones, int meshIndex);
-	void AddBoneData(int BoneID, float Weight);
-
-
 };
 
 #endif /* Node_hpp */

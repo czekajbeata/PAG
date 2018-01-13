@@ -33,6 +33,20 @@ struct VertexBoneData
 		ZERO_MEM(Weights);*/
 	}
 
+
+	void AddBoneData(int BoneID, float Weight)
+	{
+		for (int i = 0; i < sizeof(IDs); i++) {
+			if (Weights[i] == 0.0) {
+				IDs[i] = BoneID;
+				Weights[i] = Weight;
+				return;
+			}
+		}
+
+		// should never get here - more bones than we have space for
+		assert(0);
+	}
 };
 
 
