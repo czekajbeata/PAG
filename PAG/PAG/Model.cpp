@@ -41,7 +41,7 @@ void Model::loadModel(const std::string &pModelPath, Shader *const pShader)
 	mModelFilename = pModelPath.substr(pModelPath.rfind(MODEL_SOURCE_FOLDER) + std::string(MODEL_SOURCE_FOLDER).length());
 
 	mTextures = new Textures(scene, mModelDirectory.append(MODEL_TEXTURE_FOLDER), pShader);
-	mRootNode = new Node(scene->mRootNode, scene, mTextures);
+	mRootNode = new Node(scene->mRootNode, scene, mTextures, (this));
 
 
 

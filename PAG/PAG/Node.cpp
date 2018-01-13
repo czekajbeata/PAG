@@ -5,17 +5,19 @@
 #include "Texture.h"
 #include "Textures.h"
 #include "MousePicker.h"
+#include "Model.h" 
 
 #include <iostream>
 #include <algorithm>
 
-Node::Node(const aiNode* const pNode, const aiScene* const pScene, Node* pParentNode, Textures* const pTextures) : Node(pNode, pScene, pTextures) { mParentNode = pParentNode; }
+Node::Node(const aiNode* const pNode, const aiScene* const pScene, Node* pParentNode, Textures* const pTextures, Model* _model) : Node(pNode, pScene, pTextures, _model) { mParentNode = pParentNode; }
 
-Node::Node(const aiNode* const pNode, const aiScene* const pScene, Textures* const pTextures) : mOriginalTransform(pNode->mTransformation)
+Node::Node(const aiNode* const pNode, const aiScene* const pScene, Textures* const pTextures, Model* _model) : mOriginalTransform(pNode->mTransformation)
 {
 	mElementTransform = new Transform();
 	processNode(pNode, pScene, pTextures);
 	updateChildrenPointers(this);
+	model = _model;
 }
 
 Node::Node(const Node& pSourceNode) : mParentNode(pSourceNode.mParentNode), mChildNodes(pSourceNode.mChildNodes), mMeshes(pSourceNode.mMeshes), mOriginalTransform(pSourceNode.mOriginalTransform)
@@ -35,7 +37,7 @@ void Node::processNode(const aiNode* const pNode, const aiScene* const pScene, T
 
 	//Przetwarzanie dzieci
 	for (i = 0; i < pNode->mNumChildren; i++)
-		mChildNodes.push_back(Node(pNode->mChildren[i], pScene, this, pTextures));
+		mChildNodes.push_back(Node(pNode->mChildren[i], pScene, this, pTextures, model));
 }
 
 Mesh Node::processMesh(const aiMesh* const pMesh, const aiScene* const pScene, Textures* const pTextures, int index)
@@ -195,7 +197,7 @@ std::pair<bool, float> Node::tryGetIntersection(const glm::vec3& pRaySource, con
 //}
 
 //
-//void VertexBoneData::AddBoneData(int BoneID, float Weight)
+//void Node::AddBoneData(int BoneID, float Weight)
 //{
 //	for (int i = 0; i < sizeof(IDs); i++) {
 //		if (Weights[i] == 0.0) {

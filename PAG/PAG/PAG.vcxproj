@@ -180,6 +180,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseLight.h" />
+    <ClInclude Include="BoneStruct.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Const.h" />
     <ClInclude Include="Core.h" />
