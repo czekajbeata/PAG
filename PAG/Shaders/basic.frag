@@ -118,10 +118,18 @@ void main()
 
 
 	if (shouldUseDiffuseTexture)	{
+		//reflection
+		//vec3 I = normalize(FragPos - viewPosition);
+		//vec3 R = reflect(I, normalize(Normal));
+		//fragColor = vec4(texture(skybox, R).rgb, 1.0) * vec4(lights, 1.0);
+
+		//refraction
+		float ratio = 1.00 / 1.52;
 		vec3 I = normalize(FragPos - viewPosition);
-		vec3 R = reflect(I, normalize(Normal));
+		vec3 R = refract(I, normalize(Normal), ratio);
 		fragColor = vec4(texture(skybox, R).rgb, 1.0) * vec4(lights, 1.0);
 
+		//plain texture
 		//vec4 texel0 = texture(diffuse0, fragVertexTexture);
 		//fragColor = texel0 * vec4(lights, 1.0);
 	}
