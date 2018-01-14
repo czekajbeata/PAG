@@ -46,7 +46,7 @@ void Core::run()
 
 	Model animated("D:/Studia/Sem V/PAG/PAG/Objects/Robot/source/Robot.fbx", defaultShader.get());
 
-	animated.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
+//	animated.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
 //	models.push_back(&cubes);
 //	models.push_back(&nanosuit);
 //	models.push_back(&plane);
@@ -69,9 +69,7 @@ void Core::run()
 		GLfloat currentTime = glfwGetTime();
 		deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
-
-
-		glDepthMask(GL_FALSE);
+		
 		defaultShader->use();
 		//shader->setInt("texture", 0);
 		
@@ -145,7 +143,6 @@ void Core::run()
 		scene->updateViewSpace(*camera);
 		defaultShader->updateScene(*scene);
 
-
 		for each (Model* model in models)
 		{
 			model->draw(defaultShader.get());
@@ -154,6 +151,7 @@ void Core::run()
 		skybox.drawContent(skyboxShader.get(), scene.get());
 
 		ui->draw();
+
 
 		glfwSwapBuffers(window->getWindow());
 		glfwPollEvents();
