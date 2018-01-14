@@ -118,16 +118,17 @@ void main()
 
 
 	if (shouldUseDiffuseTexture)	{
-		vec3 I = normalize(FragPos - cameraPos);
+		vec3 I = normalize(FragPos - viewPosition);
 		vec3 R = reflect(I, normalize(Normal));
-		fragColor = vec4(texture(skybox, R).rgb, 1.0);
+		fragColor = vec4(texture(skybox, R).rgb, 1.0) * vec4(lights, 1.0);
 
 		//vec4 texel0 = texture(diffuse0, fragVertexTexture);
 		//fragColor = texel0 * vec4(lights, 1.0);
 	}
-
 	else
-		fragColor=vec4(diffuseColor,1) * vec4(lights, 1.0);
+	{
+		fragColor = vec4(diffuseColor, 1) * vec4(lights, 1.0);
+	}
 
 }
 
