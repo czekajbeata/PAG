@@ -6,6 +6,9 @@ in vec3 FragPos;
 
 out vec4 fragColor; //Zmienna wyjœciowa dla koloru fragmentu
 
+uniform vec3 cameraPos;
+uniform samplerCube skybox;
+
 
 //all lights
 uniform vec3 lightColor;
@@ -108,16 +111,28 @@ void main()
 	//vec3 lights = directionalLight;
 
 	//vec3 lights = pointLight + spotLight;
+	
 
-	vec4 texel0;
-	texel0=texture(diffuse0, fragVertexTexture);
-	if (shouldUseDiffuseTexture)
-		fragColor=texel0 * vec4(lights, 1.0);
+
+	vec4 texel0=texture(diffuse0, fragVertexTexture);
+
+
+	if (shouldUseDiffuseTexture)	{
+		vec3 I = normalize(FragPos - cameraPos);
+		vec3 R = reflect(I, normalize(Normal));
+		fragColor = vec4(texture(skybox, R).rgb, 1.0);
+
+		//vec4 texel0 = texture(diffuse0, fragVertexTexture);
+		//fragColor = texel0 * vec4(lights, 1.0);
+	}
+
 	else
 		fragColor=vec4(diffuseColor,1) * vec4(lights, 1.0);
 
-	//fragColor=vec4(normalize(normalTransform*Normal),1);
 }
+
+
+
 
 
 

@@ -30,6 +30,9 @@ void Skybox::setupSkybox()
 
 	};
 	cubemapTexture = loadCubemap(faces);
+	glBindVertexArray(VertexArrayObject);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
 void Skybox::drawContent(Shader * const pShader, Scene * const scene)

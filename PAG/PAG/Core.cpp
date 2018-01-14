@@ -35,27 +35,31 @@ void Core::run()
 
 	std::vector<Model*> models;
 
-	//Model nanosuit("D:/Studia/Sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
+	Model nanosuit("D:/Studia/Sem V/PAG/PAG/Objects/source/nanosuit.obj", defaultShader.get());
+	nanosuit.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
+	nanosuit.getRootNode()->getNodeTransform()->translate(glm::vec3(9.0, 0.0, 3.0));
+
 	//Model cubes("D:/Studia/Sem V/PAG/PAG/Objects/Cubes/source/Cubes.fbx", shader.get());
 	////Model cubes("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/Cubes/source/Cubes.fbx", shader.get());
 	//cubes.getRootNode()->getNodeTransform()->scale(glm::vec3(0.002, 0.002, 0.002));
 	////Model nanosuit("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
 	//nanosuit.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
 	////Model plane("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/plane.FBX", shader.get());
-	//Model plane("D:/Studia/Sem V/PAG/PAG/Objects/source/plane.FBX", shader.get());
+	Model plane("D:/Studia/Sem V/PAG/PAG/Objects/source/plane.FBX", defaultShader.get());
 
 	Model animated("D:/Studia/Sem V/PAG/PAG/Objects/Robot/source/Robot.fbx", defaultShader.get());
+	animated.getRootNode()->getNodeTransform()->scale(glm::vec3(0.005, 0.005, 0.005));
 
-	animated.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
-//	models.push_back(&cubes);
-//	models.push_back(&nanosuit);
-//	models.push_back(&plane);
+	//	models.push_back(&cubes);
+	models.push_back(&nanosuit);
+	models.push_back(&plane);
 	models.push_back(&animated);
 
 	Skybox skybox;
 	skybox.setupSkybox();
 
 	skyboxShader->setInt("skybox", skybox.cubemapTexture);
+	defaultShader->setInt("skybox", skybox.cubemapTexture);
 
 
 	while (!glfwWindowShouldClose(window->getWindow()))
@@ -134,14 +138,15 @@ void Core::run()
 		vector<Matrix4f> Transforms;
 		float RunningTime = (float)((double)GetCurrentTimeMillis() - (double)m_startTime) / 1000.0f;
 
-		animated.BoneTransform(RunningTime, Transforms);
-		for (int i = 0; i < Transforms.size(); i++) {
-			SetBoneTransform(i, Transforms[i]);
-		}
+		//animated.BoneTransform(RunningTime, Transforms);
+		//for (int i = 0; i < Transforms.size(); i++) {
+		//	SetBoneTransform(i, Transforms[i]);
+		//}
 
 		
 		scene->updateViewSpace(*camera);
 		defaultShader->updateScene(*scene);
+		defaultShader->setVec3("cameraPos", camera->cameraPos);
 
 		for each (Model* model in models)
 		{
