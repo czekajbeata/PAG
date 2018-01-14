@@ -154,6 +154,19 @@ void Core::run()
 
 		for each (Model* model in models)
 		{
+			if (model == &nanosuit)
+			{
+				defaultShader->setBool("shouldRefract", true);
+				defaultShader->setBool("shouldReflect", false);
+
+			}
+			else 
+			{
+				defaultShader->setBool("shouldRefract", false);
+				defaultShader->setBool("shouldReflect", true);
+
+			}
+
 			model->draw(defaultShader.get());
 		}
 
