@@ -19,12 +19,15 @@ void Skybox::setupSkybox()
 
 	std::vector<std::string> faces
 	{
-		"ac_bk.tga",
-		"ac_dn.tga",
-		"ac_ft.tga",
-		"ac_lf.tga",
-		"ac_rt.tga",
-		"ac_up.tga"
+
+		"right.jpg",
+		"left.jpg",
+		"top.jpg",
+		"bottom.jpg",
+		"back.jpg",
+		"front.jpg"
+
+
 	};
 	cubemapTexture = loadCubemap(faces);
 }
@@ -33,7 +36,6 @@ void Skybox::drawContent(Shader * const pShader, Scene * const scene)
 {
 	glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
 	pShader->use();
-	pShader->setInt("skybox", cubemapTexture);
 	pShader->setMat4("view", scene->getViewSpace());
 	pShader->setMat4("projection", scene->getProjectionSpace());
 	// skybox cube
@@ -47,7 +49,7 @@ void Skybox::drawContent(Shader * const pShader, Scene * const scene)
 
 
 
-unsigned int loadCubemap(std::vector<std::string> faces)
+unsigned int Skybox::loadCubemap(std::vector<std::string> faces)
 {
 	unsigned int textureID;
 	glGenTextures(1, &textureID);

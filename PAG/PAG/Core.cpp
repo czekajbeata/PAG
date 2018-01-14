@@ -46,7 +46,7 @@ void Core::run()
 
 	Model animated("D:/Studia/Sem V/PAG/PAG/Objects/Robot/source/Robot.fbx", defaultShader.get());
 
-	animated.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
+//	animated.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
 //	models.push_back(&cubes);
 //	models.push_back(&nanosuit);
 //	models.push_back(&plane);
@@ -55,6 +55,7 @@ void Core::run()
 	Skybox skybox;
 	skybox.setupSkybox();
 
+	skyboxShader->setInt("skybox", skybox.cubemapTexture);
 
 
 	while (!glfwWindowShouldClose(window->getWindow()))
@@ -144,6 +145,7 @@ void Core::run()
 		scene->updateViewSpace(*camera);
 		defaultShader->updateScene(*scene);
 
+		skybox.drawContent(skyboxShader.get(), scene.get());
 		for each (Model* model in models)
 		{
 			model->draw(defaultShader.get());
@@ -151,7 +153,6 @@ void Core::run()
 
 		ui->draw();
 
-		skybox.drawContent(skyboxShader.get(), scene.get());
 
 		glfwSwapBuffers(window->getWindow());
 		glfwPollEvents();
