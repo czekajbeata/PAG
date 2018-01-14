@@ -46,7 +46,7 @@ void Core::run()
 
 	Model animated("D:/Studia/Sem V/PAG/PAG/Objects/Robot/source/Robot.fbx", defaultShader.get());
 
-//	animated.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
+	animated.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
 //	models.push_back(&cubes);
 //	models.push_back(&nanosuit);
 //	models.push_back(&plane);
