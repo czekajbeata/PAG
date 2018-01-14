@@ -39,7 +39,9 @@ private:
 	GLuint m_prevBoneLocation[100];
 
 	std::unique_ptr<Window> window;
-	std::unique_ptr<Shader> shader;
+	std::unique_ptr<Shader> defaultShader;
+	std::unique_ptr<Shader> skyboxShader;
+
 	std::unique_ptr<Camera> camera;
 	std::unique_ptr<Scene> scene;
 	std::unique_ptr<MousePicker> mousePicker;
@@ -53,5 +55,7 @@ public:
 	Core();
 	~Core();
 };
+
+
 
 #endif 

@@ -254,4 +254,6 @@ void Model::BoneTransform(float TimeInSeconds, std::vector<Matrix4f>& Transforms
 	for (int i = 0; i < m_NumBones; i++) {
 		Transforms[i] = m_BoneInfo[i].FinalTransformation;
 	}
+
+
 }

@@ -93,6 +93,9 @@
     <ClCompile Include="math.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core.h">
@@ -185,12 +188,21 @@
     <ClInclude Include="BoneStruct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Skybox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\basic.frag">
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\Shaders\basic.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\skybox.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\skybox.frag">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

@@ -13,8 +13,9 @@ class Shader
 {
 private:
 	GLuint program;
-	void loadShader(GLint type, std::string fileName);
 public:
+	void loadShader(GLint type, std::string fileName);
+	void link();
 	GLuint getProgram();
 	void updateScene(Scene scene);
 	void use();
@@ -33,4 +34,5 @@ public:
 	void setMat3(const std::string & name, const glm::mat3 & mat) const;
 	void setMat4(const std::string & name, const glm::mat4 & mat) const;
 };
+
 #endif /* Shader_hpp */

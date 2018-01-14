@@ -23,7 +23,6 @@ class Mesh
 	bool isSelected;
 
 
-
 public:
 	void setIsSelected(bool isSelected);
 	GLuint VertexBufferObject = NULL;

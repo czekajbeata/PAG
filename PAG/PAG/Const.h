@@ -7,8 +7,10 @@
 
 #define BACKGROUND_COLOR 0.9f,0.9f,0.8f,1.0f
 
-#define GL_VERTEX_SHADER_PATH "../Shaders/basic.vert"
-#define GL_FRAGMENT_SHADER_PATH "../Shaders/basic.frag"
+#define DEFAULT_VERTEX_SHADER_PATH "../Shaders/basic.vert"
+#define DEFAULT_FRAGMENT_SHADER_PATH "../Shaders/basic.frag"
+#define SKYBOX_VERTEX_SHADER_PATH "../Shaders/skybox.vert"
+#define SKYBOX_FRAGMENT_SHADER_PATH "../Shaders/skybox.frag"
 
 #define MODEL_SOURCE_FOLDER "source/"
 #define MODEL_TEXTURE_FOLDER "textures/"

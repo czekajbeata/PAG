@@ -18,6 +18,7 @@
 #include "UserInterface.h"
 #include "Model.h"
 #include "MousePicker.h"
+#include "Skybox.h"
 
 
 
@@ -43,13 +44,18 @@ void Core::run()
 	////Model plane("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/plane.FBX", shader.get());
 	//Model plane("D:/Studia/Sem V/PAG/PAG/Objects/source/plane.FBX", shader.get());
 
-	Model animated("D:/Studia/Sem V/PAG/PAG/Objects/Robot/source/Robot.fbx", shader.get());
+	Model animated("D:/Studia/Sem V/PAG/PAG/Objects/Robot/source/Robot.fbx", defaultShader.get());
 
 	animated.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
 //	models.push_back(&cubes);
 //	models.push_back(&nanosuit);
 //	models.push_back(&plane);
 	models.push_back(&animated);
+
+	Skybox skybox;
+	skybox.setupSkybox();
+
+
 
 	while (!glfwWindowShouldClose(window->getWindow()))
 	{
@@ -64,8 +70,8 @@ void Core::run()
 		lastTime = currentTime;
 
 
-
-		shader->use();
+		glDepthMask(GL_FALSE);
+		defaultShader->use();
 		//shader->setInt("texture", 0);
 		
 
@@ -80,10 +86,10 @@ void Core::run()
 
 		////unique_ptr<Material> cube = make_unique<Material>(matAmbient, matDiffuse, matSpecular, shininess);
 
-		shader->setVec3("mambient", matAmbient);
-		shader->setVec3("mdiffuse", matDiffuse);
-		shader->setVec3("mspecular", matSpecular);
-		shader->setFloat("mshininess", shininess);
+		defaultShader->setVec3("mambient", matAmbient);
+		defaultShader->setVec3("mdiffuse", matDiffuse);
+		defaultShader->setVec3("mspecular", matSpecular);
+		defaultShader->setFloat("mshininess", shininess);
 
 	
 		//glm::vec3 ligDiffuse = lightColor * glm::vec3(0.6f);
@@ -98,27 +104,27 @@ void Core::run()
 
 		//every light
 		glm::vec3 lightColor = glm::vec3(2.0f, 2.0f, 2.0f);
-		shader->setVec3("lightColor", lightColor);
-		shader->setFloat("currentTime", currentTime);
-		shader->setVec3("viewPosition", camera->cameraPos);
+		defaultShader->setVec3("lightColor", lightColor);
+		defaultShader->setFloat("currentTime", currentTime);
+		defaultShader->setVec3("viewPosition", camera->cameraPos);
 
 
 		//directional light
 		glm::vec3 lightDirection = glm::normalize(glm::vec3(-0.2f, -3.0f, -1.3f));
-		shader->setVec3("lightDirection", lightDirection);
+		defaultShader->setVec3("lightDirection", lightDirection);
 		glm::vec3 directionalColors = glm::vec3( 0.0f, sin(currentTime) + 1.0f, cos(currentTime)+1.0f);
-		shader->setVec3("directionalColors", directionalColors);
+		defaultShader->setVec3("directionalColors", directionalColors);
 
 		//point light
 		//glm::vec3 pointLightPosition = glm::vec3(1, 1, 1.0f);
 		glm::vec3 pointLightPosition = glm::vec3(10*sin(currentTime), 2.0f, 1.0f);
-		shader->setVec3("pointLightPosition", pointLightPosition);
+		defaultShader->setVec3("pointLightPosition", pointLightPosition);
 
 		//spotlight
-		shader->setVec3("spotLightPosition", camera->cameraPos);
-		shader->setVec3("spotLightDirection", camera->cameraFront);
-		shader->setFloat("lightCutOff", glm::cos(glm::radians(3.0f)));
-		shader->setFloat("outerLightCutOff", glm::cos(glm::radians(4.5f)));
+		defaultShader->setVec3("spotLightPosition", camera->cameraPos);
+		defaultShader->setVec3("spotLightDirection", camera->cameraFront);
+		defaultShader->setFloat("lightCutOff", glm::cos(glm::radians(3.0f)));
+		defaultShader->setFloat("outerLightCutOff", glm::cos(glm::radians(4.5f)));
 
 
 		//running time
@@ -134,20 +140,18 @@ void Core::run()
 			SetBoneTransform(i, Transforms[i]);
 		}
 
-
-		//przekaz world transform do shadera
-		//Normal = (gWorld * Normal).xyz;
-		//WorldPos0 = (gWorld * FragPos).xyz;
-
+		
 		scene->updateViewSpace(*camera);
-		shader->updateScene(*scene);
+		defaultShader->updateScene(*scene);
 
 		for each (Model* model in models)
 		{
-			model->draw(shader.get());
+			model->draw(defaultShader.get());
 		}
 
 		ui->draw();
+
+		skybox.drawContent(skyboxShader.get(), scene.get());
 
 		glfwSwapBuffers(window->getWindow());
 		glfwPollEvents();
@@ -176,13 +180,27 @@ Core::Core()
 
 	m_startTime = GetCurrentTimeMillis();
 
-	shader = std::make_unique<Shader>();
-	shader->use();
+	defaultShader = std::make_unique<Shader>();
+
+	defaultShader->loadShader(GL_VERTEX_SHADER, DEFAULT_VERTEX_SHADER_PATH);
+	defaultShader->loadShader(GL_FRAGMENT_SHADER, DEFAULT_FRAGMENT_SHADER_PATH);
+	defaultShader->link();
+
+
+	skyboxShader = std::make_unique<Shader>();
+
+	skyboxShader->loadShader(GL_VERTEX_SHADER, SKYBOX_VERTEX_SHADER_PATH);
+	skyboxShader->loadShader(GL_FRAGMENT_SHADER, SKYBOX_FRAGMENT_SHADER_PATH);
+	skyboxShader->link();
+
+
+
 
 	camera = std::make_unique<Camera>();
 	glfwGetCursorPos(window->getWindow(), &camera->lastX, &camera->lastY);
 
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
 
 	scene = std::make_unique<Scene>();
 	ui = std::make_unique<UserInterface>(window->getWindow());
@@ -192,7 +210,7 @@ Core::Core()
 		char Name[128];
 		memset(Name, 0, sizeof(Name));
 		_snprintf_s(Name, sizeof(Name), "gBones[%d]", i);
-		m_boneLocation[i] = glGetUniformLocation(shader->getProgram(), Name);
+		m_boneLocation[i] = glGetUniformLocation(defaultShader->getProgram(), Name);
 	}
 }
 
@@ -291,3 +309,4 @@ void Core::SetBoneTransform(int Index, const Matrix4f& Transform)
 	//Transform.Print();
 	glUniformMatrix4fv(m_boneLocation[Index], 1, GL_TRUE, (const GLfloat*)Transform);
 }
+

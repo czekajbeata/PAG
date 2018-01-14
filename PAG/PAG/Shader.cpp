@@ -9,32 +9,6 @@ Shader::Shader()
 	{
 		throw std::runtime_error("Error while creating shader");
 	}
-
-	loadShader(GL_VERTEX_SHADER, GL_VERTEX_SHADER_PATH);
-	loadShader(GL_FRAGMENT_SHADER, GL_FRAGMENT_SHADER_PATH);
-
-	glLinkProgram(program);
-
-	GLint status;
-	glGetProgramiv(program, GL_LINK_STATUS, &status);
-
-	if (!status)
-	{
-		std::string errorMessage = "Failed to link shader program";
-		GLint logLen;
-		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLen);
-
-		if (logLen > 0)
-		{
-			const auto log = static_cast<char*>(malloc(logLen));
-			GLsizei written;
-			glGetProgramInfoLog(program, logLen, &written, log);
-			errorMessage += ". ";
-			errorMessage += log;
-			free(log);
-		}
-		throw std::runtime_error(errorMessage);
-	}
 }
 
 
@@ -69,7 +43,7 @@ void Shader::loadShader(GLint type, std::string fileName)
 
 	if (!result)
 	{
-		std::string errorMessage = std::string("%s compilation failed!\n", fileName.c_str());
+		std::string errorMessage;
 
 		GLint logLen;
 		glGetShaderiv(shaderObject, GL_INFO_LOG_LENGTH, &logLen);
@@ -93,6 +67,32 @@ void Shader::loadShader(GLint type, std::string fileName)
 	glDeleteShader(shaderObject);
 }
 
+void Shader::link()
+{
+	glLinkProgram(program);
+
+	GLint status;
+	glGetProgramiv(program, GL_LINK_STATUS, &status);
+
+	if (!status)
+	{
+		std::string errorMessage = "Failed to link shader program";
+		GLint logLen;
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLen);
+
+		if (logLen > 0)
+		{
+			const auto log = static_cast<char*>(malloc(logLen));
+			GLsizei written;
+			glGetProgramInfoLog(program, logLen, &written, log);
+			errorMessage += ". ";
+			errorMessage += log;
+			free(log);
+		}
+		throw std::runtime_error(errorMessage);
+	}
+}
+
 GLuint Shader::getProgram()
 {
 	return program;
@@ -102,7 +102,6 @@ void Shader::updateScene(Scene scene)
 {
 	setMat4("projection", scene.getProjectionSpace());
 	setMat4("view", scene.getViewSpace());
-	//setMat4("world", scene.getWorldSpace());
 }
 
 void Shader::use()
