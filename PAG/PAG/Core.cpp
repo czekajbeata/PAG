@@ -69,9 +69,7 @@ void Core::run()
 		GLfloat currentTime = glfwGetTime();
 		deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
-
-
-		glDepthMask(GL_FALSE);
+		
 		defaultShader->use();
 		//shader->setInt("texture", 0);
 		
@@ -145,11 +143,12 @@ void Core::run()
 		scene->updateViewSpace(*camera);
 		defaultShader->updateScene(*scene);
 
-		skybox.drawContent(skyboxShader.get(), scene.get());
 		for each (Model* model in models)
 		{
 			model->draw(defaultShader.get());
 		}
+
+		skybox.drawContent(skyboxShader.get(), scene.get());
 
 		ui->draw();
 
