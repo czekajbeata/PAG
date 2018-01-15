@@ -29,24 +29,15 @@ void Core::run()
 {
 	//glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	//Transform center = Transform();
-	//Transform planet1 = Transform();
-	//Transform planet1Moon = Transform();
-
 	std::vector<Model*> models;
 
 	//Model nanosuit("F:/GitHub/PAG_Beatta/PAG/Objects/source/nanosuit.obj", defaultShader.get());
+	//Model nanosuit("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
 	Model nanosuit("D:/Studia/Sem V/PAG/PAG/Objects/source/nanosuit.obj", defaultShader.get());
 	nanosuit.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
 	nanosuit.getRootNode()->getNodeTransform()->translate(glm::vec3(9.0, 0.0, 3.0));
 
-	//Model cubes("D:/Studia/Sem V/PAG/PAG/Objects/Cubes/source/Cubes.fbx", shader.get());
-	////Model cubes("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/Cubes/source/Cubes.fbx", shader.get());
-	//cubes.getRootNode()->getNodeTransform()->scale(glm::vec3(0.002, 0.002, 0.002));
-	////Model nanosuit("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
-	//nanosuit.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
-	////Model plane("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/plane.FBX", shader.get());
-	
+	//Model plane("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/plane.FBX", shader.get());	
 	//Model plane("F:/GitHub/PAG_Beatta/PAG/Objects/source/plane.FBX", defaultShader.get());
 	Model plane("D:/Studia/Sem V/PAG/PAG/Objects/source/plane.FBX", defaultShader.get());
 
@@ -54,7 +45,6 @@ void Core::run()
 	Model animated("D:/Studia/Sem V/PAG/PAG/Objects/Robot/source/Robot.fbx", defaultShader.get());
 	animated.getRootNode()->getNodeTransform()->scale(glm::vec3(0.005, 0.005, 0.005));
 
-	//	models.push_back(&cubes);
 	models.push_back(&nanosuit);
 	models.push_back(&plane);
 	models.push_back(&animated);
@@ -66,10 +56,70 @@ void Core::run()
 	skyboxShader->setInt("skybox", skybox.cubemapTexture);
 
 
+	//FRAMEBUFFER
+	float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+		// positions		 // texCoords
+		-1.0f,  1.0f,  0.0f, 1.0f,
+		-1.0f, -1.0f,  0.0f, 0.0f,
+		1.0f, -1.0f,  1.0f, 0.0f,
+
+		-1.0f,  1.0f,  0.0f, 1.0f,
+		1.0f, -1.0f,  1.0f, 0.0f,
+		1.0f,  1.0f,  1.0f, 1.0f
+	};
+
+	// screen quad VAO
+	unsigned int quadVAO, quadVBO;
+	glGenVertexArrays(1, &quadVAO);
+	glGenBuffers(1, &quadVBO);
+	glBindVertexArray(quadVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+
+	screenShader->use();
+	screenShader->setInt("screenTexture", 0);
+
+	// framebuffer configuration
+	// -------------------------
+	unsigned int framebuffer;
+	glGenFramebuffers(1, &framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	// create a color attachment texture
+	unsigned int textureColorbuffer;
+	glGenTextures(1, &textureColorbuffer);
+	glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WINDOW_WIDTH, WINDOW_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
+
+	// create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
+	unsigned int rbo;
+	glGenRenderbuffers(1, &rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, WINDOW_WIDTH, WINDOW_HEIGHT); // use a single renderbuffer object for both a depth AND stencil buffer.
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); // now actually attach it
+																								  // now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << endl;
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
 	while (!glfwWindowShouldClose(window->getWindow()))
 	{
 		processInput();
 		processMouse(*scene, models);
+
+		// render
+		// ------
+		// bind to framebuffer and draw scene as we normally would to color texture 
+		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+		glEnable(GL_DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)
+
 
 		glClearColor(BACKGROUND_COLOR);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -81,40 +131,13 @@ void Core::run()
 		defaultShader->use();
 		//shader->setInt("texture", 0);
 		
-
-		////copper
-		//glm::vec3 matAmbient = glm::vec3(0.19125f, 0.0735f, 0.0225f);
-		//glm::vec3 matDiffuse = glm::vec3(0.7038f, 0.27048f, 0.0828f);
-		//glm::vec3 matSpecular = glm::vec3(0.256777f, 0.137622f, 0.086014f);/*
-		glm::vec3 matAmbient = glm::vec3(0.2f, 0.2f, 0.2f);
-		glm::vec3 matDiffuse = glm::vec3(0.2f, 0.2f, 0.2f);
-		glm::vec3 matSpecular = glm::vec3(0.2f, 0.2f, 0.2f);
-		float shininess = 12.8f;
-
-		////unique_ptr<Material> cube = make_unique<Material>(matAmbient, matDiffuse, matSpecular, shininess);
-
-		defaultShader->setVec3("mambient", matAmbient);
-		defaultShader->setVec3("mdiffuse", matDiffuse);
-		defaultShader->setVec3("mspecular", matSpecular);
-		defaultShader->setFloat("mshininess", shininess);
-
-	
-		//glm::vec3 ligDiffuse = lightColor * glm::vec3(0.6f);
-		//glm::vec3 ligAmbient = ligDiffuse * glm::vec3(0.9f);
-		//glm::vec3 ligSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
-		////shader->setVec3("lambient", ligAmbient);
-		////shader->setVec3("ldiffuse", ligDiffuse);
-		////shader->setVec3("lspecular", ligSpecular);
-		//shader->setVec3("lambient", 0.2f, 0.2f, 0.2f);
-		//shader->setVec3("ldiffuse", 0.5f, 0.5f, 0.5f);
-		//shader->setVec3("lspecular", 1.0f, 1.0f, 1.0f);
-
 		//every light
 		glm::vec3 lightColor = glm::vec3(2.0f, 2.0f, 2.0f);
 		defaultShader->setVec3("lightColor", lightColor);
 		defaultShader->setFloat("currentTime", currentTime);
 		defaultShader->setVec3("viewPosition", camera->cameraPos);
-
+		float shininess = 12.8f;
+		defaultShader->setFloat("mshininess", shininess);
 
 		//directional light
 		glm::vec3 lightDirection = glm::normalize(glm::vec3(-0.2f, -3.0f, -1.3f));
@@ -134,11 +157,7 @@ void Core::run()
 		defaultShader->setFloat("outerLightCutOff", glm::cos(glm::radians(4.5f)));
 
 
-		//running time
-		//bone transform
-		//set bone transform
-
-
+		//amimation
 		vector<Matrix4f> Transforms;
 		float RunningTime = (float)((double)GetCurrentTimeMillis() - (double)m_startTime) / 1000.0f;
 
@@ -147,10 +166,20 @@ void Core::run()
 		//	SetBoneTransform(i, Transforms[i]);
 		//}
 
-		
 		scene->updateViewSpace(*camera);
 		defaultShader->updateScene(*scene);
-		defaultShader->setVec3("cameraPos", camera->cameraPos);
+
+
+		//Depth of field uniforms
+		defaultShader->setBool("shouldUseDoF", shouldUseDoF);
+
+		glm::vec4 focus = scene->getProjectionSpace() * scene->getViewSpace() * glm::vec4(0, 0, 0, 1);
+		float depth = 0.5f * focus.z / focus.w + 0.5f;
+		float focusDistance = depth;
+		float focusTightness = 500.0f;
+		defaultShader->setFloat("focus_distance", focusDistance);
+		defaultShader->setFloat("focus_tightness", focusTightness);
+
 
 		for each (Model* model in models)
 		{
@@ -175,9 +204,24 @@ void Core::run()
 		ui->draw();
 
 
+		// now bind back to default framebuffer and draw a quad plane with the attached framebuffer color texture
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // set clear color to white (not really necessery actually, since we won't be able to see behind the quad anyways)
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		screenShader->use();
+		glBindVertexArray(quadVAO); 
+		glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
+															  // clear all relevant buffers
+		glBindTexture(GL_TEXTURE_2D, textureColorbuffer); // use the color attachment texture as the texture of the quad plane
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		
 		glfwSwapBuffers(window->getWindow());
 		glfwPollEvents();
 	}
+
+	glDeleteFramebuffers(1, &framebuffer);
 }
 
 
@@ -215,6 +259,11 @@ Core::Core()
 	skyboxShader->loadShader(GL_FRAGMENT_SHADER, SKYBOX_FRAGMENT_SHADER_PATH);
 	skyboxShader->link();
 
+	screenShader = std::make_unique<Shader>();
+
+	screenShader->loadShader(GL_VERTEX_SHADER, SCREEN_VERTEX_SHADER_PATH);
+	screenShader->loadShader(GL_FRAGMENT_SHADER, SCREEN_FRAGMENT_SHADER_PATH);
+	screenShader->link();
 
 
 

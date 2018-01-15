@@ -29,7 +29,7 @@ private:
 	GLfloat lastTime = 0.0f;		// Czas ostatniej ramki
 	float cameraSpeed = 2.0f;
 	float mouseSensivity = 0.15f;
-
+	bool shouldUseDoF;
 	long long m_startTime;
 
 	void processInput();
@@ -41,6 +41,7 @@ private:
 	std::unique_ptr<Window> window;
 	std::unique_ptr<Shader> defaultShader;
 	std::unique_ptr<Shader> skyboxShader;
+	std::unique_ptr<Shader> screenShader;
 
 	std::unique_ptr<Camera> camera;
 	std::unique_ptr<Scene> scene;

@@ -12,10 +12,14 @@ uniform samplerCube skybox;
 uniform bool shouldRefract;
 uniform bool shouldReflect;
 
+//DOF data
+uniform bool shouldUseDoF;
+uniform float focus_distance;
+uniform float focus_tightness;
+
 //all lights
 uniform vec3 lightColor;
 uniform vec3 viewPosition;
-uniform float currentTime;
 
 //Directional light 
 uniform vec3 directionalColors;
@@ -34,30 +38,56 @@ uniform float outerLightCutOff;
 uniform bool shouldUseDiffuseTexture;
 uniform sampler2D diffuse0;
 uniform vec3 diffuseColor;
-//uniform sampler2D specular0;
-uniform vec3 mambient;
-uniform vec3 mdiffuse;
-uniform vec3 mspecular;
 uniform float mshininess;
 
 uniform mat3 normalTransform;
 
+
+
+const mediump vec2[] poisson = vec2[](
+	vec2(0.0, 0.0),
+	vec2(0.421371704412, 0.906567202227),
+	vec2(0.995340825493, -0.0765600846338),
+	vec2(-0.11795897484, -0.992506111676),
+	vec2(-0.955384723968, -0.283241343592),
+	vec2(-0.639638592679, 0.737523888289),
+	vec2(0.533180349316, -0.796841591966),
+	vec2(0.529296606416, 0.235529970636),
+	vec2(-0.337629660503, -0.440940769128),
+	vec2(-0.116286582025, 0.549146401483),
+	vec2(-0.606287414387, 0.165178891925),
+	vec2(0.396831901178, -0.273994232394),
+	vec2(0.792085623609, 0.586268062773),
+	vec2(-0.0774468852701, 0.996707096728),
+	vec2(-0.727338416286, -0.668729615531),
+	vec2(0.757764018525, -0.392595647475),
+	vec2(-0.890878068496, 0.445073897715),
+	vec2(0.0966273805019, -0.52978354296),
+	vec2(-0.959064443092, 0.0740426808208),
+	vec2(0.391077708621, 0.544546371569),
+	vec2(-0.579352207036, -0.16835414791),
+	vec2(-0.415223230079, -0.826142464521),
+	vec2(0.956384725401, 0.271835625325),
+	vec2(0.136447590955, 0.309939366132),
+	vec2(-0.280449819994, 0.255379931371)
+	);
+
+
 void main()
 {
 	// DIRECTIONAL LIGHT
-	// zmiana koloru w czasie
 		// dlambient
-	vec3 dlambient = mambient * directionalColors * vec3(0.2);
+	vec3 dlambient = 0.4* directionalColors * vec3(0.2);
 		// dldiffuse
 	vec3 norm = normalize(normalTransform*Normal);
 	vec3 lightDir = normalize(-lightDirection);  
 	float diff = max(dot(norm, lightDir), 0.0);
-	vec3 dldiffuse = mdiffuse * directionalColors * diff * vec3(0.5);
+	vec3 dldiffuse = 0.4* directionalColors * diff * vec3(0.5);
 		// dlspecular
 	vec3 viewDir = normalize(viewPosition - FragPos);
     vec3 reflectDir = reflect(-lightDir, norm);  
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), mshininess);
-	vec3 dlspecular = mspecular * vec3(1.0f, 1.0f, 1.0f) * spec;
+	vec3 dlspecular = 0.4* vec3(1.0f, 1.0f, 1.0f) * spec;
 
 	vec3 directionalLight = dlambient + dldiffuse + dlspecular;
 
@@ -71,49 +101,42 @@ void main()
     float distance = length(pointLightPosition - FragPos);
     float attenuation = 1.0 / (constant + linear * distance + quadratic * (distance * distance)); 	  
 		// plambient	
-	vec3 plambient = mambient *  lightColor * vec3(0.8f) * vec3(0.9f) * attenuation; 
+	vec3 plambient = 0.4*  lightColor * vec3(0.8f) * vec3(0.9f) * attenuation; 
 		// pldiffuse
 	lightDir = normalize(pointLightPosition - FragPos);  
 	diff = max(dot(norm, lightDir), 0.0);
-	vec3 pldiffuse = mdiffuse * lightColor * vec3(0.8f) * diff *  attenuation; 
+	vec3 pldiffuse = 0.4* lightColor * vec3(0.8f) * diff *  attenuation; 
 		// plspecular
     reflectDir = reflect(-lightDir, norm);  
     spec = pow(max(dot(viewDir, reflectDir), 0.0), mshininess);
-	vec3 plspecular = mspecular *  vec3(1.0f, 1.0f, 1.0f) * spec * attenuation;
+	vec3 plspecular = 0.4*  vec3(1.0f, 1.0f, 1.0f) * spec * attenuation;
 
 	vec3 pointLight = plambient + pldiffuse + plspecular;
 
 
 	
 	// SPOTLIGHT
-	// zmiana intensywnosci w czasie
 	lightDir = normalize(spotLightPosition - FragPos);  
 	float theta = dot(lightDir, normalize(-spotLightDirection));
     float epsilon   = lightCutOff - outerLightCutOff;
 	float intensity = clamp((theta - outerLightCutOff) / epsilon, 0.0, 1.0);   
-	intensity = 2 * intensity + 3*sin(currentTime);	 
 	// attenuation
     distance = length(spotLightPosition - FragPos);
     attenuation = 1.0 / (constant + linear * distance + quadratic * (distance * distance)); 	
 		// slambient	
-	vec3 slambient =   mambient * lightColor * vec3(1.2f) * attenuation; 
+	vec3 slambient =   0.4* lightColor * vec3(1.2f) * attenuation; 
 		// sldiffuse
 	diff = max(dot(norm, lightDir), 0.0);
-	vec3 sldiffuse =   mdiffuse * lightColor * vec3(0.8f) * diff * intensity * attenuation;
+	vec3 sldiffuse =   0.4* lightColor * vec3(0.8f) * diff * intensity * attenuation;
 		// slspecular
 	reflectDir = reflect(-lightDir, norm);
 	spec = pow(max(dot(viewDir, reflectDir), 0.0), mshininess); 
 	vec3 slspecular =  vec3(1.0f, 1.0f, 1.0f) * spec * intensity * attenuation;   
 	
 	vec3 spotLight = slambient + sldiffuse + slspecular;
-
-
+	
 
 	vec3 lights = directionalLight + pointLight + spotLight;
-	//vec3 lights = directionalLight;
-
-	//vec3 lights = pointLight + spotLight;
-	
 
 	if (shouldReflect)
 	{
@@ -143,6 +166,9 @@ void main()
 		fragColor = vec4(diffuseColor, 1) * vec4(lights, 1.0);
 	}
 
+	if (shouldUseDoF) {
+
+	}
 }
 
 
