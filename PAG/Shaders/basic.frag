@@ -12,11 +12,6 @@ uniform samplerCube skybox;
 uniform bool shouldRefract;
 uniform bool shouldReflect;
 
-//DOF data
-uniform bool shouldUseDoF;
-uniform float focus_distance;
-uniform float focus_tightness;
-
 //all lights
 uniform vec3 lightColor;
 uniform vec3 viewPosition;
@@ -164,10 +159,6 @@ void main()
 	else
 	{
 		fragColor = vec4(diffuseColor, 1) * vec4(lights, 1.0);
-	}
-
-	if (shouldUseDoF) {
-
 	}
 }
 

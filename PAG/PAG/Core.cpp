@@ -97,13 +97,28 @@ void Core::run()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
 
+
+	screenShader->setInt("depthTexture", 0);
+	unsigned int textureDepth;
+	glGenTextures(1, &textureDepth);
+	glBindTexture(GL_TEXTURE_2D, textureDepth);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, WINDOW_WIDTH, WINDOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
 	// create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
 	unsigned int rbo;
 	glGenRenderbuffers(1, &rbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, WINDOW_WIDTH, WINDOW_HEIGHT); // use a single renderbuffer object for both a depth AND stencil buffer.
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); // now actually attach it
+	//glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, WINDOW_WIDTH, WINDOW_HEIGHT); // use a single renderbuffer object for both a depth AND stencil buffer.
+	//glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); // now actually attach it
 																								  // now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, WINDOW_WIDTH, WINDOW_HEIGHT);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, textureDepth, 0);
+
+
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << endl;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -127,10 +142,10 @@ void Core::run()
 		GLfloat currentTime = glfwGetTime();
 		deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
-		
+
 		defaultShader->use();
 		//shader->setInt("texture", 0);
-		
+
 		//every light
 		glm::vec3 lightColor = glm::vec3(2.0f, 2.0f, 2.0f);
 		defaultShader->setVec3("lightColor", lightColor);
@@ -142,12 +157,13 @@ void Core::run()
 		//directional light
 		glm::vec3 lightDirection = glm::normalize(glm::vec3(-0.2f, -3.0f, -1.3f));
 		defaultShader->setVec3("lightDirection", lightDirection);
-		glm::vec3 directionalColors = glm::vec3( 0.0f, sin(currentTime) + 1.0f, cos(currentTime)+1.0f);
+		//glm::vec3 directionalColors = glm::vec3(0.0f, sin(currentTime) + 1.0f, cos(currentTime) + 1.0f);
+		glm::vec3 directionalColors = glm::vec3(0.0f, 1.0f, 1.0f);
 		defaultShader->setVec3("directionalColors", directionalColors);
 
 		//point light
-		//glm::vec3 pointLightPosition = glm::vec3(1, 1, 1.0f);
-		glm::vec3 pointLightPosition = glm::vec3(10*sin(currentTime), 2.0f, 1.0f);
+		glm::vec3 pointLightPosition = glm::vec3(1, 1, 1.0f);
+		//glm::vec3 pointLightPosition = glm::vec3(10 * sin(currentTime), 2.0f, 1.0f);
 		defaultShader->setVec3("pointLightPosition", pointLightPosition);
 
 		//spotlight
@@ -170,17 +186,6 @@ void Core::run()
 		defaultShader->updateScene(*scene);
 
 
-		//Depth of field uniforms
-		defaultShader->setBool("shouldUseDoF", shouldUseDoF);
-
-		glm::vec4 focus = scene->getProjectionSpace() * scene->getViewSpace() * glm::vec4(0, 0, 0, 1);
-		float depth = 0.5f * focus.z / focus.w + 0.5f;
-		float focusDistance = depth;
-		float focusTightness = 500.0f;
-		defaultShader->setFloat("focus_distance", focusDistance);
-		defaultShader->setFloat("focus_tightness", focusTightness);
-
-
 		for each (Model* model in models)
 		{
 			if (model == &nanosuit)
@@ -189,7 +194,7 @@ void Core::run()
 				defaultShader->setBool("shouldReflect", false);
 
 			}
-			else 
+			else
 			{
 				defaultShader->setBool("shouldRefract", false);
 				defaultShader->setBool("shouldReflect", true);
@@ -210,13 +215,32 @@ void Core::run()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		screenShader->use();
-		glBindVertexArray(quadVAO); 
+
+		//Depth of field uniforms
+		screenShader->setBool("shouldUseDoF", shouldUseDoF);
+
+		glm::vec4 focus = scene->getProjectionSpace() * scene->getViewSpace() * glm::vec4(0, 0, 0, 1);
+		float depth = 0.5f * focus.z / focus.w + 0.5f;
+		float focusDistance = depth;
+	//	float focusDistance = 10.0f;
+		float focusTightness = 100.0f;
+		screenShader->setFloat("focus_distance", focusDistance);
+		screenShader->setFloat("focus_tightness", focusTightness);
+
+		glm::ivec2 screenSize = glm::vec2(WINDOW_WIDTH, WINDOW_HEIGHT);
+		screenShader->setVec2("screenSize", screenSize);
+
+		//Pixelization uniforms
+		screenShader->setBool("shouldPixelise", shouldPixelise);
+		
+
+		glBindVertexArray(quadVAO);
 		glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
 															  // clear all relevant buffers
 		glBindTexture(GL_TEXTURE_2D, textureColorbuffer); // use the color attachment texture as the texture of the quad plane
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		
+
 		glfwSwapBuffers(window->getWindow());
 		glfwPollEvents();
 	}
@@ -303,6 +327,14 @@ void Core::processInput()
 		camera->cameraPos -= glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * speed;
 	if (glfwGetKey(window->getWindow(), GLFW_KEY_D) == GLFW_PRESS)
 		camera->cameraPos += glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * speed;
+	if (glfwGetKey(window->getWindow(), GLFW_KEY_1) == GLFW_PRESS)
+		shouldUseDoF = true;
+	if (glfwGetKey(window->getWindow(), GLFW_KEY_2) == GLFW_PRESS)
+		shouldUseDoF = false;
+	if (glfwGetKey(window->getWindow(), GLFW_KEY_3) == GLFW_PRESS)
+		shouldPixelise = true;
+	if (glfwGetKey(window->getWindow(), GLFW_KEY_4) == GLFW_PRESS)
+		shouldPixelise = false;
 }
 
 void Core::processMouse(Scene scene, std::vector<Model*> models)
@@ -327,7 +359,7 @@ void Core::processMouse(Scene scene, std::vector<Model*> models)
 
 		camera->rotateByOffset(offsetX, offsetY);
 	}
-	
+
 
 	std::pair<int, int> screenSize;
 	std::pair<double, double> mousePos;

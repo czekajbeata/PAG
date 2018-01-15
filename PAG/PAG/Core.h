@@ -29,7 +29,8 @@ private:
 	GLfloat lastTime = 0.0f;		// Czas ostatniej ramki
 	float cameraSpeed = 2.0f;
 	float mouseSensivity = 0.15f;
-	bool shouldUseDoF;
+	bool shouldUseDoF = false;
+	bool shouldPixelise = false;
 	long long m_startTime;
 
 	void processInput();
