@@ -67,16 +67,12 @@ void main()
 	}
 	else if (shouldPixelise)
 	{
-		float pixel_w = 1.50;
-		float pixel_h = 1.50;
-
 		float Pixels = 1024.0;
 		float dx = 15.0 * (1.0 / Pixels);
 		float dy = 10.0 * (1.0 / Pixels);
 		vec2 Coord = vec2(dx * floor(TexCoords.x / dx),
 			dy * floor(TexCoords.y / dy));
 		FragColor = texture(screenTexture, Coord);
-
 	}
 	else {
 		vec3 col = texture(screenTexture, TexCoords).rgb;
