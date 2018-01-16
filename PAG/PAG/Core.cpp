@@ -92,7 +92,7 @@ void Core::run()
 	unsigned int textureColorbuffer;
 	glGenTextures(1, &textureColorbuffer);
 	glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WINDOW_WIDTH, WINDOW_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WINDOW_WIDTH, WINDOW_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
@@ -123,6 +123,8 @@ void Core::run()
 		cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << endl;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+
+	screenShader->setInt("hdrBuffer", 0);
 
 	while (!glfwWindowShouldClose(window->getWindow()))
 	{
@@ -238,6 +240,10 @@ void Core::run()
 		glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
 															  // clear all relevant buffers
 		glBindTexture(GL_TEXTURE_2D, textureColorbuffer); // use the color attachment texture as the texture of the quad plane
+
+		screenShader->setInt("hdr", true);
+		screenShader->setFloat("exposure", exposure);
+
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 
@@ -335,6 +341,18 @@ void Core::processInput()
 		shouldPixelise = true;
 	if (glfwGetKey(window->getWindow(), GLFW_KEY_4) == GLFW_PRESS)
 		shouldPixelise = false;
+
+	if (glfwGetKey(window->getWindow(), GLFW_KEY_Q) == GLFW_PRESS)
+	{
+		if (exposure > 0.0f)
+			exposure -= 0.05f;
+		else
+			exposure = 0.0f;
+	}
+	else if (glfwGetKey(window->getWindow(), GLFW_KEY_E) == GLFW_PRESS)
+	{
+		exposure += 0.05f;
+	}
 }
 
 void Core::processMouse(Scene scene, std::vector<Model*> models)
