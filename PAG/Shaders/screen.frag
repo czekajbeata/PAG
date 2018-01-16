@@ -47,9 +47,26 @@ void main()
 {
 	if (shouldUseDoF && shouldPixelise) 
 	{
-		// czary ³¹czeniowe
-		vec3 col = texture(screenTexture, TexCoords).rgb;
-		FragColor = vec4(col, 1.0);
+		float Pixels = 1024.0;
+		float dx = 15.0 * (1.0 / Pixels);
+		float dy = 10.0 * (1.0 / Pixels);
+		vec2 Coord = vec2(dx * floor(TexCoords.x / dx),
+			dy * floor(TexCoords.y / dy));
+		vec4 PixelFragColor = texture(screenTexture, Coord);
+
+		mediump float focus = clamp(abs(texture(depthTexture, TexCoords).r - focus_distance) * focus_tightness, 0.0, 20.0);
+
+		mediump vec2 one_over_size = vec2(1.0) / vec2(screenSize);
+		mediump vec3 color = vec3(0.0);
+		for (int i = 0; i<25; ++i)
+		{
+			color += texture(screenTexture, TexCoords + focus * one_over_size * poisson[i]).rgb;
+		}
+		color *= (1.0 / 25.0);
+		vec4 DOFFragColor = vec4(color, 1.0);
+
+		FragColor = PixelFragColor + DOFFragColor;
+
 	}
 	else if (shouldUseDoF) 
 	{

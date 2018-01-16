@@ -222,8 +222,8 @@ void Core::run()
 		glm::vec4 focus = scene->getProjectionSpace() * scene->getViewSpace() * glm::vec4(0, 0, 0, 1);
 		float depth = 0.5f * focus.z / focus.w + 0.5f;
 		float focusDistance = depth;
-	//	float focusDistance = 10.0f;
-		float focusTightness = 100.0f;
+		float focusTightness = 20.0f;
+	//	float focusTightness = 100.0f;
 		screenShader->setFloat("focus_distance", focusDistance);
 		screenShader->setFloat("focus_tightness", focusTightness);
 

@@ -147,7 +147,7 @@ void main()
 		//fragColor = vec4(texture(skybox, R).rgb, 1.0) * vec4(lights, 1.0);
 
 		//refraction
-		float ratio = 1.00 / 1.01;
+		float ratio = 1.00 / 1.00;
 		vec3 I = normalize(FragPos - viewPosition);
 		vec3 R = refract(I, normalize(Normal), ratio);
 		fragColor = vec4(texture(skybox, R).rgb, 1.0) * vec4(lights, 1.0);
