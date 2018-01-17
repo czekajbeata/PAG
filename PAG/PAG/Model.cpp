@@ -3,6 +3,7 @@
 #include "Textures.h"
 #include "Node.h"
 #include "Const.h"
+#include "Transform.h"
 
 #include "MousePicker.h"
 #include <assimp/scene.h>
@@ -37,8 +38,8 @@ void Model::loadModel(const std::string &pModelPath, Shader *const pShader)
 
 	mTextures = new Textures(scene, mModelDirectory.append(MODEL_TEXTURE_FOLDER), pShader);
 	mRootNode = new Node(scene->mRootNode, scene, mTextures, m_BoneMapping, m_NumBones, m_BoneInfo);
-
-	m_GlobalInverseTransform = scene->mRootNode->mTransformation; /////////
+	auto x = getRootNode()->getHierarchyTransform().getTransform();
+	m_GlobalInverseTransform = scene->mRootNode->mTransformation;//Matrix4f(x[0][0], x[0][1], x[0][2], x[0][3], x[1][0], x[1][1], x[1][2], x[1][3], x[2][0], x[2][1], x[2][2], x[2][3], x[3][0], x[3][1], x[3][2], x[3][3]); //scene->mRootNode->mTransformation; /////////
 	m_GlobalInverseTransform.Inverse();/////////////
 }
 
@@ -115,6 +116,7 @@ void Model::ReadNodeHeirarchy(float AnimationTime, const aiNode* pNode, const Ma
 		m_BoneInfo[BoneIndex].FinalTransformation = m_GlobalInverseTransform * GlobalTransformation *
 			m_BoneInfo[BoneIndex].BoneOffset;
 	}
+	//Matrix4f(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
 
 	for (int i = 0; i < pNode->mNumChildren; i++) {
 		ReadNodeHeirarchy(AnimationTime, pNode->mChildren[i], GlobalTransformation);

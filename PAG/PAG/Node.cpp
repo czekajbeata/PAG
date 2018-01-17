@@ -186,14 +186,14 @@ void Node::LoadBones(const aiMesh * const pMesh, std::vector<VertexBoneData>& Bo
 			m_NumBones++;
 			BoneInfo bi;
 			m_BoneInfo.push_back(bi);
-			m_BoneInfo[BoneIndex].BoneOffset = pMesh->mBones[i]->mOffsetMatrix;
+			m_BoneInfo[BoneIndex].BoneOffset =  pMesh->mBones[i]->mOffsetMatrix;
 			m_BoneMapping[BoneName] = BoneIndex;
 		}
 		else {
 			BoneIndex = m_BoneMapping[BoneName];
 		}
 
-		for (int j = 1; j < pMesh->mBones[i]->mNumWeights; j++) {
+		for (int j = 0; j < pMesh->mBones[i]->mNumWeights; j++) {
 			//int VertexID = pMesh[meshIndex].mNumVertices + pMesh->mBones[i]->mWeights[j].mVertexId;
 			int VertexID = pMesh->mBones[i]->mWeights[j].mVertexId;
 			float Weight = pMesh->mBones[i]->mWeights[j].mWeight;
