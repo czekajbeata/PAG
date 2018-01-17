@@ -3,7 +3,6 @@ out vec4 FragColor;
 
 in vec2 TexCoords;
 
-
 //DOF data
 uniform bool shouldUseDoF;
 uniform sampler2D screenTexture;
@@ -14,7 +13,6 @@ uniform float focus_tightness;
 
 //Pixelization data
 uniform bool shouldPixelise;
-
 
 //HDR
 uniform sampler2D hdrBuffer;
@@ -49,6 +47,9 @@ const vec2[] poisson = vec2[](
 	vec2(-0.280449819994, 0.255379931371)
 	);
 
+vec4 getPixelized();
+vec4 getDOF();
+
 void main()
 {
 	vec3 result =  vec3(1.0, 1.0, 1.0);
@@ -62,61 +63,49 @@ void main()
 		result = pow(result, vec3(1.0 / gamma));
 		//FragColor = vec4(result, 1.0);
 	}
-
-
-		if (shouldUseDoF && shouldPixelise)
-		{
-			float Pixels = 1024.0;
-			float dx = 15.0 * (1.0 / Pixels);
-			float dy = 10.0 * (1.0 / Pixels);
-			vec2 Coord = vec2(dx * floor(TexCoords.x / dx),
-				dy * floor(TexCoords.y / dy));
-			vec4 PixelFragColor = texture(screenTexture, Coord);
-
-			mediump float focus = clamp(abs(texture(depthTexture, TexCoords).r - focus_distance) * focus_tightness, 0.0, 20.0);
-
-			mediump vec2 one_over_size = vec2(1.0) / vec2(screenSize);
-			mediump vec3 color = vec3(0.0);
-			for (int i = 0; i < 25; ++i)
-			{
-				color += texture(screenTexture, TexCoords + focus * one_over_size * poisson[i]).rgb;
-			}
-			color *= (1.0 / 25.0);
-			vec4 DOFFragColor = vec4(color, 1.0);
-
-			FragColor = (PixelFragColor + DOFFragColor) /2.0;
-			FragColor *= vec4(result, 1.0);
-
-		}
-		else if (shouldUseDoF)
-		{
-			mediump float focus = clamp(abs(texture(depthTexture, TexCoords).r - focus_distance) * focus_tightness, 0.0, 20.0);
-
-			mediump vec2 one_over_size = vec2(1.0) / vec2(screenSize);
-			mediump vec3 color = vec3(0.0);
-			for (int i = 0; i < 25; ++i)
-			{
-				color += texture(screenTexture, TexCoords + focus * one_over_size * poisson[i]).rgb;
-			}
-			color *= (1.0 / 25.0);
-			FragColor = vec4(color, 1.0);
-			FragColor *= vec4(result, 1.0);
-
-		}
-		else if (shouldPixelise)
-		{
-			float Pixels = 1024.0;
-			float dx = 15.0 * (1.0 / Pixels);
-			float dy = 10.0 * (1.0 / Pixels);
-			vec2 Coord = vec2(dx * floor(TexCoords.x / dx),
-				dy * floor(TexCoords.y / dy));
-			FragColor = texture(screenTexture, Coord);
-			FragColor *= vec4(result, 1.0);
-		}
-		else {
-			vec3 col = texture(screenTexture, TexCoords).rgb;
-			FragColor = vec4(col, 1.0);
-			FragColor *= vec4(result, 1.0);
-		}
 	
+	if (shouldUseDoF && shouldPixelise)
+	{
+		FragColor = (getPixelized() + getDOF()) /2.0;
+		FragColor *= vec4(result, 1.0);
+	}
+	else if (shouldUseDoF)
+	{
+		FragColor = getDOF() * vec4(result, 1.0);
+
+	}
+	else if (shouldPixelise)
+	{
+		FragColor = getPixelized() * vec4(result, 1.0);
+	}
+	else 
+	{
+		vec3 col = texture(screenTexture, TexCoords).rgb;
+		FragColor = vec4(col, 1.0);
+		FragColor *= vec4(result, 1.0);
+	}	
+}
+
+vec4 getPixelized()
+{
+	float Pixels = 1024.0;
+	float dx = 15.0 * (1.0 / Pixels);
+	float dy = 10.0 * (1.0 / Pixels);
+	vec2 Coord = vec2(dx * floor(TexCoords.x / dx),
+		dy * floor(TexCoords.y / dy));
+	return texture(screenTexture, Coord);
+}
+
+vec4 getDOF()
+{
+	mediump float focus = clamp(abs(texture(depthTexture, TexCoords).r - focus_distance) * focus_tightness, 0.0, 20.0);
+
+	mediump vec2 one_over_size = vec2(1.0) / vec2(screenSize);
+	mediump vec3 color = vec3(0.0);
+	for (int i = 0; i < 25; ++i)
+	{
+		color += texture(screenTexture, TexCoords + focus * one_over_size * poisson[i]).rgb;
+	}
+	color *= (1.0 / 25.0);
+	return vec4(color, 1.0);
 }
