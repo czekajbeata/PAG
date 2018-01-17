@@ -31,6 +31,7 @@ private:
 	float mouseSensivity = 0.15f;
 	bool shouldUseDoF = false;
 	bool shouldPixelise = false;
+	float exposure = 1.0f;
 	long long m_startTime;
 
 	void processInput();
