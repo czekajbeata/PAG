@@ -31,9 +31,9 @@ void Core::run()
 
 	std::vector<Model*> models;
 
-	Model nanosuit("F:/GitHub/PAG_Beatta/PAG/Objects/source/nanosuit.obj", defaultShader.get());
+	//Model nanosuit("F:/GitHub/PAG_Beatta/PAG/Objects/source/nanosuit.obj", defaultShader.get());
 	//Model nanosuit("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
-	//Model nanosuit("D:/Studia/Sem V/PAG/PAG/Objects/source/nanosuit.obj", defaultShader.get());
+	Model nanosuit("D:/Studia/Sem V/PAG/PAG/Objects/source/nanosuit.obj", defaultShader.get());
 	nanosuit.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
 	nanosuit.getRootNode()->getNodeTransform()->translate(glm::vec3(11.0, 0.0, 3.0));
 
@@ -42,8 +42,9 @@ void Core::run()
 	//Model plane("D:/Studia/Sem V/PAG/PAG/Objects/source/plane.FBX", defaultShader.get());
 
 	//Model animated("F:/GitHub/PAG_Beatta/PAG/Objects/Robot/source/Robot.fbx", defaultShader.get());
-	Model animated("F:/GitHub/PAG_Beatta/PAG/Objects/Spidey/source/Spider.fbx", defaultShader.get());
+	//Model animated("F:/GitHub/PAG_Beatta/PAG/Objects/Spidey/source/Spider.fbx", defaultShader.get());
 	//Model animated("D:/Studia/Sem V/PAG/PAG/Objects/Robot/source/Robot.fbx", defaultShader.get());
+	Model animated("D:/Studia/Sem V/PAG/PAG/Objects/Spidey/source/Spider.fbx", defaultShader.get());
 	animated.getRootNode()->getNodeTransform()->scale(glm::vec3(0.0002, 0.0002, 0.0002));
 	animated.getRootNode()->getNodeTransform()->rotate(1.57f, glm::vec3(1.0, 0.0, 0.0));;
 
@@ -252,7 +253,7 @@ void Core::run()
 															  // clear all relevant buffers
 		glBindTexture(GL_TEXTURE_2D, textureColorbuffer); // use the color attachment texture as the texture of the quad plane
 
-		screenShader->setInt("hdr", hdr);
+		screenShader->setBool("hdr", hdr);
 		screenShader->setFloat("exposure", exposure);
 
 		glDrawArrays(GL_TRIANGLES, 0, 6);
