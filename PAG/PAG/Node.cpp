@@ -42,6 +42,8 @@ void Node::processNode(const aiNode* const pNode, const aiScene* const pScene, T
 	//Przetwarzanie dzieci
 	for (i = 0; i < pNode->mNumChildren; i++)
 		mChildNodes.push_back(Node(pNode->mChildren[i], pScene, this, pTextures, m_BoneMapping, m_NumBones, m_BoneInfo));
+
+
 }
 
 Mesh Node::processMesh(const aiMesh* const pMesh, const aiScene* const pScene, Textures* const pTextures, int index, std::map<std::string, int> &m_BoneMapping, int &m_NumBones, std::vector<BoneInfo> &m_BoneInfo)
