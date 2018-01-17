@@ -31,7 +31,11 @@ private:
 	float mouseSensivity = 0.15f;
 	bool shouldUseDoF = false;
 	bool shouldPixelise = false;
+	bool shouldAnimate = false;
+	bool animationKeyPressed = false;
 	float exposure = 1.0f;
+	bool hdrKeyPressed = false;
+	bool hdr = true;
 	long long m_startTime;
 
 	void processInput();

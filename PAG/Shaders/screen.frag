@@ -51,16 +51,18 @@ const vec2[] poisson = vec2[](
 
 void main()
 {
+	vec3 result =  vec3(1.0, 1.0, 1.0);
 	if (hdr)
 	{
 		const float gamma = 2.2;
 		vec3 hdrColor = texture(hdrBuffer, TexCoords).rgb;
-		vec3 result = vec3(1.0) - exp(-hdrColor * exposure);
-		// also gamma correct while we're at it       
+		// hdr with exposure
+		result = vec3(1.0) - exp(-hdrColor * exposure);
+		// gamma correction 
 		result = pow(result, vec3(1.0 / gamma));
-		FragColor = vec4(result, 1.0);
+		//FragColor = vec4(result, 1.0);
 	}
-	else {
+
 
 		if (shouldUseDoF && shouldPixelise)
 		{
@@ -82,7 +84,8 @@ void main()
 			color *= (1.0 / 25.0);
 			vec4 DOFFragColor = vec4(color, 1.0);
 
-			FragColor = PixelFragColor * DOFFragColor;
+			FragColor = (PixelFragColor + DOFFragColor) /2.0;
+			FragColor *= vec4(result, 1.0);
 
 		}
 		else if (shouldUseDoF)
@@ -97,6 +100,7 @@ void main()
 			}
 			color *= (1.0 / 25.0);
 			FragColor = vec4(color, 1.0);
+			FragColor *= vec4(result, 1.0);
 
 		}
 		else if (shouldPixelise)
@@ -107,10 +111,12 @@ void main()
 			vec2 Coord = vec2(dx * floor(TexCoords.x / dx),
 				dy * floor(TexCoords.y / dy));
 			FragColor = texture(screenTexture, Coord);
+			FragColor *= vec4(result, 1.0);
 		}
 		else {
 			vec3 col = texture(screenTexture, TexCoords).rgb;
 			FragColor = vec4(col, 1.0);
+			FragColor *= vec4(result, 1.0);
 		}
-	}
+	
 }

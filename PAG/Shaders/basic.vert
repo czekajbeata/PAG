@@ -14,18 +14,13 @@ uniform mat4 view;
 uniform mat4 projection;
 uniform mat4 gBones[100];
 
+uniform bool shouldAnimate;
+
 void main()
 {
-
 	fragVertexTexture = vertexTexture;
 
-	if (BoneIDs[0] == 0) {
-		Normal = vertexNormal;
-		FragPos = vec3(model * vec4(vertexPosition, 1.0));
-		gl_Position = projection * view * model * vec4(vertexPosition, 1.0f);
-	}
-	else {
-
+	if (shouldAnimate) {
 		mat4 BoneTransform = gBones[BoneIDs[0]];//  * Weights[0];
 		if (BoneIDs[1] == 0)
 			BoneTransform += gBones[BoneIDs[1]];// *Weights[1];
@@ -36,23 +31,19 @@ void main()
 		if (BoneIDs[4] == 0)
 			BoneTransform += gBones[BoneIDs[4]];//  * Weights[4];
 
-
 		vec4 PosL = BoneTransform * vec4(vertexPosition, 1.0);
 		vec4 NormalL = BoneTransform * vec4(vertexNormal, 0.0);
-
 
 		Normal = (NormalL).xyz;
 		FragPos = (model * PosL).xyz;
 		gl_Position = projection * view * model * PosL;
 	}
-
-
-
+	else {
+		Normal = vertexNormal;
+		FragPos = vec3(model * vec4(vertexPosition, 1.0));
+		gl_Position = projection * view * model * vec4(vertexPosition, 1.0f);
+	}
 
 	//gwp model*view*pro
 	//gworld model*view
-	//Normal = vec3(BoneTransform * vec4(vertexNormal, 1.0));
-
-	//FragPos = vec3(model * vec4(vertexPosition, 1.0));
-
 }

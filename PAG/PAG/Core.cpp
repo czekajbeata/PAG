@@ -196,18 +196,21 @@ void Core::run()
 			{
 				defaultShader->setBool("shouldRefract", true);
 				defaultShader->setBool("shouldReflect", false);
+				defaultShader->setBool("shouldAnimate", false);
 
 			}
 			else if (model == &animated)
 			{
 				defaultShader->setBool("shouldRefract", false);
 				defaultShader->setBool("shouldReflect", true);
+				defaultShader->setBool("shouldAnimate", shouldAnimate);
 
 			}
 			else 
 			{
 				defaultShader->setBool("shouldRefract", false);
 				defaultShader->setBool("shouldReflect", false);
+				defaultShader->setBool("shouldAnimate", false);
 
 			}
 
@@ -249,7 +252,7 @@ void Core::run()
 															  // clear all relevant buffers
 		glBindTexture(GL_TEXTURE_2D, textureColorbuffer); // use the color attachment texture as the texture of the quad plane
 
-		screenShader->setInt("hdr", true);
+		screenShader->setInt("hdr", hdr);
 		screenShader->setFloat("exposure", exposure);
 
 		glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -350,6 +353,16 @@ void Core::processInput()
 	if (glfwGetKey(window->getWindow(), GLFW_KEY_4) == GLFW_PRESS)
 		shouldPixelise = false;
 
+	if (glfwGetKey(window->getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS && !hdrKeyPressed)
+	{
+		hdr = !hdr;
+		hdrKeyPressed = true;
+	}
+	if (glfwGetKey(window->getWindow(), GLFW_KEY_SPACE) == GLFW_RELEASE)
+	{
+		hdrKeyPressed = false;
+	}
+
 	if (glfwGetKey(window->getWindow(), GLFW_KEY_Q) == GLFW_PRESS)
 	{
 		if (exposure > 0.0f)
@@ -361,6 +374,17 @@ void Core::processInput()
 	{
 		exposure += 0.05f;
 	}
+
+	if (glfwGetKey(window->getWindow(), GLFW_KEY_5) == GLFW_PRESS && !animationKeyPressed)
+	{
+		shouldAnimate = !shouldAnimate;
+		animationKeyPressed = true;
+	}
+	if (glfwGetKey(window->getWindow(), GLFW_KEY_5) == GLFW_RELEASE)
+	{
+		animationKeyPressed = false;
+	}
+
 }
 
 void Core::processMouse(Scene scene, std::vector<Model*> models)
