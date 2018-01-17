@@ -5,7 +5,7 @@
 
 Textures::Textures(const aiScene* const pScene, const std::string& pTexturesPath, Shader *const pShader) : mTexturesPath(pTexturesPath)
 {
-	loadTextures(pScene);
+	//loadTextures(pScene);
 	//Przypisywanie tekstur
 	pShader->setInt("diffuse0", 0); //Docelowo przy normalnych i specularach, w jakiejœ pêtli
 }

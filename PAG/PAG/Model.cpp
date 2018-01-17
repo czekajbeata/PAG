@@ -37,11 +37,14 @@ void Model::loadModel(const std::string &pModelPath, Shader *const pShader)
 	mModelFilename = pModelPath.substr(pModelPath.rfind(MODEL_SOURCE_FOLDER) + std::string(MODEL_SOURCE_FOLDER).length());
 
 	mTextures = new Textures(scene, mModelDirectory.append(MODEL_TEXTURE_FOLDER), pShader);
-	mRootNode = new Node(scene->mRootNode, scene, mTextures, m_BoneMapping, m_NumBones, m_BoneInfo);
-	auto x = getRootNode()->getHierarchyTransform().getTransform();
-	//m_GlobalInverseTransform = scene->mRootNode->mTransformation;//Matrix4f(x[0][0], x[0][1], x[0][2], x[0][3], x[1][0], x[1][1], x[1][2], x[1][3], x[2][0], x[2][1], x[2][2], x[2][3], x[3][0], x[3][1], x[3][2], x[3][3]); //scene->mRootNode->mTransformation; /////////
-	m_GlobalInverseTransform = Matrix4f(x[0][0], x[0][1], x[0][2], x[0][3], x[1][0], x[1][1], x[1][2], x[1][3], x[2][0], x[2][1], x[2][2], x[2][3], x[3][0], x[3][1], x[3][2], x[3][3]); //scene->mRootNode->mTransformation; /////////
+	m_GlobalInverseTransform = scene->mRootNode->mTransformation;//Matrix4f(x[0][0], x[0][1], x[0][2], x[0][3], x[1][0], x[1][1], x[1][2], x[1][3], x[2][0], x[2][1], x[2][2], x[2][3], x[3][0], x[3][1], x[3][2], x[3][3]); //scene->mRootNode->mTransformation; /////////
+	//m_GlobalInverseTransform = Matrix4f(x[0][0], x[0][1], x[0][2], x[0][3], x[1][0], x[1][1], x[1][2], x[1][3], x[2][0], x[2][1], x[2][2], x[2][3], x[3][0], x[3][1], x[3][2], x[3][3]); //scene->mRootNode->mTransformation; /////////
 	m_GlobalInverseTransform.Inverse();/////////////
+	Matrix4f Identity;
+	Identity.InitIdentity();
+
+	mRootNode = new Node(scene->mRootNode, scene, mTextures, m_BoneMapping, m_NumBones, m_BoneInfo);
+	ReadNodeHeirarchy(0, scene->mRootNode, Identity);
 }
 
 void Model::draw(Shader *const pShader)
@@ -80,47 +83,49 @@ Model::~Model()
 
 void Model::ReadNodeHeirarchy(float AnimationTime, const aiNode* pNode, const Matrix4f& ParentTransform)
 {
-	std::string NodeName(pNode->mName.data);
+	//std::string NodeName(pNode->mName.data);
 
 	const aiAnimation* pAnimation = scene->mAnimations[0];
 
-	Matrix4f NodeTransformation(pNode->mTransformation);
+	//Matrix4f NodeTransformation(pNode->mTransformation);
 
-	const aiNodeAnim* pNodeAnim = FindNodeAnim(pAnimation, NodeName);
+	//const aiNodeAnim* pNodeAnim = FindNodeAnim(pAnimation, NodeName);
 
-	if (pNodeAnim) {
-		// Interpolate scaling and generate scaling transformation matrix
-		aiVector3D Scaling;
-		CalcInterpolatedScaling(Scaling, AnimationTime, pNodeAnim);
-		Matrix4f ScalingM;
-		ScalingM.InitScaleTransform(Scaling.x, Scaling.y, Scaling.z);
+	//if (pNodeAnim) {
+	//	// Interpolate scaling and generate scaling transformation matrix
+	//	aiVector3D Scaling;
+	//	CalcInterpolatedScaling(Scaling, AnimationTime, pNodeAnim);
+	//	Matrix4f ScalingM;
+	//	ScalingM.InitScaleTransform(Scaling.x, Scaling.y, Scaling.z);
 
-		// Interpolate rotation and generate rotation transformation matrix
-		aiQuaternion RotationQ;
-		CalcInterpolatedRotation(RotationQ, AnimationTime, pNodeAnim);
-		Matrix4f RotationM = Matrix4f(RotationQ.GetMatrix());
+	//	// Interpolate rotation and generate rotation transformation matrix
+	//	aiQuaternion RotationQ;
+	//	CalcInterpolatedRotation(RotationQ, AnimationTime, pNodeAnim);
+	//	Matrix4f RotationM = Matrix4f(RotationQ.GetMatrix());
 
-		// Interpolate translation and generate translation transformation matrix
-		aiVector3D Translation;
-		CalcInterpolatedPosition(Translation, AnimationTime, pNodeAnim);
-		Matrix4f TranslationM;
-		TranslationM.InitTranslationTransform(Translation.x, Translation.y, Translation.z);
+	//	// Interpolate translation and generate translation transformation matrix
+	//	aiVector3D Translation;
+	//	CalcInterpolatedPosition(Translation, AnimationTime, pNodeAnim);
+	//	Matrix4f TranslationM;
+	//	TranslationM.InitTranslationTransform(Translation.x, Translation.y, Translation.z);
 
-		// Combine the above transformations
-		NodeTransformation = TranslationM * RotationM * ScalingM;
-	}
+	//	// Combine the above transformations
+	//	NodeTransformation = TranslationM * RotationM * ScalingM;
+	//}
 
-	Matrix4f GlobalTransformation = ParentTransform * NodeTransformation;
+	//Matrix4f GlobalTransformation = ParentTransform * NodeTransformation;
 
-	if (m_BoneMapping.find(NodeName) != m_BoneMapping.end()) {
-		int BoneIndex = m_BoneMapping[NodeName];
-		m_BoneInfo[BoneIndex].FinalTransformation = m_GlobalInverseTransform * GlobalTransformation * m_BoneInfo[BoneIndex].BoneOffset;
-	}
+	//if (m_BoneMapping.find(NodeName) != m_BoneMapping.end()) {
+	//	int BoneIndex = m_BoneMapping[NodeName];
+	//	m_BoneInfo[BoneIndex].FinalTransformation = m_GlobalInverseTransform * GlobalTransformation * m_BoneInfo[BoneIndex].BoneOffset;
+	//}
 	//Matrix4f(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
 
-	for (int i = 0; i < pNode->mNumChildren; i++) {
+	mRootNode->ReadNodeHeirarchy(pAnimation, AnimationTime, ParentTransform, m_BoneMapping, m_NumBones, m_BoneInfo);
+
+	/*for (int i = 0; i < pNode->mNumChildren; i++) {
 		ReadNodeHeirarchy(AnimationTime, pNode->mChildren[i], GlobalTransformation);
-	}
+	}*/
 }
 
 

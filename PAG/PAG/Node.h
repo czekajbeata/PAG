@@ -8,6 +8,7 @@
 #include <assimp/scene.h>
 #include "math.h"
 #include "BoneStruct.h"
+#include <assimp/Importer.hpp>
 
 class Transform;
 class Mesh;
@@ -18,6 +19,8 @@ class Model;
 class Node
 {
 private:
+	Matrix4f m_GlobalInverseTransform;
+	const aiNode* nodeOrigin;
 	Transform * mElementTransform = NULL;
 	Node* mParentNode = NULL;
 	const aiMatrix4x4 mOriginalTransform;
@@ -50,7 +53,16 @@ public:
 	Node* const getParentNode();
 	Node* const getChild(const unsigned int& pChildNumber);
 
+
 	void Node::LoadBones(const aiMesh * const pMesh, std::vector<VertexBoneData>& Bones, int meshIndex, std::map<std::string, int> &m_BoneMapping, int &m_NumBones, std::vector<BoneInfo> &m_BoneInfo);
+	void ReadNodeHeirarchy(const aiAnimation* pAnimation, float AnimationTime, const Matrix4f & ParentTransform, std::map<std::string, int>& m_BoneMapping, int & m_NumBones, std::vector<BoneInfo>& m_BoneInfo);
+	void CalcInterpolatedPosition(aiVector3D & Out, float AnimationTime, const aiNodeAnim * pNodeAnim);
+	void CalcInterpolatedRotation(aiQuaternion & Out, float AnimationTime, const aiNodeAnim * pNodeAnim);
+	void CalcInterpolatedScaling(aiVector3D & Out, float AnimationTime, const aiNodeAnim * pNodeAnim);
+	const aiNodeAnim * FindNodeAnim(const aiAnimation * pAnimation, const std::string NodeName);
+	int FindPosition(float AnimationTime, const aiNodeAnim * pNodeAnim);
+	int FindRotation(float AnimationTime, const aiNodeAnim * pNodeAnim);
+	int FindScaling(float AnimationTime, const aiNodeAnim * pNodeAnim);
 };
 
 #endif /* Node_hpp */

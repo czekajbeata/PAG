@@ -41,8 +41,8 @@ void Core::run()
 	//Model plane("F:/GitHub/PAG_Beatta/PAG/Objects/source/plane.FBX", defaultShader.get());
 	//Model plane("D:/Studia/Sem V/PAG/PAG/Objects/source/plane.FBX", defaultShader.get());
 
-	Model animated("F:/GitHub/PAG_Beatta/PAG/Objects/Robot/source/Robot.fbx", defaultShader.get());
-	//Model animated("F:/GitHub/PAG_Beatta/PAG/Objects/Spidey/source/Spider.fbx", defaultShader.get());
+	//Model animated("F:/GitHub/PAG_Beatta/PAG/Objects/Robot/source/Robot.fbx", defaultShader.get());
+	Model animated("F:/GitHub/PAG_Beatta/PAG/Objects/Spidey/source/Spider_3.fbx", defaultShader.get());
 	//Model animated("D:/Studia/Sem V/PAG/PAG/Objects/Robot/source/Robot.fbx", defaultShader.get());
 	animated.getRootNode()->getNodeTransform()->scale(glm::vec3(0.005, 0.005, 0.005));
 

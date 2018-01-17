@@ -26,15 +26,15 @@ void main()
 	}
 	else {
 
-		mat4 BoneTransform = gBones[BoneIDs[0]];//  * Weights[0];
-		if (BoneIDs[1] == 0)
-			BoneTransform += gBones[BoneIDs[1]];// *Weights[1];
-		if (BoneIDs[2] == 0)
-			BoneTransform += gBones[BoneIDs[2]];//  * Weights[2];
-		if (BoneIDs[3] == 0)
-			BoneTransform += gBones[BoneIDs[3]];//  * Weights[3];
-		if (BoneIDs[4] == 0)
-			BoneTransform += gBones[BoneIDs[4]];//  * Weights[4];
+		mat4 BoneTransform = gBones[BoneIDs[0]]  * Weights[0];
+		//if (BoneIDs[1] == 0)
+			BoneTransform += gBones[BoneIDs[1]] *Weights[1];
+		//if (BoneIDs[2] == 0)
+			BoneTransform += gBones[BoneIDs[2]]  * Weights[2];
+		//if (BoneIDs[3] == 0)
+			BoneTransform += gBones[BoneIDs[3]]  * Weights[3];
+		//if (BoneIDs[4] == 0)
+			BoneTransform += gBones[BoneIDs[4]]  * Weights[4];
 
 
 		vec4 PosL = BoneTransform * vec4(vertexPosition, 1.0);
