@@ -59,8 +59,8 @@ void Mesh::setupMesh() {
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexBoneData), (GLvoid*)(offsetof(VertexBoneData, normals))); //Atrybut koloru - start po wierzcho³kach (glm::vec3)
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(VertexBoneData), (GLvoid*)(offsetof(VertexBoneData, texture))); //Atrubut textury
 				
-	glVertexAttribPointer(3, 1, GL_INT, GL_FALSE, sizeof(VertexBoneData), (GLvoid*)(offsetof(VertexBoneData, IDs)));
-	glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(VertexBoneData), (GLvoid*)(offsetof(VertexBoneData, Weights)));
+	glVertexAttribPointer(3, 4, GL_INT, GL_FALSE, sizeof(VertexBoneData), (GLvoid*)(offsetof(VertexBoneData, IDs)));
+	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(VertexBoneData), (GLvoid*)(offsetof(VertexBoneData, Weights)));
 																										   //Podanie dostêpu do wierzcho³ków w tablicy o indeksie 0-2
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);

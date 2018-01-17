@@ -65,7 +65,7 @@ void main()
 		color *= (1.0 / 25.0);
 		vec4 DOFFragColor = vec4(color, 1.0);
 
-		FragColor = PixelFragColor + DOFFragColor;
+		FragColor = (PixelFragColor + DOFFragColor)/2.0;
 
 	}
 	else if (shouldUseDoF) 

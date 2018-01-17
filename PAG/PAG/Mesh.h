@@ -26,7 +26,6 @@ class Mesh
 public:
 	void setIsSelected(bool isSelected);
 	GLuint VertexBufferObject = NULL;
-	GLuint BonesBufferObject = NULL;
 	GLuint VertexArrayObject = NULL;
 	GLuint ElementObjectBuffer = NULL;
 	void setupMesh();

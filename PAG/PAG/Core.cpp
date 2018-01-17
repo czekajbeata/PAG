@@ -27,26 +27,26 @@ using namespace std;
 
 void Core::run()
 {
-	//glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	std::vector<Model*> models;
 
-	//Model nanosuit("F:/GitHub/PAG_Beatta/PAG/Objects/source/nanosuit.obj", defaultShader.get());
+	Model nanosuit("F:/GitHub/PAG_Beatta/PAG/Objects/source/nanosuit.obj", defaultShader.get());
 	//Model nanosuit("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/nanosuit.obj", shader.get());
-	Model nanosuit("D:/Studia/Sem V/PAG/PAG/Objects/source/nanosuit.obj", defaultShader.get());
+	//Model nanosuit("D:/Studia/Sem V/PAG/PAG/Objects/source/nanosuit.obj", defaultShader.get());
 	nanosuit.getRootNode()->getNodeTransform()->scale(glm::vec3(0.05, 0.05, 0.05));
 	nanosuit.getRootNode()->getNodeTransform()->translate(glm::vec3(9.0, 0.0, 3.0));
 
 	//Model plane("C:/Users/Beata/Desktop/sem V/PAG/PAG/Objects/source/plane.FBX", shader.get());	
-	//Model plane("F:/GitHub/PAG_Beatta/PAG/Objects/source/plane.FBX", defaultShader.get());
-	Model plane("D:/Studia/Sem V/PAG/PAG/Objects/source/plane.FBX", defaultShader.get());
+	Model plane("F:/GitHub/PAG_Beatta/PAG/Objects/source/plane.FBX", defaultShader.get());
+	//Model plane("D:/Studia/Sem V/PAG/PAG/Objects/source/plane.FBX", defaultShader.get());
 
-	//Model animated("F:/GitHub/PAG_Beatta/PAG/Objects/Robot/source/Robot.fbx", defaultShader.get());
-	Model animated("D:/Studia/Sem V/PAG/PAG/Objects/Robot/source/Robot.fbx", defaultShader.get());
+	Model animated("F:/GitHub/PAG_Beatta/PAG/Objects/Robot/source/Robot.fbx", defaultShader.get());
+	//Model animated("D:/Studia/Sem V/PAG/PAG/Objects/Robot/source/Robot.fbx", defaultShader.get());
 	animated.getRootNode()->getNodeTransform()->scale(glm::vec3(0.005, 0.005, 0.005));
 
-	models.push_back(&nanosuit);
-	models.push_back(&plane);
+	//models.push_back(&nanosuit);
+	//models.push_back(&plane);
 	models.push_back(&animated);
 
 	Skybox skybox;
@@ -177,10 +177,10 @@ void Core::run()
 		vector<Matrix4f> Transforms;
 		float RunningTime = (float)((double)GetCurrentTimeMillis() - (double)m_startTime) / 1000.0f;
 
-		//animated.BoneTransform(RunningTime, Transforms);
-		//for (int i = 0; i < Transforms.size(); i++) {
-		//	SetBoneTransform(i, Transforms[i]);
-		//}
+		animated.BoneTransform(RunningTime, Transforms);
+		for (int i = 0; i < Transforms.size(); i++) {
+			SetBoneTransform(i, Transforms[i]);
+		}
 
 		scene->updateViewSpace(*camera);
 		defaultShader->updateScene(*scene);
@@ -190,14 +190,14 @@ void Core::run()
 		{
 			if (model == &nanosuit)
 			{
-				defaultShader->setBool("shouldRefract", true);
+				defaultShader->setBool("shouldRefract", false);
 				defaultShader->setBool("shouldReflect", false);
 
 			}
 			else
 			{
 				defaultShader->setBool("shouldRefract", false);
-				defaultShader->setBool("shouldReflect", true);
+				defaultShader->setBool("shouldReflect", false);
 
 			}
 
